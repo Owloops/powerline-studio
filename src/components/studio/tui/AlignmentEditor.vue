@@ -29,8 +29,8 @@ const isEnabled = computed(() => !!props.align)
 				<Label for="align-toggle" class="text-xs text-muted-foreground">Override</Label>
 				<Switch
 					id="align-toggle"
-					:checked="isEnabled"
-					@update:checked="configStore.toggleAlignOverrides(breakpointIndex, $event)"
+					:model-value="isEnabled"
+					@update:model-value="configStore.toggleAlignOverrides(breakpointIndex, $event)"
 				/>
 			</div>
 		</div>

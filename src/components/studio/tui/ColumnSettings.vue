@@ -68,8 +68,8 @@ function handleAlignChange(colIndex: number, value: string) {
 				<Label for="col-align-toggle" class="text-xs text-muted-foreground">Align override</Label>
 				<Switch
 					id="col-align-toggle"
-					:checked="isAlignEnabled"
-					@update:checked="configStore.toggleAlignOverrides(breakpointIndex, $event)"
+					:model-value="isAlignEnabled"
+					@update:model-value="configStore.toggleAlignOverrides(breakpointIndex, $event)"
 				/>
 			</div>
 		</div>

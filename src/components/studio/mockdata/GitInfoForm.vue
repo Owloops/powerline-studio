@@ -173,8 +173,8 @@ const stashCountNum = numModel(stashCount as ReturnType<typeof field>)
 					<Label class="text-xs text-muted-foreground flex items-center gap-1"> Worktree </Label>
 					<div class="flex h-8 items-center">
 						<Switch
-							:checked="isWorktree ?? false"
-							@update:checked="isWorktree = $event || undefined"
+							:model-value="isWorktree ?? false"
+							@update:model-value="isWorktree = $event || undefined"
 						/>
 					</div>
 				</div>

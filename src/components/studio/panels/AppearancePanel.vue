@@ -193,8 +193,8 @@ const baseThemeColors = computed(() =>
 							<div class="flex items-center gap-3">
 								<Switch
 									id="auto-wrap"
-									:checked="configStore.config.display.autoWrap"
-									@update:checked="configStore.setAutoWrap($event)"
+									:model-value="configStore.config.display.autoWrap ?? true"
+									@update:model-value="configStore.setAutoWrap($event)"
 								/>
 								<p class="text-xs text-muted-foreground">Wrap when exceeding width</p>
 							</div>

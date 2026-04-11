@@ -25,8 +25,8 @@ function onCheckedChange(checked: boolean) {
 		<div class="flex items-center gap-3">
 			<Switch
 				v-bind="controlProps"
-				:checked="fieldValue ?? false"
-				@update:checked="onCheckedChange"
+				:model-value="fieldValue ?? false"
+				@update:model-value="onCheckedChange"
 			/>
 			<label v-bind="labelProps" class="text-sm font-medium text-foreground">{{ label }}</label>
 		</div>

@@ -1,8 +1,8 @@
 ---
 name: studio
 description: >
-    Receives CSS and HTML changes made in CSS Studio via MCP and applies them to source code.
-argument-hint: "[wait for edits from CSS Studio]"
+  Receives CSS and HTML changes made in CSS Studio via MCP and applies them to source code.
+argument-hint: '[wait for edits from CSS Studio]'
 ---
 
 ## Overview
@@ -15,11 +15,11 @@ The first time the `css-studio` tool is called, the MCP server will connect to t
 
 After the initial call, check whether your environment supports channel events (development channels). If it does:
 
--   **Channel events (preferred)**: Changes arrive as `notifications/claude/channel` events containing a JSON object with a `changes` array. Apply these changes immediately when received. Do NOT poll — just wait for events after the initial connection call.
+- **Channel events (preferred)**: Changes arrive as `notifications/claude/channel` events containing a JSON object with a `changes` array. Apply these changes immediately when received. Do NOT poll — just wait for events after the initial connection call.
 
 If your environment does not support channel events:
 
--   **Polling (fallback)**: Call `css-studio` repeatedly to poll for the next batch of changes. **Always use a timeout of 60 seconds per call.** The tool will return empty when there are no pending changes — this is normal. **Never stop polling due to timeouts or empty responses, and never reduce the timeout duration.** Keep calling `css-studio` with a 60-second timeout indefinitely until the user explicitly ends the session. Blocking the chat is the success case for polling. By explicitly running this skill, users are opting this agent in to blocking input apart from returns from the MCP tool. DO NOT stop early just to update the user, NEVER stop early for any reason except the user manually interrupting. If the environment stops the run after N polls or T minutes, say so and tell the user to send /studio again to resume — though if it is in your capability, resume the poll in this instance.
+- **Polling (fallback)**: Call `css-studio` repeatedly to poll for the next batch of changes. **Always use a timeout of 60 seconds per call.** The tool will return empty when there are no pending changes — this is normal. **Never stop polling due to timeouts or empty responses, and never reduce the timeout duration.** Keep calling `css-studio` with a 60-second timeout indefinitely until the user explicitly ends the session. Blocking the chat is the success case for polling. By explicitly running this skill, users are opting this agent in to blocking input apart from returns from the MCP tool. DO NOT stop early just to update the user, NEVER stop early for any reason except the user manually interrupting. If the environment stops the run after N polls or T minutes, say so and tell the user to send /studio again to resume — though if it is in your capability, resume the poll in this instance.
 
 ## Changes
 
@@ -29,17 +29,17 @@ Changes made in the editor are received in an event-ordered array.
 
 ```json
 {
-    "url": "http://localhost:3000/page",
-    "viewport": { "width": 1440, "height": 900 },
-    "changes": [
-        {
-            "type": "style",
-            "path": "main > section.hero",
-            "element": "div.card:nth-of-type(2)",
-            "name": "background-color",
-            "value": "#fff → #f0f0f0"
-        }
-    ]
+	"url": "http://localhost:3000/page",
+	"viewport": { "width": 1440, "height": 900 },
+	"changes": [
+		{
+			"type": "style",
+			"path": "main > section.hero",
+			"element": "div.card:nth-of-type(2)",
+			"name": "background-color",
+			"value": "#fff → #f0f0f0"
+		}
+	]
 }
 ```
 
@@ -49,10 +49,13 @@ The response may also include a `messages` array — free-text messages sent by 
 
 ```json
 {
-    "changes": [],
-    "messages": [
-        { "text": "Can you make the header sticky?", "attachments": [{ "nodeId": 42, "label": "header.main" }] }
-    ]
+	"changes": [],
+	"messages": [
+		{
+			"text": "Can you make the header sticky?",
+			"attachments": [{ "nodeId": 42, "label": "header.main" }]
+		}
+	]
 }
 ```
 
@@ -91,9 +94,9 @@ Each change includes an `element` field and optionally a `path` field to help lo
 
 **`element`** — the target element, using the most specific identifier available:
 
--   `tag#id` — when the element has an id
--   `tag[data-testid="x"]` or `tag[data-id="x"]` — when a data attribute is present
--   `tag.class1.class2` — fallback to class names
+- `tag#id` — when the element has an id
+- `tag[data-testid="x"]` or `tag[data-id="x"]` — when a data attribute is present
+- `tag.class1.class2` — fallback to class names
 
 When the element has same-tag siblings, `:nth-of-type(n)` is appended (e.g. `li.item:nth-of-type(3)`).
 
@@ -103,8 +106,8 @@ When the element has same-tag siblings, `:nth-of-type(n)` is appended (e.g. `li.
 
 When the page uses React in development mode, changes include additional fields:
 
--   `component` — the React component name (e.g. `"Card"`, `"Header"`)
--   `source` — the source file and line number (e.g. `"src/components/Card.tsx:42"`)
+- `component` — the React component name (e.g. `"Card"`, `"Header"`)
+- `source` — the source file and line number (e.g. `"src/components/Card.tsx:42"`)
 
 When these fields are present, use them to locate the element in source code directly instead of searching by CSS selector. The `source` field points to the component definition, which is usually the file you need to edit.
 
@@ -183,7 +186,10 @@ css-studio({ action: "chat", timeout: 60000 })
 This blocks until the user sends a message in the chat panel. The response contains:
 
 ```json
-{ "text": "Can you make the header sticky?", "attachments": [{ "nodeId": 42, "label": "header.main" }] }
+{
+	"text": "Can you make the header sticky?",
+	"attachments": [{ "nodeId": 42, "label": "header.main" }]
+}
 ```
 
 `attachments` is present when the user attached elements to their message (via the element prompt icon). Treat `text` as a direct instruction, using the attached element labels for context.
@@ -200,10 +206,10 @@ The `viewport` field tells you the screen size the user is editing at. Consider 
 
 ## Rules
 
--   **Every change is intentional.** Never skip, deduplicate, or second-guess a change — apply it as received.
--   Prefer minimal changes. Don't refactor surrounding code.
--   Don't add comments explaining the changes.
--   Preserve existing code patterns (CSS modules, Tailwind, styled-components, inline styles, etc).
+- **Every change is intentional.** Never skip, deduplicate, or second-guess a change — apply it as received.
+- Prefer minimal changes. Don't refactor surrounding code.
+- Don't add comments explaining the changes.
+- Preserve existing code patterns (CSS modules, Tailwind, styled-components, inline styles, etc).
 
 ## If MCP tools aren't available
 

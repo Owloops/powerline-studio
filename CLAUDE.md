@@ -8,18 +8,18 @@ Single-page Vue app — one page at `/`, one layout, no backend required.
 
 ## Tech Stack
 
-| Tool | Role |
-|---|---|
-| Vue 3.6 + Composition API | UI framework, `<script setup lang="ts">` exclusively |
-| Vite 8 via VitePlus (`vp` CLI) | Build toolchain |
-| Tailwind CSS 4 | Styling (CSS-first config, `@theme {}` blocks) |
-| shadcn-vue + reka-ui | UI components (owned copies in `src/components/ui/`) |
-| Pinia 3 | State management (4 stores) |
-| `@owloops/claude-powerline/browser` | Rendering engine (local linked dependency) |
-| ansi_up | ANSI escape codes → HTML conversion |
-| Shiki | JSON syntax highlighting in export panel |
-| Motion for Vue | Animations |
-| VueUse | Utility composables (auto-imported) |
+| Tool                                | Role                                                 |
+| ----------------------------------- | ---------------------------------------------------- |
+| Vue 3.6 + Composition API           | UI framework, `<script setup lang="ts">` exclusively |
+| Vite 8 via VitePlus (`vp` CLI)      | Build toolchain                                      |
+| Tailwind CSS 4                      | Styling (CSS-first config, `@theme {}` blocks)       |
+| shadcn-vue + reka-ui                | UI components (owned copies in `src/components/ui/`) |
+| Pinia 3                             | State management (4 stores)                          |
+| `@owloops/claude-powerline/browser` | Rendering engine (local linked dependency)           |
+| ansi_up                             | ANSI escape codes → HTML conversion                  |
+| Shiki                               | JSON syntax highlighting in export panel             |
+| Motion for Vue                      | Animations                                           |
+| VueUse                              | Utility composables (auto-imported)                  |
 
 ## Commands
 

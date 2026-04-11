@@ -136,7 +136,7 @@ const bdCacheRead = breakdownField('cacheRead')
 
 			<div class="flex items-center justify-between">
 				<Label class="text-xs text-muted-foreground">Token Breakdown</Label>
-				<Switch :checked="hasBreakdown" @update:checked="hasBreakdown = $event" />
+				<Switch :model-value="hasBreakdown" @update:model-value="hasBreakdown = $event" />
 			</div>
 
 			<template v-if="hasBreakdown">

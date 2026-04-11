@@ -45,9 +45,9 @@ const toggleEnabled = (v: boolean) => {
 				</CollapsibleTrigger>
 				<Switch
 					v-if="toggleable"
-					:checked="enabled"
+					:model-value="enabled"
 					class="shrink-0"
-					@update:checked="toggleEnabled"
+					@update:model-value="toggleEnabled"
 				/>
 			</div>
 

@@ -723,7 +723,7 @@ export function useRenderer() {
 
 					if (renderedSegments.length === 0) continue
 
-					if (config.display.autoWrap && terminalWidth > 0) {
+					if ((config.display.autoWrap ?? true) && terminalWidth > 0) {
 						// Auto-wrap: split across lines when too wide
 						// Account for reserved width (e.g. TUI width reserve) so wrapping
 						// happens at the visible area boundary, not the full terminal width.

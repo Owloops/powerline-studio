@@ -17,6 +17,7 @@ dependencies:
 The rendering service is the core bridge between the claude-powerline engine and Vue's reactivity system. It takes the user's configuration and mock data from Pinia stores, runs them through the real claude-powerline rendering pipeline, converts the resulting ANSI escape-code output to styled HTML, and feeds the result back into the preview store for display.
 
 The service handles two distinct rendering paths:
+
 1. **Non-TUI styles** (minimal, powerline, capsule): Instantiates `SegmentRenderer`, renders each enabled segment individually, then assembles them into complete ANSI lines using the correct separator/formatting logic (powerline arrows, capsule rounded ends, or minimal plain separators).
 2. **TUI style**: Calls `renderTuiPanel` directly with a `TuiData` object containing all segment data, producing a boxed grid-based ANSI panel.
 
@@ -29,10 +30,12 @@ The ANSI output is then converted to HTML using the `ansi_up` library, producing
 <!-- SPECIFICATION:BEGIN -->
 
 ### Dependencies
+
 - Install `ansi_up` (v6.x) via `vp add ansi_up`
 - `@owloops/claude-powerline` already linked locally — browser entry at `@owloops/claude-powerline/browser`
 
 ### Composable: `useRenderer`
+
 - Located at `src/composables/useRenderer.ts`
 - Auto-imported via `unplugin-auto-import` (composables directory convention)
 - Reads reactive state from `useConfigStore` (PowerlineConfig) and `useMockDataStore` (ClaudeHookData + provider data)
@@ -40,6 +43,7 @@ The ANSI output is then converted to HTML using the `ansi_up` library, producing
 - Writes rendered output back to `usePreviewStore` (ANSI string + HTML string)
 
 ### Non-TUI rendering path (minimal / powerline / capsule)
+
 - Instantiate `SegmentRenderer` from `@owloops/claude-powerline/browser` with config and resolved symbols
 - Resolve theme colors using `getTheme()` + `hexToAnsi()` / `hexTo256Ansi()` / `hexToBasicAnsi()` color converters based on `previewStore.colorMode` (NOT `config.display.colorCompatibility` — the preview store's colorMode is the source of truth for rendering simulation; config's colorCompatibility is only relevant for export and is ignored during preview rendering)
 - Initialize `PowerlineSymbols` based on config style (minimal/powerline/capsule) and charset (unicode/text), using `SYMBOLS`/`TEXT_SYMBOLS` constants
@@ -55,6 +59,7 @@ The ANSI output is then converted to HTML using the `ansi_up` library, producing
 - Join lines with `\n`
 
 ### TUI rendering path
+
 - Build `TuiData` object from mock data stores: `{ hookData, usageInfo, blockInfo, todayInfo, contextInfo, metricsInfo, gitInfo, tmuxSessionId, colors }`
 - Resolve `BoxChars` from charset (unicode → `BOX_CHARS`, text → `BOX_CHARS_TEXT`)
 - **IMPORTANT: TUI grid width handling** — when `config.display.tui` is present (grid path), `renderTuiPanel` ignores the `terminalWidth` parameter and reads `config.display.tui.terminalWidth` instead (defaulting to 120). Before calling, the composable must set `config.display.tui.terminalWidth = previewStore.terminalWidth` on a cloned config so the preview width slider controls the grid render. For the hardcoded (non-grid) TUI path, the `terminalWidth` parameter IS used correctly.
@@ -62,12 +67,14 @@ The ANSI output is then converted to HTML using the `ansi_up` library, producing
 - `renderTuiPanel` is async (it dynamically imports terminal-width in Node, but in browser that import silently fails and the explicit `tui.terminalWidth` or function parameter is used)
 
 ### ANSI-to-HTML conversion
+
 - Instantiate `AnsiUp` once (reuse across renders)
 - Configure: `use_classes = false` (inline styles for portability), `escape_html = true` (default)
 - Call `ansiUp.ansi_to_html(ansiString)` to produce HTML with `<span style="...">` elements
 - Strip the TUI sync sequences (`\x1b[?2026h` / `\x1b[?2026l`) and whitespace guard (`\x1b[0m` at line starts) before conversion — these are terminal-only control sequences that would produce spurious empty spans
 
 ### Reactivity and performance
+
 - Use `watch` with `{ deep: true }` on config and mock data store state
 - **Watch all preview settings that affect rendering:** terminalWidth, colorMode, charset, AND `darkBackground` (needed because `getThemeColors` uses theme lightness to adjust TUI foreground colors via `hexColorDistance` against a terminal reference color)
 - Debounce the render function (150ms) using `useDebounceFn` from VueUse
@@ -79,6 +86,7 @@ The ANSI output is then converted to HTML using the `ansi_up` library, producing
 - **Singleton pattern:** The composable creates watchers and side effects. It should be called once (in the studio page root) and the returned refs passed down or consumed via provide/inject. Do NOT call `useRenderer()` from multiple components.
 
 ### Acceptance criteria
+
 - Changing any config field triggers a debounced re-render within 150ms
 - Non-TUI output matches what claude-powerline produces for the same config+data
 - TUI output matches renderTuiPanel output for the same config+data
@@ -125,62 +133,66 @@ usePreviewStore ──┘       ├─→ resolveSymbols()    ← SYMBOLS/TEXT_S
 ### Patterns to Follow
 
 **Composable pattern (Vue best practices):**
+
 ```ts
 export function useRenderer() {
-  const configStore = useConfigStore()
-  const mockDataStore = useMockDataStore()
-  const previewStore = usePreviewStore()
+	const configStore = useConfigStore()
+	const mockDataStore = useMockDataStore()
+	const previewStore = usePreviewStore()
 
-  const isRendering = shallowRef(false)
-  const renderError = shallowRef<string | null>(null)
-  let renderToken = 0  // stale render protection
+	const isRendering = shallowRef(false)
+	const renderError = shallowRef<string | null>(null)
+	let renderToken = 0 // stale render protection
 
-  // AnsiUp instance — reused across renders
-  const ansiUp = new AnsiUp()
+	// AnsiUp instance — reused across renders
+	const ansiUp = new AnsiUp()
 
-  // Core render function
-  async function render() {
-    const token = ++renderToken
-    isRendering.value = true
-    renderError.value = null
-    try {
-      // ... rendering logic ...
-      if (token !== renderToken) return  // stale, discard
-      previewStore.setRenderedOutput(ansi, html)
-    } catch (e) {
-      if (token !== renderToken) return
-      renderError.value = e instanceof Error ? e.message : String(e)
-    } finally {
-      if (token === renderToken) isRendering.value = false
-    }
-  }
+	// Core render function
+	async function render() {
+		const token = ++renderToken
+		isRendering.value = true
+		renderError.value = null
+		try {
+			// ... rendering logic ...
+			if (token !== renderToken) return // stale, discard
+			previewStore.setRenderedOutput(ansi, html)
+		} catch (e) {
+			if (token !== renderToken) return
+			renderError.value = e instanceof Error ? e.message : String(e)
+		} finally {
+			if (token === renderToken) isRendering.value = false
+		}
+	}
 
-  // Debounced version
-  const debouncedRender = useDebounceFn(render, 150)
+	// Debounced version
+	const debouncedRender = useDebounceFn(render, 150)
 
-  // Watch ALL inputs that affect rendering (including darkBackground for TUI color correction)
-  watch(
-    [
-      () => configStore.$state,
-      () => mockDataStore.$state,
-      () => previewStore.terminalWidth,
-      () => previewStore.colorMode,
-      () => previewStore.charset,
-      () => previewStore.darkBackground,
-    ],
-    () => { debouncedRender() },
-    { deep: true }
-  )
+	// Watch ALL inputs that affect rendering (including darkBackground for TUI color correction)
+	watch(
+		[
+			() => configStore.$state,
+			() => mockDataStore.$state,
+			() => previewStore.terminalWidth,
+			() => previewStore.colorMode,
+			() => previewStore.charset,
+			() => previewStore.darkBackground,
+		],
+		() => {
+			debouncedRender()
+		},
+		{ deep: true },
+	)
 
-  // Initial render
-  render()
+	// Initial render
+	render()
 
-  return { isRendering, renderError, renderNow: render }
+	return { isRendering, renderError, renderNow: render }
 }
 ```
 
 **Singleton usage:** Call `useRenderer()` once in the studio page root component. Do not call from multiple components — each call creates independent watchers and side effects. Consuming components should read output from `usePreviewStore` directly.
-```
+
+````
 
 **Color resolution (browser-safe):**
 The `getColorSupport()` function uses `node:process` and `node:tty` — it cannot be called in the browser. The composable must bypass it by reading `previewStore.colorMode` directly (which the user sets via the UI: "truecolor" / "ansi256" / "ansi" / "none"). The browser entry exports the individual converters (`hexToAnsi`, `hexTo256Ansi`, `hexToBasicAnsi`) so we pick the right one based on the user's colorMode selection.
@@ -227,9 +239,10 @@ function stripControlSequences(ansi: string): string {
     .replace(/\x1b\[\?2026[hl]/g, '')  // sync sequences
     .replace(/^\x1b\[0m/gm, '')         // line-start whitespace guards
 }
-```
+````
 
 ### Dependencies
+
 - **External packages:** `ansi_up` (v6.x, ES module, zero deps, ~10KB)
 - **Local linked package:** `@owloops/claude-powerline/browser` (already linked)
 - **Task dependencies:** task-009 (Pinia stores must exist: useConfigStore, useMockDataStore, usePreviewStore)
@@ -237,6 +250,7 @@ function stripControlSequences(ansi: string): string {
 - **Skills:** vue, vue-best-practices, vite, pnpm
 
 ### Key technical risks
+
 1. **getThemeColors replication accuracy** — The `getThemeColors()` private method in PowerlineRenderer is ~60 lines with subtle logic (TUI fg/bg proximity correction via `hexColorDistance`, custom theme partFg resolution). Must be carefully ported. Mitigation: copy logic precisely, test against known theme outputs.
 2. **formatSegment replication accuracy** — The formatting logic differs by style and handles `extractBgToFg` for arrow colors. Must match exactly for pixel-perfect preview. Mitigation: write unit tests comparing output against PowerlineRenderer for each style.
 3. **AnsiUp CSS classes vs inline styles** — Using inline styles (default) produces self-contained HTML. If we later need CSS theming of the preview terminal background, we may switch to `use_classes = true`. Start with inline styles for simplicity.
@@ -273,6 +287,7 @@ function stripControlSequences(ansi: string): string {
 <!-- NOTES:BEGIN -->
 
 **Key implementation decisions:**
+
 - `PowerlineRenderer` class is NOT exported from the browser entry and cannot be used directly. It is tightly coupled to Node.js data providers. We replicate only the pure rendering assembly logic (getThemeColors, initializeSymbols, formatSegment, buildLineFromSegments, calculateSegmentWidth) which are private methods.
 - `SegmentRenderer` IS exported and browser-safe — it handles individual segment rendering given pre-built data. This is the primary rendering workhorse.
 - `renderTuiPanel` IS exported and mostly browser-safe — it dynamically imports terminal-width (Node-only) but silently falls back when that import fails in the browser. HOWEVER, the grid path ignores the `terminalWidth` parameter and reads `config.display.tui.terminalWidth` instead. The composable must clone config and set `tui.terminalWidth` to the preview width before calling.
@@ -284,6 +299,7 @@ function stripControlSequences(ansi: string): string {
 - Async TUI renders use a token-based stale render guard to prevent old results overwriting newer ones.
 
 **Review outcomes (Codex review 2026-04-11):**
+
 - Fixed: TUI grid width — must override `config.display.tui.terminalWidth` before calling `renderTuiPanel`
 - Fixed: darkBackground missing from watcher — needed for TUI fg/bg proximity correction
 - Fixed: stale render protection for async TUI path via render token
@@ -293,6 +309,7 @@ function stripControlSequences(ansi: string): string {
 - Noted: unit test parity for replicated logic (getThemeColors, formatSegment) would be valuable but is a testing concern, not a scope addition for this task
 
 **Related Tasks:**
+
 - task-009-pinia-stores — Provides useConfigStore, useMockDataStore, usePreviewStore that this composable depends on
 - task-011-terminal-preview — Will consume the HTML output from usePreviewStore that this composable produces
 - task-012-preview-controls — Controls (terminalWidth, colorMode, charset, darkBackground) that trigger re-rendering live in usePreviewStore

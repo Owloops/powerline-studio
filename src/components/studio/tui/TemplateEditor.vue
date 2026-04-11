@@ -139,7 +139,11 @@ function insertTokenAtInput(
 				<div class="flex items-center gap-2">
 					<Label class="text-xs">Right template</Label>
 					<div v-if="allowDisableRight" class="flex items-center gap-1.5">
-						<Switch :checked="rightEnabled" class="scale-75" @update:checked="toggleRight" />
+						<Switch
+							:model-value="rightEnabled"
+							class="scale-75"
+							@update:model-value="toggleRight"
+						/>
 						<span class="text-[10px] text-muted-foreground">{{
 							rightEnabled ? 'Enabled' : 'Disabled'
 						}}</span>

@@ -34,8 +34,8 @@ const fitContent = computed(() => tui.value?.fitContent ?? false)
 				</div>
 				<Switch
 					id="fit-content"
-					:checked="fitContent"
-					@update:checked="configStore.setTuiOption('fitContent', $event)"
+					:model-value="fitContent"
+					@update:model-value="configStore.setTuiOption('fitContent', $event)"
 				/>
 			</div>
 
