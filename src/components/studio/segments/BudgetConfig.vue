@@ -39,10 +39,7 @@ watch(
 		if (!configStore.config.budget) {
 			configStore.config.budget = {} as Record<string, unknown>
 		}
-		const budget = configStore.config.budget as Record<
-			string,
-			Record<string, unknown> | undefined
-		>
+		const budget = configStore.config.budget as Record<string, Record<string, unknown> | undefined>
 		if (!budget[props.budgetKey]) {
 			budget[props.budgetKey] = {}
 		}

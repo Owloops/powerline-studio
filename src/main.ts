@@ -10,7 +10,7 @@ import 'unfonts.css'
 import './assets/main.css'
 
 if (import.meta.env.DEV) {
-	import('cssstudio').then(({ startStudio }) => startStudio())
+	void import('cssstudio').then(({ startStudio }) => startStudio())
 }
 
 export const createApp = ViteSSG(

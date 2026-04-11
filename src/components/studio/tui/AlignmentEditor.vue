@@ -36,15 +36,13 @@ const isEnabled = computed(() => !!props.align)
 		</div>
 
 		<div v-if="isEnabled && align" class="flex flex-wrap gap-2">
-			<div
-				v-for="(val, colIndex) in align"
-				:key="colIndex"
-				class="flex flex-col gap-1"
-			>
+			<div v-for="(val, colIndex) in align" :key="colIndex" class="flex flex-col gap-1">
 				<span class="text-[10px] text-muted-foreground">Col {{ colIndex + 1 }}</span>
 				<Select
 					:model-value="val"
-					@update:model-value="configStore.setColumnAlign(breakpointIndex, colIndex, $event as AlignValue)"
+					@update:model-value="
+						configStore.setColumnAlign(breakpointIndex, colIndex, $event as AlignValue)
+					"
 				>
 					<SelectTrigger size="sm" class="h-7 w-24 text-xs">
 						<SelectValue />

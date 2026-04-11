@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { cn } from '@/lib/utils'
+
 const props = defineProps<{
 	title: string
 	description: string

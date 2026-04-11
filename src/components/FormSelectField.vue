@@ -8,8 +8,16 @@ const props = defineProps<
 	}
 >()
 
-const { controlProps, labelProps, errorMessage, errorMessageProps, setValue, validate, isTouched, fieldValue } =
-	useCustomField<string>(props)
+const {
+	controlProps,
+	labelProps,
+	errorMessage,
+	errorMessageProps,
+	setValue,
+	validate,
+	isTouched,
+	fieldValue,
+} = useCustomField<string>(props)
 
 function onValueChange(value: string) {
 	setValue(value)

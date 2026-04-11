@@ -34,6 +34,8 @@ const navItems = computed(() =>
 	allNavItems.filter((item) => {
 		// Hide Segments panel when TUI style is active (TUI layout defines segment placement)
 		if (item.id === 'segments' && configStore.isTuiStyle) return false
+		// Hide TUI Layout panel when not in TUI style
+		if (item.id === 'tui' && !configStore.isTuiStyle) return false
 		return true
 	}),
 )

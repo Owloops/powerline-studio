@@ -12,7 +12,7 @@ const segmentConfig = computed(() => {
 	const seg = configStore.currentLineSegments.env
 	return {
 		variable: seg?.variable ?? SEGMENT_DEFAULTS.env.variable,
-		prefix: (seg as Record<string, unknown>)?.prefix as string | undefined ?? '',
+		prefix: ((seg as Record<string, unknown>)?.prefix as string | undefined) ?? '',
 	}
 })
 

@@ -28,12 +28,15 @@ function ensureHighlighter(): Promise<HighlighterCore> {
 	return loadPromise
 }
 
-export function useShikiHighlighter(code: MaybeRefOrGetter<string>, lang: MaybeRefOrGetter<string> = 'json') {
+export function useShikiHighlighter(
+	code: MaybeRefOrGetter<string>,
+	lang: MaybeRefOrGetter<string> = 'json',
+) {
 	const html = ref('')
 	const isLoading = ref(true)
 
 	// Kick off loading immediately
-	ensureHighlighter()
+	void ensureHighlighter()
 
 	// watchEffect tracks highlighter.value, code, and lang
 	// Once highlighter loads, it becomes non-null and this re-runs

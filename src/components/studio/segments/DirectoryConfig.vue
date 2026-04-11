@@ -31,10 +31,6 @@ watch(
 
 <template>
 	<div class="space-y-3">
-		<FormSelectField
-			name="style"
-			label="Directory Style"
-			:options="DIRECTORY_STYLE_OPTIONS"
-		/>
+		<FormSelectField name="style" label="Directory Style" :options="DIRECTORY_STYLE_OPTIONS" />
 	</div>
 </template>

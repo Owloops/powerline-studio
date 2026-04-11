@@ -52,7 +52,7 @@ const emit = defineEmits<{
 						@click="emit('load:saved', saved)"
 					/>
 					<button
-						class="absolute top-1.5 right-1.5 flex size-5 items-center justify-center rounded-full bg-destructive/90 text-destructive-foreground opacity-0 transition-opacity group-hover:opacity-100"
+						class="absolute top-1.5 right-1.5 flex size-5 items-center justify-center rounded-full bg-destructive/90 text-destructive-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:bg-destructive focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none cursor-pointer"
 						:aria-label="`Delete ${saved.name}`"
 						@click.stop="emit('delete:saved', saved.id)"
 					>

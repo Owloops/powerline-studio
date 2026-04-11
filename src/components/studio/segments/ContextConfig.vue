@@ -16,8 +16,7 @@ const segmentConfig = computed(() => {
 	return {
 		displayStyle,
 		showPercentageOnly: seg?.showPercentageOnly ?? false,
-		percentageMode:
-			seg?.percentageMode ?? (displayStyle === 'text' ? 'remaining' : 'used'),
+		percentageMode: seg?.percentageMode ?? (displayStyle === 'text' ? 'remaining' : 'used'),
 		autocompactBuffer: seg?.autocompactBuffer ?? SEGMENT_DEFAULTS.context.autocompactBuffer,
 	}
 })

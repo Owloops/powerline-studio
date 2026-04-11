@@ -3,11 +3,7 @@ import { useForm } from '@formwerk/core'
 import FormSelectField from '@/components/FormSelectField.vue'
 import BudgetConfig from './BudgetConfig.vue'
 import { blockConfigSchema } from './schemas'
-import {
-	BLOCK_TYPE_OPTIONS,
-	BURN_TYPE_OPTIONS,
-	BAR_DISPLAY_STYLE_OPTIONS,
-} from './options'
+import { BLOCK_TYPE_OPTIONS, BURN_TYPE_OPTIONS, BAR_DISPLAY_STYLE_OPTIONS } from './options'
 import { SEGMENT_DEFAULTS } from '@/stores/config'
 
 const configStore = useConfigStore()

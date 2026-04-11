@@ -168,7 +168,7 @@ const baseThemeColors = computed(() =>
 				<template v-if="!configStore.isTuiStyle">
 					<div class="grid grid-cols-2 gap-4">
 						<!-- Padding Stepper -->
-						<div class="flex flex-col gap-1.5">
+						<div class="flex flex-col gap-1.5 max-w-[140px]">
 							<NumberField
 								id="padding"
 								:model-value="configStore.config.display.padding"
@@ -188,7 +188,7 @@ const baseThemeColors = computed(() =>
 						</div>
 
 						<!-- Auto-Wrap Toggle -->
-						<div class="flex flex-col gap-1.5">
+						<div class="flex flex-col gap-3">
 							<Label for="auto-wrap">Auto-wrap</Label>
 							<div class="flex items-center gap-3">
 								<Switch

@@ -84,7 +84,7 @@ const segments = [
 					class="text-[#cdd6f4] leading-none"
 					style="font-family: inherit"
 				>&#x256D;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x256E;
-&#x2502;<span :style="{ color: '#3b82f6' }">~/proj </span>&#x2502;<span :style="{ color: '#22c55e' }">main </span>&#x2502;
+&#x2502;<span :style="{ color: '#3b82f6' }">~/proj  </span>&#x2502;<span :style="{ color: '#22c55e' }">main  </span>&#x2502;
 &#x2570;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x256F;</pre>
 			</template>
 		</div>

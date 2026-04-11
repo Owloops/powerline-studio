@@ -17,11 +17,7 @@ export function useTuiValidation(tuiConfig: () => TuiGridConfig | undefined) {
 		}
 
 		// Global minWidth/maxWidth consistency
-		if (
-			tui.minWidth !== undefined &&
-			tui.maxWidth !== undefined &&
-			tui.minWidth > tui.maxWidth
-		) {
+		if (tui.minWidth !== undefined && tui.maxWidth !== undefined && tui.minWidth > tui.maxWidth) {
 			result.push({
 				path: 'global',
 				message: 'minWidth must be less than or equal to maxWidth',

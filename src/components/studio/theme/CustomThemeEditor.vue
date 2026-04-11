@@ -14,7 +14,6 @@ const emit = defineEmits<{
 	'save:theme': [name: string]
 }>()
 
-const showSaveInput = ref(false)
 const themeName = ref('')
 
 function updateBg(segment: keyof ColorTheme, bg: string) {
@@ -34,34 +33,28 @@ function handleSave() {
 	if (!name) return
 	emit('save:theme', name)
 	themeName.value = ''
-	showSaveInput.value = false
 }
 </script>
 
 <template>
 	<div class="custom-editor flex flex-col gap-3">
 		<Separator />
-		<div class="flex items-center justify-between">
-			<div>
-				<h3 class="text-sm font-medium">Custom Theme</h3>
-				<p class="text-xs text-muted-foreground">Edit all segment colors</p>
-			</div>
-			<Button v-if="!showSaveInput" variant="outline" size="sm" @click="showSaveInput = true">
-				<IconLucide-save class="mr-1.5 size-3.5" />
-				Save
-			</Button>
+		<div>
+			<h3 class="text-sm font-medium">Custom Theme</h3>
+			<p class="text-xs text-muted-foreground">Edit all segment colors</p>
 		</div>
 
-		<!-- Save input -->
-		<div v-if="showSaveInput" class="flex items-center gap-2">
+		<div class="flex items-center gap-2">
 			<input
 				v-model="themeName"
 				class="h-8 flex-1 rounded-md border border-border bg-background px-2.5 text-sm outline-none focus:border-ring focus:ring-1 focus:ring-ring"
 				placeholder="Theme name..."
 				@keydown.enter="handleSave"
 			/>
-			<Button size="sm" :disabled="!themeName.trim()" @click="handleSave"> Save </Button>
-			<Button variant="ghost" size="sm" @click="showSaveInput = false"> Cancel </Button>
+			<Button size="sm" :disabled="!themeName.trim()" @click="handleSave">
+				<IconLucide-save class="mr-1.5 size-3.5" />
+				Save
+			</Button>
 		</div>
 
 		<div class="flex flex-col gap-2">
