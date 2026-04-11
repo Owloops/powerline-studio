@@ -141,11 +141,11 @@ const baseThemeColors = computed(() =>
 
 				<RadioGroupRoot
 					:model-value="configStore.config.display.style"
-					class="grid grid-cols-2 gap-3"
+					class="flex flex-wrap gap-3"
 					@update:model-value="configStore.setStyle($event as StyleValue)"
 				>
 					<RadioGroupItem v-for="s in styles" :key="s.value" :value="s.value" as-child>
-						<StyleCard v-bind="s" />
+						<StyleCard v-bind="s" class="min-w-[120px] flex-1" />
 					</RadioGroupItem>
 				</RadioGroupRoot>
 

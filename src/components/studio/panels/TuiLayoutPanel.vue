@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import {
@@ -71,8 +70,6 @@ const selectedBreakpoint = computed(() => {
 })
 
 const { errors } = useTuiValidation(() => tui.value)
-
-const globalOptionsCollapsed = shallowRef(true)
 
 function handleAddBreakpoint() {
 	configStore.addBreakpoint()
@@ -207,24 +204,8 @@ function confirmPreset() {
 			</ul>
 		</div>
 
-		<!-- Global Options (collapsible) -->
-		<Card>
-			<CardHeader
-				class="cursor-pointer py-2 px-3"
-				@click="globalOptionsCollapsed = !globalOptionsCollapsed"
-			>
-				<div class="flex items-center justify-between">
-					<CardTitle class="text-xs font-medium">Global Options</CardTitle>
-					<IconLucide-chevron-down
-						class="size-4 text-muted-foreground transition-transform duration-200"
-						:class="{ '-rotate-180': !globalOptionsCollapsed }"
-					/>
-				</div>
-			</CardHeader>
-			<CardContent v-show="!globalOptionsCollapsed" class="px-3 pb-3 pt-0">
-				<TuiGlobalOptions />
-			</CardContent>
-		</Card>
+		<!-- Panel Sizing -->
+		<TuiGlobalOptions />
 
 		<Separator />
 

@@ -23,7 +23,7 @@ const emit = defineEmits<{
 	<div class="flex flex-col gap-3">
 		<RadioGroupRoot
 			:model-value="mode === 'builtin' ? selectedTheme : ''"
-			class="grid grid-cols-2 gap-3"
+			class="flex flex-wrap gap-3"
 			@update:model-value="emit('select:theme', $event as CanonicalTheme)"
 		>
 			<RadioGroupItem v-for="name in CANONICAL_THEMES" :key="name" :value="name" as-child>
@@ -31,6 +31,7 @@ const emit = defineEmits<{
 					:theme-name="name"
 					:theme="getCanonicalThemeColors(name)"
 					:selected="mode === 'builtin' && selectedTheme === name"
+					class="min-w-[120px] flex-1"
 				/>
 			</RadioGroupItem>
 		</RadioGroupRoot>
@@ -41,8 +42,12 @@ const emit = defineEmits<{
 				<span class="text-xs font-medium text-muted-foreground">Saved Custom Themes</span>
 				<div class="h-px flex-1 bg-border" />
 			</div>
-			<div class="grid grid-cols-2 gap-3">
-				<div v-for="saved in savedCustomThemes" :key="saved.id" class="group relative">
+			<div class="flex flex-wrap gap-3">
+				<div
+					v-for="saved in savedCustomThemes"
+					:key="saved.id"
+					class="group relative min-w-[120px] flex-1"
+				>
 					<ThemeCard
 						:theme-name="saved.id"
 						:theme="saved.colors"

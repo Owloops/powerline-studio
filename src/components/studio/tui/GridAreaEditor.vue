@@ -70,37 +70,66 @@ function handleSingleCellUpdate(
 			<div
 				v-for="(row, rowIndex) in parsedGrid"
 				:key="rowIndex"
-				class="grid gap-1"
-				:style="{ gridTemplateColumns }"
+				class="group/row flex items-center gap-1.5"
 			>
-				<template v-if="row.length === 1 && row[0]!.segment === '---'">
-					<div
-						class="flex items-center justify-center rounded-md border border-dashed border-muted-foreground/40 bg-muted/20 px-2 py-1 text-xs text-muted-foreground/60 font-mono"
-						:style="{ gridColumn: `span ${columns.length}` }"
+				<div class="grid flex-1 gap-1" :style="{ gridTemplateColumns }">
+					<template v-if="row.length === 1 && row[0]!.segment === '---'">
+						<div
+							class="flex items-center justify-center rounded-md border border-dashed border-muted-foreground/40 bg-muted/20 px-2 py-1 text-xs text-muted-foreground/60 font-mono"
+							:style="{ gridColumn: `span ${columns.length}` }"
+						>
+							--- divider ---
+						</div>
+					</template>
+					<template v-else>
+						<GridCell
+							v-for="cell in row"
+							:key="`${rowIndex}-${cell.startCol}`"
+							:value="cell.segment"
+							:span="cell.span"
+							:start-col="cell.startCol"
+							:used-segments="usedSegmentsByRow(rowIndex)"
+							:highlighted="highlightedSegment != null && cell.segment === highlightedSegment"
+							@update="handleCellUpdate(rowIndex, cell, $event)"
+							@update-single="
+								(colOffset: number, val: string) =>
+									handleSingleCellUpdate(rowIndex, cell, colOffset, val)
+							"
+						/>
+					</template>
+				</div>
+
+				<!-- Per-row controls -->
+				<div class="flex flex-col gap-0.5 opacity-0 transition-opacity group-hover/row:opacity-100">
+					<button
+						v-if="rowIndex > 0"
+						class="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
+						title="Move row up"
+						@click="configStore.moveAreaRow(breakpointIndex, rowIndex, rowIndex - 1)"
 					>
-						--- divider ---
-					</div>
-				</template>
-				<template v-else>
-					<GridCell
-						v-for="cell in row"
-						:key="`${rowIndex}-${cell.startCol}`"
-						:value="cell.segment"
-						:span="cell.span"
-						:start-col="cell.startCol"
-						:used-segments="usedSegmentsByRow(rowIndex)"
-						:highlighted="highlightedSegment != null && cell.segment === highlightedSegment"
-						@update="handleCellUpdate(rowIndex, cell, $event)"
-						@update-single="
-							(colOffset: number, val: string) =>
-								handleSingleCellUpdate(rowIndex, cell, colOffset, val)
-						"
-					/>
-				</template>
+						<IconLucide-chevron-up class="size-3" />
+					</button>
+					<button
+						v-if="rowIndex < parsedGrid.length - 1"
+						class="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
+						title="Move row down"
+						@click="configStore.moveAreaRow(breakpointIndex, rowIndex, rowIndex + 1)"
+					>
+						<IconLucide-chevron-down class="size-3" />
+					</button>
+					<button
+						v-if="areas.length > 1"
+						class="flex size-5 items-center justify-center rounded text-destructive/70 hover:bg-destructive/10 hover:text-destructive"
+						title="Remove row"
+						@click="configStore.removeAreaRow(breakpointIndex, rowIndex)"
+					>
+						<IconLucide-x class="size-3" />
+					</button>
+				</div>
 			</div>
 		</div>
 
-		<!-- Row Controls -->
+		<!-- Add Row Controls -->
 		<div class="flex items-center gap-2">
 			<Button
 				variant="outline"
@@ -119,17 +148,6 @@ function handleSingleCellUpdate(
 			>
 				<IconLucide-minus class="mr-1 size-3" />
 				Add Divider
-			</Button>
-			<div class="flex-1" />
-			<Button
-				v-if="areas.length > 1"
-				variant="ghost"
-				size="sm"
-				class="h-7 text-xs text-destructive hover:text-destructive"
-				@click="configStore.removeAreaRow(breakpointIndex, areas.length - 1)"
-			>
-				<IconLucide-trash-2 class="mr-1 size-3" />
-				Remove Last Row
 			</Button>
 		</div>
 	</div>

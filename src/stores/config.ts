@@ -352,6 +352,16 @@ export const useConfigStore = defineStore('config', () => {
 		bp.areas.splice(rowIndex, 1)
 	}
 
+	function moveAreaRow(bpIndex: number, fromIndex: number, toIndex: number) {
+		ensureTuiConfig()
+		const bp = config.value.display.tui!.breakpoints[bpIndex]
+		if (!bp) return
+		if (fromIndex < 0 || fromIndex >= bp.areas.length) return
+		if (toIndex < 0 || toIndex >= bp.areas.length) return
+		const [row] = bp.areas.splice(fromIndex, 1)
+		bp.areas.splice(toIndex, 0, row!)
+	}
+
 	function addColumn(bpIndex: number) {
 		ensureTuiConfig()
 		const bp = config.value.display.tui!.breakpoints[bpIndex]
@@ -714,6 +724,7 @@ export const useConfigStore = defineStore('config', () => {
 		setAreaSpan,
 		addAreaRow,
 		removeAreaRow,
+		moveAreaRow,
 		addColumn,
 		removeColumn,
 		setColumnDef,
