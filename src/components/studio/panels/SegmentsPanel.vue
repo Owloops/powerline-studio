@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
-import { Reorder, useDragControls } from 'motion-v'
+import { Reorder } from 'motion-v'
 import { useMediaQuery } from '@vueuse/core'
 import SegmentRow from '@/components/studio/SegmentRow.vue'
 import LineSelector from '@/components/studio/LineSelector.vue'
+import SegmentPicker from '@/components/studio/SegmentPicker.vue'
 import {
 	SEGMENT_KEYS,
 	isSegmentKey,
@@ -22,25 +23,29 @@ const whileDragStyle = computed(() =>
 		: { scale: 1.02, boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', zIndex: 10 },
 )
 
-// --- Segment order derived from config ---
+// --- Enabled segment keys derived from config ---
 
-const segmentOrder = ref<string[]>(Object.keys(configStore.currentLineSegments))
+const enabledSegmentKeys = computed<SegmentKey[]>(() => {
+	const segments = configStore.currentLineSegments
+	return (Object.keys(segments) as SegmentKey[]).filter((key) => segments[key]?.enabled)
+})
 
-watch(
-	() => Object.keys(configStore.currentLineSegments),
-	(newKeys) => {
-		// Only update if order actually changed (avoid clobbering during drag)
-		if (JSON.stringify(newKeys) !== JSON.stringify(segmentOrder.value)) {
-			segmentOrder.value = newKeys
-		}
-	},
-)
+const enabledKeySet = computed(() => new Set<string>(enabledSegmentKeys.value))
 
-// --- Drag controls per segment ---
+// Local order state — tracks enabled keys for drag reorder
+const segmentOrder = ref<SegmentKey[]>([...enabledSegmentKeys.value])
 
-const dragControlsMap = Object.fromEntries(
-	SEGMENT_KEYS.map((key) => [key, useDragControls()]),
-) as Record<SegmentKey, ReturnType<typeof useDragControls>>
+watch(enabledSegmentKeys, (newKeys) => {
+	// Rebuild order: keep existing order for keys still present, append new keys at the end
+	const newSet = new Set(newKeys)
+	const kept = segmentOrder.value.filter((key) => newSet.has(key))
+	const keptSet = new Set(kept)
+	const added = newKeys.filter((key) => !keptSet.has(key))
+	const merged = [...kept, ...added]
+	if (JSON.stringify(merged) !== JSON.stringify(segmentOrder.value)) {
+		segmentOrder.value = merged
+	}
+})
 
 // --- Expanded state (multi-open, keyed by segment key) ---
 
@@ -50,10 +55,6 @@ const expandedRows = ref<Record<string, boolean>>(
 
 function isExpanded(key: string): boolean {
 	return expandedRows.value[key] ?? false
-}
-
-function setExpanded(key: string, value: boolean) {
-	expandedRows.value[key] = value
 }
 
 // --- Row element refs for scrollIntoView ---
@@ -66,20 +67,37 @@ function setRowRef(key: string, el: HTMLElement | null) {
 
 // --- Handlers ---
 
-function handleReorder(newOrder: string[]) {
+function handleReorder(newOrder: SegmentKey[]) {
 	segmentOrder.value = newOrder
-	configStore.reorderSegments(editorStore.activeLineIndex, newOrder as SegmentKey[])
+	// Build full order: reordered enabled keys first, then disabled keys
+	const disabledKeys = (Object.keys(configStore.currentLineSegments) as SegmentKey[]).filter(
+		(key) => !enabledKeySet.value.has(key),
+	)
+	configStore.reorderSegments(editorStore.activeLineIndex, [...newOrder, ...disabledKeys])
 }
 
 function handleSelect(key: string) {
 	editorStore.selectSegment(key)
 }
 
-function handleToggleEnabled(key: string, enabled: boolean) {
-	configStore.toggleSegment(editorStore.activeLineIndex, key as SegmentKey, enabled)
+function handleRemoveSegment(key: string) {
+	// Collapse the row first
+	expandedRows.value[key] = false
+	configStore.toggleSegment(editorStore.activeLineIndex, key as SegmentKey, false)
+	// Clear selection if the removed segment was selected
+	if (editorStore.selectedSegment === key) {
+		editorStore.clearSelection()
+	}
 }
 
-// --- Selection sync: external → list ---
+function handleAddSegment(key: SegmentKey) {
+	configStore.toggleSegment(editorStore.activeLineIndex, key, true)
+	// Auto-select and expand the newly added segment
+	editorStore.selectSegment(key)
+	expandedRows.value[key] = true
+}
+
+// --- Selection sync: external -> list ---
 
 watch(
 	() => editorStore.selectedSegment,
@@ -88,7 +106,7 @@ watch(
 
 		// Auto-expand if not already expanded
 		if (!isExpanded(selectedKey)) {
-			setExpanded(selectedKey, true)
+			expandedRows.value[selectedKey] = true
 		}
 
 		// ScrollIntoView
@@ -105,10 +123,12 @@ watch(
 </script>
 
 <template>
-	<div class="flex flex-col gap-1 p-2">
+	<div class="flex flex-col gap-3 p-2">
 		<LineSelector />
 
+		<!-- Enabled segments reorder list -->
 		<Reorder.Group
+			v-if="segmentOrder.length > 0"
 			axis="y"
 			:values="segmentOrder"
 			as="div"
@@ -119,20 +139,16 @@ watch(
 				v-for="key in segmentOrder"
 				:key="key"
 				:value="key"
-				:drag-listener="false"
-				:drag-controls="dragControlsMap[key as SegmentKey]"
 				as="div"
 				:while-drag="whileDragStyle"
 			>
 				<div :ref="(el: any) => setRowRef(key, el as HTMLElement)">
 					<SegmentRow
 						:segment-key="key as SegmentKey"
-						:enabled="configStore.currentLineSegments[key as SegmentKey]?.enabled ?? false"
 						:selected="editorStore.selectedSegment === key"
-						:drag-controls="dragControlsMap[key as SegmentKey]"
 						v-model:expanded="expandedRows[key]"
 						@select="handleSelect(key)"
-						@toggle-enabled="(enabled: boolean) => handleToggleEnabled(key, enabled)"
+						@remove="handleRemoveSegment(key)"
 					>
 						<template #config>
 							<component
@@ -145,5 +161,17 @@ watch(
 				</div>
 			</Reorder.Item>
 		</Reorder.Group>
+
+		<!-- Empty state -->
+		<div
+			v-else
+			class="flex flex-col items-center gap-2 rounded-md border border-dashed py-6 text-center text-sm text-muted-foreground"
+		>
+			<span>No segments in this line</span>
+			<span class="text-xs">Add segments using the button below</span>
+		</div>
+
+		<!-- Add Segment picker -->
+		<SegmentPicker :enabled-keys="enabledKeySet" @add="handleAddSegment" />
 	</div>
 </template>

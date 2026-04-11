@@ -1,39 +1,29 @@
 <script setup lang="ts">
-import type { DragControls } from 'motion-v'
-import { useAutoAnimate } from '@formkit/auto-animate/vue'
-import { GripVertical } from 'lucide-vue-next'
+import { ChevronDown, GripVertical, X } from 'lucide-vue-next'
 import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible'
-import { Switch } from '@/components/ui/switch'
 import { SEGMENT_META, type SegmentKey } from '@/components/studio/segments/segmentMeta'
 import { cn } from '@/lib/utils'
 
 defineProps<{
 	segmentKey: SegmentKey
-	enabled: boolean
 	selected: boolean
-	dragControls: DragControls
 }>()
 
 const expanded = defineModel<boolean>('expanded', { required: true })
 
 const emit = defineEmits<{
 	select: []
-	toggleEnabled: [enabled: boolean]
+	remove: []
 }>()
-
-const [autoAnimateRef] = useAutoAnimate({ duration: 150 })
-
-function handlePointerDown(event: PointerEvent, controls: DragControls) {
-	controls.start(event)
-}
 
 function handleRowClick() {
 	emit('select')
 	expanded.value = !expanded.value
 }
 
-function handleSwitchUpdate(checked: boolean) {
-	emit('toggleEnabled', checked)
+function handleRemove(event: MouseEvent) {
+	event.stopPropagation()
+	emit('remove')
 }
 </script>
 
@@ -44,16 +34,17 @@ function handleSwitchUpdate(checked: boolean) {
 				cn(
 					'group rounded-md border border-transparent transition-colors',
 					selected && 'border-border bg-accent',
-					!enabled && 'opacity-50',
 				)
 			"
 		>
+			<!-- Row header — entire row is draggable -->
 			<div
 				role="button"
 				tabindex="0"
 				:class="
 					cn(
-						'flex h-12 cursor-pointer items-center gap-2 rounded-md px-2 transition-colors',
+						'flex h-10 select-none items-center gap-2 rounded-md px-2 transition-colors',
+						'cursor-grab active:cursor-grabbing',
 						'hover:bg-accent/50',
 						selected && 'hover:bg-accent',
 					)
@@ -62,14 +53,8 @@ function handleSwitchUpdate(checked: boolean) {
 				@keydown.enter.prevent="handleRowClick"
 				@keydown.space.prevent="handleRowClick"
 			>
-				<!-- Drag handle -->
-				<div
-					class="flex cursor-grab items-center text-muted-foreground active:cursor-grabbing"
-					@pointerdown.stop="(e: PointerEvent) => handlePointerDown(e, dragControls)"
-					@click.stop
-				>
-					<GripVertical class="size-4" />
-				</div>
+				<!-- Drag handle indicator -->
+				<GripVertical class="size-4 shrink-0 text-muted-foreground/50" />
 
 				<!-- Segment icon + name -->
 				<component
@@ -80,15 +65,34 @@ function handleSwitchUpdate(checked: boolean) {
 					{{ SEGMENT_META[segmentKey].name }}
 				</span>
 
-				<!-- Enable/disable toggle -->
-				<Switch :model-value="enabled" @click.stop @update:model-value="handleSwitchUpdate" />
+				<!-- Expand chevron -->
+				<ChevronDown
+					:class="
+						cn(
+							'size-4 shrink-0 text-muted-foreground transition-transform duration-200',
+							expanded && 'rotate-180',
+						)
+					"
+				/>
+
+				<!-- Remove button -->
+				<button
+					class="inline-flex size-6 shrink-0 items-center justify-center rounded-sm text-muted-foreground opacity-0 transition-opacity hover:text-destructive group-hover:opacity-100"
+					tabindex="-1"
+					@click="handleRemove"
+					@pointerdown.stop
+				>
+					<X class="size-3.5" />
+					<span class="sr-only">Remove {{ SEGMENT_META[segmentKey].name }}</span>
+				</button>
 			</div>
 
+			<!-- Config section with left border indicator -->
 			<CollapsibleContent>
-				<div ref="autoAnimateRef" class="px-2 pb-3 pt-1">
+				<div class="ml-4 border-l-2 border-border/50 py-2 pr-2 pl-4">
 					<slot name="config">
 						<div class="rounded-md bg-muted/50 px-3 py-2 text-xs text-muted-foreground">
-							Configuration options coming soon
+							No configuration options for this segment
 						</div>
 					</slot>
 				</div>

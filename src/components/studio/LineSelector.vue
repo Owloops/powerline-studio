@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { Plus, X } from 'lucide-vue-next'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { ChevronLeft, ChevronRight, Plus, Trash2 } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import {
 	Dialog,
@@ -16,76 +15,99 @@ const configStore = useConfigStore()
 const editorStore = useEditorStore()
 
 const lines = computed(() => configStore.config.display.lines)
-const canAddLine = computed(() => lines.value.length < 5)
+const lineCount = computed(() => lines.value.length)
+const canAddLine = computed(() => lineCount.value < 5)
+const canRemoveLine = computed(() => lineCount.value > 1 && editorStore.activeLineIndex > 0)
+const hasPrev = computed(() => editorStore.activeLineIndex > 0)
+const hasNext = computed(() => editorStore.activeLineIndex < lineCount.value - 1)
 
-// Tabs v-model: maps numeric activeLineIndex ↔ string tab value
-const activeTab = computed({
-	get: () => `line-${editorStore.activeLineIndex}`,
-	set: (val: string) => {
-		const index = Number.parseInt(val.replace('line-', ''), 10)
-		if (!Number.isNaN(index)) {
-			editorStore.setActiveLineIndex(index)
-		}
-	},
-})
-
-// --- Remove line dialog state ---
-
-const lineToRemove = ref<number | null>(null)
-const dialogOpen = computed({
-	get: () => lineToRemove.value !== null,
-	set: (open: boolean) => {
-		if (!open) lineToRemove.value = null
-	},
-})
-
-function requestRemoveLine(index: number) {
-	lineToRemove.value = index
+function goToPrev() {
+	if (hasPrev.value) {
+		editorStore.setActiveLineIndex(editorStore.activeLineIndex - 1)
+	}
 }
 
-function confirmRemoveLine() {
-	if (lineToRemove.value !== null) {
-		configStore.removeLine(lineToRemove.value)
-		lineToRemove.value = null
+function goToNext() {
+	if (hasNext.value) {
+		editorStore.setActiveLineIndex(editorStore.activeLineIndex + 1)
 	}
 }
 
 function handleAddLine() {
 	configStore.addLine()
-	// Auto-select the newly added line
 	editorStore.setActiveLineIndex(configStore.config.display.lines.length - 1)
+}
+
+// --- Remove line dialog state ---
+
+const dialogOpen = ref(false)
+
+function requestRemoveLine() {
+	if (canRemoveLine.value) {
+		dialogOpen.value = true
+	}
+}
+
+function confirmRemoveLine() {
+	configStore.removeLine(editorStore.activeLineIndex)
+	dialogOpen.value = false
 }
 </script>
 
 <template>
-	<div class="flex items-center gap-1">
-		<Tabs v-model="activeTab" class="min-w-0 flex-1">
-			<TabsList class="h-8 w-full overflow-x-auto">
-				<div v-for="(_, index) in lines" :key="index" class="flex items-center">
-					<TabsTrigger :value="`line-${index}`" class="h-7 px-2 text-xs">
-						Line {{ index + 1 }}
-					</TabsTrigger>
-					<button
-						v-if="index > 0"
-						class="ml-0.5 inline-flex size-5 shrink-0 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-						@click.stop="requestRemoveLine(index)"
-					>
-						<X class="size-3" />
-						<span class="sr-only">Remove Line {{ index + 1 }}</span>
-					</button>
-				</div>
-			</TabsList>
-		</Tabs>
+	<div class="flex items-center gap-2">
+		<!-- Prev/Next arrows + Line label -->
+		<div class="flex min-w-0 flex-1 items-center gap-1">
+			<Button
+				variant="ghost"
+				size="icon-sm"
+				:disabled="!hasPrev"
+				class="shrink-0"
+				@click="goToPrev"
+			>
+				<ChevronLeft class="size-4" />
+				<span class="sr-only">Previous line</span>
+			</Button>
 
+			<span class="min-w-0 text-sm font-medium">
+				Line {{ editorStore.activeLineIndex + 1 }}
+				<span class="text-muted-foreground">of {{ lineCount }}</span>
+			</span>
+
+			<Button
+				variant="ghost"
+				size="icon-sm"
+				:disabled="!hasNext"
+				class="shrink-0"
+				@click="goToNext"
+			>
+				<ChevronRight class="size-4" />
+				<span class="sr-only">Next line</span>
+			</Button>
+		</div>
+
+		<!-- Remove line button -->
 		<Button
+			v-if="canRemoveLine"
 			variant="ghost"
 			size="icon-sm"
+			class="shrink-0 text-muted-foreground hover:text-destructive"
+			@click="requestRemoveLine"
+		>
+			<Trash2 class="size-4" />
+			<span class="sr-only">Remove Line {{ editorStore.activeLineIndex + 1 }}</span>
+		</Button>
+
+		<!-- Add line button -->
+		<Button
+			variant="outline"
+			size="sm"
 			:disabled="!canAddLine"
 			class="shrink-0"
 			@click="handleAddLine"
 		>
 			<Plus class="size-4" />
-			<span class="sr-only">Add Line</span>
+			Add Line
 		</Button>
 	</div>
 
@@ -93,13 +115,13 @@ function handleAddLine() {
 	<Dialog v-model:open="dialogOpen">
 		<DialogContent :show-close-button="false">
 			<DialogHeader>
-				<DialogTitle>Remove Line {{ lineToRemove !== null ? lineToRemove + 1 : '' }}?</DialogTitle>
+				<DialogTitle>Remove Line {{ editorStore.activeLineIndex + 1 }}?</DialogTitle>
 				<DialogDescription>
 					This will delete all segments configured for this line.
 				</DialogDescription>
 			</DialogHeader>
 			<DialogFooter>
-				<Button variant="outline" @click="lineToRemove = null"> Cancel </Button>
+				<Button variant="outline" @click="dialogOpen = false"> Cancel </Button>
 				<Button variant="destructive" @click="confirmRemoveLine"> Remove </Button>
 			</DialogFooter>
 		</DialogContent>
