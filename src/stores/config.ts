@@ -411,14 +411,17 @@ export const useConfigStore = defineStore('config', () => {
 
 	function loadConfig(partial: Partial<PowerlineConfig>) {
 		config.value = deepMerge(structuredClone(DEFAULT_CONFIG), partial as PowerlineConfig)
+		rehydrateThemeEditor()
 	}
 
 	function resetToDefaults() {
 		config.value = structuredClone(DEFAULT_CONFIG)
+		rehydrateThemeEditor()
 	}
 
 	function $reset() {
 		config.value = structuredClone(DEFAULT_CONFIG)
+		rehydrateThemeEditor()
 	}
 
 	// --- Theme Editor State ---
@@ -451,6 +454,15 @@ export const useConfigStore = defineStore('config', () => {
 	}
 
 	const themeEditor = reactive<ThemeEditorState>(resolveInitialThemeState())
+
+	function rehydrateThemeEditor() {
+		const fresh = resolveInitialThemeState()
+		themeEditor.mode = fresh.mode
+		themeEditor.builtinTheme = fresh.builtinTheme
+		themeEditor.overrides = fresh.overrides
+		themeEditor.customDraft = fresh.customDraft
+		themeEditor.customSourceSnapshot = fresh.customSourceSnapshot
+	}
 
 	const effectiveColors = computed<ColorTheme>(() => {
 		if (themeEditor.mode === 'custom') {
@@ -525,7 +537,12 @@ export const useConfigStore = defineStore('config', () => {
 	}
 
 	function setColorOverride(segment: keyof ColorTheme, color: SegmentColor) {
-		themeEditor.overrides[segment] = { ...color }
+		const base = getCanonicalThemeColors(themeEditor.builtinTheme)[segment]
+		if (base.bg === color.bg && base.fg === color.fg) {
+			delete themeEditor.overrides[segment]
+		} else {
+			themeEditor.overrides[segment] = { ...color }
+		}
 	}
 
 	function resetSegmentOverride(segment: keyof ColorTheme) {

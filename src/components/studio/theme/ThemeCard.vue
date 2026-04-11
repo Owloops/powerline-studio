@@ -20,7 +20,6 @@ const label = computed(() => CANONICAL_THEME_LABELS[props.themeName])
 		:class="
 			cn(
 				'theme-card flex cursor-pointer flex-col gap-2 rounded-xl border bg-card p-3 text-left text-card-foreground shadow-sm outline-none',
-				'hover:bg-accent/50',
 				'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
 				'data-[state=checked]:border-primary data-[state=checked]:ring-primary/20 data-[state=checked]:ring-2 data-[state=checked]:bg-primary/5',
 				props.class,
@@ -55,6 +54,7 @@ const label = computed(() => CANONICAL_THEME_LABELS[props.themeName])
 
 .theme-card:hover {
 	transform: scale(1.02);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .theme-card:active {

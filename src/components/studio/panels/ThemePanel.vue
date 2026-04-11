@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ColorTheme, SegmentColor } from '@owloops/claude-powerline/browser'
+import type { ColorTheme } from '@owloops/claude-powerline/browser'
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -10,6 +10,7 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import ThemeGrid from '@/components/studio/theme/ThemeGrid.vue'
 import CustomThemeEditor from '@/components/studio/theme/CustomThemeEditor.vue'
 import ThemeOverrides from '@/components/studio/theme/ThemeOverrides.vue'
@@ -58,7 +59,6 @@ function handleUpdateCustomColors(colors: ColorTheme) {
 }
 
 function handleUpdateOverrides(overrides: Partial<ColorTheme>) {
-	// Find which key changed and set it
 	for (const key of Object.keys(overrides) as (keyof ColorTheme)[]) {
 		const override = overrides[key]
 		if (override) {
@@ -77,32 +77,34 @@ const baseThemeColors = computed(() =>
 </script>
 
 <template>
-	<div class="flex flex-col gap-6 p-4">
-		<div>
-			<h2 class="text-sm font-medium">Theme</h2>
-			<p class="text-xs text-muted-foreground">Choose your statusline color scheme</p>
+	<ScrollArea class="h-full">
+		<div class="flex flex-col gap-6 p-4">
+			<div>
+				<h2 class="text-sm font-medium">Theme</h2>
+				<p class="text-xs text-muted-foreground">Choose your statusline color scheme</p>
+			</div>
+
+			<ThemeGrid
+				:selected-theme="configStore.themeEditor.builtinTheme"
+				:mode="configStore.themeEditor.mode"
+				@select:theme="handleSelectTheme"
+				@enter:custom="handleEnterCustom"
+			/>
+
+			<CustomThemeEditor
+				v-if="configStore.themeEditor.mode === 'custom' && configStore.themeEditor.customDraft"
+				:colors="configStore.themeEditor.customDraft"
+				@update:colors="handleUpdateCustomColors"
+			/>
+
+			<ThemeOverrides
+				v-if="configStore.themeEditor.mode === 'builtin'"
+				:base-theme="baseThemeColors"
+				:overrides="configStore.themeEditor.overrides"
+				@update:overrides="handleUpdateOverrides"
+				@reset:segment="handleResetSegment"
+			/>
 		</div>
-
-		<ThemeGrid
-			:selected-theme="configStore.themeEditor.builtinTheme"
-			:mode="configStore.themeEditor.mode"
-			@select:theme="handleSelectTheme"
-			@enter:custom="handleEnterCustom"
-		/>
-
-		<CustomThemeEditor
-			v-if="configStore.themeEditor.mode === 'custom' && configStore.themeEditor.customDraft"
-			:colors="configStore.themeEditor.customDraft"
-			@update:colors="handleUpdateCustomColors"
-		/>
-
-		<ThemeOverrides
-			v-if="configStore.themeEditor.mode === 'builtin'"
-			:base-theme="baseThemeColors"
-			:overrides="configStore.themeEditor.overrides"
-			@update:overrides="handleUpdateOverrides"
-			@reset:segment="handleResetSegment"
-		/>
 
 		<!-- Confirmation Dialog -->
 		<AlertDialog :open="showConfirmDialog">
@@ -116,9 +118,9 @@ const baseThemeColors = computed(() =>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
 					<AlertDialogCancel @click="handleCancelSwitch">Cancel</AlertDialogCancel>
-					<AlertDialogAction @click="handleConfirmSwitch">Discard & Switch</AlertDialogAction>
+					<AlertDialogAction @click="handleConfirmSwitch"> Discard & Switch </AlertDialogAction>
 				</AlertDialogFooter>
 			</AlertDialogContent>
 		</AlertDialog>
-	</div>
+	</ScrollArea>
 </template>
