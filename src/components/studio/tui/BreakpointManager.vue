@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { TuiGridBreakpoint } from '@/types/tui'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 const props = defineProps<{
 	breakpoints: TuiGridBreakpoint[]
@@ -28,6 +28,11 @@ const sortedBreakpoints = computed(() => {
 		.sort((a, b) => a.bp.minWidth - b.bp.minWidth)
 })
 
+function getBreakpointLabel(minWidth: number, index: number): string {
+	if (minWidth === 0) return 'Default'
+	return `Breakpoint ${index}`
+}
+
 function startEditing(id: string, currentValue: number) {
 	editingId.value = id
 	editValue.value = String(currentValue)
@@ -47,61 +52,109 @@ function cancelEdit() {
 </script>
 
 <template>
-	<div class="flex flex-col gap-2">
-		<div class="text-xs font-medium text-muted-foreground">Breakpoints</div>
+	<TooltipProvider :delay-duration="300">
+		<div class="flex flex-col gap-2">
+			<div class="flex items-center justify-between">
+				<div class="flex items-center gap-1.5">
+					<span class="text-xs font-medium text-muted-foreground">Breakpoints</span>
+					<Tooltip>
+						<TooltipTrigger as-child>
+							<IconLucide-info class="size-3 text-muted-foreground/50" />
+						</TooltipTrigger>
+						<TooltipContent side="right" class="max-w-64 text-xs">
+							Breakpoints define different grid layouts for different terminal widths. The layout
+							with the largest matching min-width is used.
+						</TooltipContent>
+					</Tooltip>
+				</div>
+				<Button variant="outline" size="sm" class="h-7 text-xs" @click="$emit('add')">
+					<IconLucide-plus class="size-3" />
+					Add Breakpoint
+				</Button>
+			</div>
 
-		<div class="flex items-center gap-1.5 overflow-x-auto pb-1">
-			<button
-				v-for="item in sortedBreakpoints"
-				:key="item.id"
-				class="group relative flex items-center gap-1 rounded-md border px-2 py-1.5 text-xs transition-colors"
-				:class="
-					selectedId === item.id
-						? 'border-primary bg-primary/5 text-foreground'
-						: 'border-border text-muted-foreground hover:border-primary/30 hover:text-foreground'
-				"
-				@click="$emit('select', item.id)"
-			>
-				<template v-if="editingId === item.id">
-					<Input
-						v-model="editValue"
-						type="number"
-						class="h-5 w-12 text-xs p-0.5 text-center"
-						:min="0"
-						autofocus
-						@keydown.enter="commitEdit(item.index)"
-						@keydown.escape="cancelEdit"
-						@blur="commitEdit(item.index)"
-						@click.stop
-					/>
-				</template>
-				<template v-else>
-					<Badge
-						variant="secondary"
-						class="cursor-pointer text-[10px] px-1.5 py-0"
-						@dblclick.stop="startEditing(item.id, item.bp.minWidth)"
-					>
-						&ge;{{ item.bp.minWidth }}
-					</Badge>
-				</template>
-
+			<div class="flex flex-col gap-1.5">
 				<button
-					v-if="breakpoints.length > 1"
-					class="text-muted-foreground/50 hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
-					@click.stop="$emit('remove', item.id)"
+					v-for="(item, sortIdx) in sortedBreakpoints"
+					:key="item.id"
+					class="group relative flex items-center rounded-lg border px-3 py-2 text-left transition-colors"
+					:class="
+						selectedId === item.id
+							? 'border-primary ring-1 ring-primary/30 bg-primary/5'
+							: 'border-border hover:border-primary/30 hover:bg-muted/50'
+					"
+					@click="$emit('select', item.id)"
 				>
-					<IconLucide-x class="size-3" />
-				</button>
-			</button>
+					<div class="flex flex-1 items-center gap-3">
+						<div
+							class="flex size-7 shrink-0 items-center justify-center rounded-md text-[10px] font-bold tabular-nums"
+							:class="
+								selectedId === item.id
+									? 'bg-primary text-primary-foreground'
+									: 'bg-muted text-muted-foreground'
+							"
+						>
+							{{ sortIdx + 1 }}
+						</div>
 
-			<Button
-				variant="outline"
-				size="sm"
-				class="h-7 shrink-0 text-xs"
-				@click="$emit('add')"
-			>
-				<IconLucide-plus class="size-3" />
-			</Button>
+						<div class="flex flex-col gap-0.5">
+							<span class="text-xs font-medium leading-none">
+								{{ getBreakpointLabel(item.bp.minWidth, sortIdx + 1) }}
+							</span>
+							<template v-if="editingId === item.id">
+								<div class="flex items-center gap-1" @click.stop>
+									<Input
+										v-model="editValue"
+										type="number"
+										class="h-5 w-16 text-xs p-0.5 text-center"
+										:min="0"
+										autofocus
+										@keydown.enter="commitEdit(item.index)"
+										@keydown.escape="cancelEdit"
+										@blur="commitEdit(item.index)"
+									/>
+									<span class="text-[10px] text-muted-foreground">cols</span>
+								</div>
+							</template>
+							<template v-else>
+								<span
+									class="text-[11px] tabular-nums text-muted-foreground cursor-pointer hover:text-foreground"
+									@dblclick.stop="startEditing(item.id, item.bp.minWidth)"
+								>
+									<template v-if="item.bp.minWidth === 0">Any width (fallback)</template>
+									<template v-else>&#x2265; {{ item.bp.minWidth }} columns</template>
+								</span>
+							</template>
+						</div>
+					</div>
+
+					<div class="flex items-center gap-1">
+						<Tooltip v-if="item.bp.minWidth > 0">
+							<TooltipTrigger as-child>
+								<button
+									class="rounded p-1 text-muted-foreground/50 opacity-0 transition-all hover:bg-muted hover:text-foreground group-hover:opacity-100"
+									@click.stop="startEditing(item.id, item.bp.minWidth)"
+								>
+									<IconLucide-pencil class="size-3" />
+								</button>
+							</TooltipTrigger>
+							<TooltipContent side="left" class="text-xs">Edit min-width</TooltipContent>
+						</Tooltip>
+
+						<Tooltip v-if="breakpoints.length > 1">
+							<TooltipTrigger as-child>
+								<button
+									class="rounded p-1 text-muted-foreground/50 opacity-0 transition-all hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100"
+									@click.stop="$emit('remove', item.id)"
+								>
+									<IconLucide-trash-2 class="size-3" />
+								</button>
+							</TooltipTrigger>
+							<TooltipContent side="left" class="text-xs">Remove breakpoint</TooltipContent>
+						</Tooltip>
+					</div>
+				</button>
+			</div>
 		</div>
-	</div>
+	</TooltipProvider>
 </template>

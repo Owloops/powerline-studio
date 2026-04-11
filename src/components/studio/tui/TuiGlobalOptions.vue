@@ -8,12 +8,7 @@ import {
 	NumberFieldIncrement,
 	NumberFieldInput,
 } from '@/components/ui/number-field'
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 const configStore = useConfigStore()
 
@@ -95,40 +90,6 @@ const fitContent = computed(() => tui.value?.fitContent ?? false)
 					<NumberFieldContent>
 						<NumberFieldDecrement />
 						<NumberFieldInput />
-						<NumberFieldIncrement />
-					</NumberFieldContent>
-				</NumberField>
-			</div>
-
-			<!-- widthReserve -->
-			<div class="flex flex-col gap-1 col-span-2">
-				<div class="flex items-center gap-1.5">
-					<Label for="tui-width-reserve" class="text-xs">Width Reserve</Label>
-					<Tooltip>
-						<TooltipTrigger as-child>
-							<IconLucide-info class="size-3 text-muted-foreground/50" />
-						</TooltipTrigger>
-						<TooltipContent side="right" class="max-w-56 text-xs">
-							<template v-if="fitContent">
-								Ignored when Fit Content is enabled
-							</template>
-							<template v-else>
-								Characters reserved for the prompt (subtracted from terminal width to determine panel width)
-							</template>
-						</TooltipContent>
-					</Tooltip>
-				</div>
-				<NumberField
-					id="tui-width-reserve"
-					:model-value="tui?.widthReserve"
-					:min="0"
-					:step="1"
-					:disabled="fitContent"
-					@update:model-value="configStore.setTuiOption('widthReserve', $event)"
-				>
-					<NumberFieldContent>
-						<NumberFieldDecrement />
-						<NumberFieldInput placeholder="45" />
 						<NumberFieldIncrement />
 					</NumberFieldContent>
 				</NumberField>

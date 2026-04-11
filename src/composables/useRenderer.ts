@@ -623,6 +623,7 @@ export function useRenderer() {
 			const colorMode = previewStore.colorMode
 			const terminalBgColor = previewStore.terminalBgColor
 			const terminalWidth = previewStore.terminalWidth
+			const reservedWidth = previewStore.reservedWidth
 			const charset = previewStore.charset
 
 			// Override charset from preview store
@@ -636,9 +637,10 @@ export function useRenderer() {
 				// --- TUI path ---
 				const boxChars: BoxChars = charset === 'text' ? BOX_CHARS_TEXT : BOX_CHARS
 
-				// Override tui.terminalWidth so grid path uses preview width
+				// Override tui settings so grid path uses preview values
 				if (config.display.tui) {
 					config.display.tui.terminalWidth = terminalWidth
+					config.display.tui.widthReserve = reservedWidth
 				}
 
 				const tuiData: TuiData = {
@@ -828,11 +830,27 @@ export function useRenderer() {
 			() => previewStore.colorMode,
 			() => previewStore.charset,
 			() => previewStore.terminalTheme,
+			() => previewStore.reservedWidth,
 		],
 		() => {
 			void debouncedRender()
 		},
 		{ deep: true },
+	)
+
+	// Sync preview store's reservedWidth into TUI config for export.
+	// On load, seed the preview slider from any existing TUI widthReserve.
+	if (configStore.isTuiStyle && configStore.config.display.tui?.widthReserve != null) {
+		previewStore.reservedWidth = configStore.config.display.tui.widthReserve
+	}
+
+	watch(
+		() => previewStore.reservedWidth,
+		(value) => {
+			if (configStore.isTuiStyle) {
+				configStore.setTuiWidthReserve(value)
+			}
+		},
 	)
 
 	// Initial render

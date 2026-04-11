@@ -256,7 +256,7 @@ export const useConfigStore = defineStore('config', () => {
 	}
 
 	function setTuiOption(
-		key: 'fitContent' | 'minWidth' | 'maxWidth' | 'widthReserve',
+		key: 'fitContent' | 'minWidth' | 'maxWidth',
 		value: number | boolean | undefined,
 	) {
 		ensureTuiConfig()
@@ -267,6 +267,11 @@ export const useConfigStore = defineStore('config', () => {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			;(tui as any)[key] = value
 		}
+	}
+
+	function setTuiWidthReserve(value: number) {
+		ensureTuiConfig()
+		config.value.display.tui!.widthReserve = value
 	}
 
 	function addBreakpoint() {
@@ -701,6 +706,7 @@ export const useConfigStore = defineStore('config', () => {
 		// TUI actions
 		ensureTuiConfig,
 		setTuiOption,
+		setTuiWidthReserve,
 		addBreakpoint,
 		removeBreakpoint,
 		updateBreakpointMinWidth,

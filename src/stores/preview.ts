@@ -14,7 +14,9 @@ export const usePreviewStore = defineStore('preview', () => {
 	const colorMode = ref<'truecolor' | 'ansi256' | 'ansi' | 'none'>('truecolor')
 	const terminalTheme = ref('catppuccin-mocha')
 	const terminalFont = ref('firacode')
-	const lineHeight = ref(1)
+	const fontSize = ref(14)
+	const lineHeight = ref(1.15)
+	const reservedWidth = ref(45)
 	const ansiOutput = ref('')
 	const htmlOutput = ref('')
 	const segmentHitboxes = shallowRef<SegmentHitbox[]>([])
@@ -35,7 +37,7 @@ export const usePreviewStore = defineStore('preview', () => {
 	// --- Mutations ---
 
 	function setTerminalWidth(width: number) {
-		terminalWidth.value = Math.max(30, Math.min(200, width))
+		terminalWidth.value = Math.max(30, Math.min(240, width))
 	}
 
 	function setColorMode(mode: 'truecolor' | 'ansi256' | 'ansi' | 'none') {
@@ -70,7 +72,9 @@ export const usePreviewStore = defineStore('preview', () => {
 		terminalTheme,
 		terminalFont,
 		terminalFontFamily,
+		fontSize,
 		lineHeight,
+		reservedWidth,
 		darkBackground,
 		terminalBgColor,
 		terminalFgColor,

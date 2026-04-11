@@ -13,12 +13,31 @@ const terminalStyle = computed(() => ({
 const preStyle = computed(() => ({
 	fontFamily: previewStore.terminalFontFamily,
 	fontFeatureSettings: "'calt' 0, 'liga' 0",
+	fontSize: `${previewStore.fontSize}px`,
 	lineHeight: previewStore.lineHeight,
 }))
+
+const contentStyle = computed(() => ({
+	width: `${previewStore.terminalWidth}ch`,
+}))
+
+const reservedStyle = computed(() => {
+	const tw = previewStore.terminalWidth
+	const rw = previewStore.reservedWidth
+	if (rw <= 0 || rw >= tw) return null
+	return {
+		left: `${tw - rw}ch`,
+		width: `${rw}ch`,
+	}
+})
+
+const effectiveWidth = computed(() =>
+	Math.max(1, previewStore.terminalWidth - previewStore.reservedWidth),
+)
 </script>
 
 <template>
-	<div class="overflow-hidden rounded-xl border border-border shadow-lg">
+	<div class="w-fit overflow-hidden rounded-xl border border-border shadow-lg">
 		<!-- Title Bar -->
 		<div class="relative flex h-9 items-center border-b border-border bg-muted px-4">
 			<div class="flex gap-2" aria-hidden="true">
@@ -29,7 +48,9 @@ const preStyle = computed(() => ({
 			<span class="flex-1 text-center text-xs text-muted-foreground">
 				powerline-studio — bash
 			</span>
-			<Badge variant="secondary">{{ previewStore.terminalWidth }} cols</Badge>
+			<Badge variant="secondary" class="shrink-0">
+				{{ effectiveWidth }}/{{ previewStore.terminalWidth }} cols
+			</Badge>
 		</div>
 
 		<!-- Terminal Body -->
@@ -39,11 +60,15 @@ const preStyle = computed(() => ({
 		>
 			<pre
 				v-if="previewStore.htmlOutput"
-				class="min-w-max whitespace-pre px-4 py-3 text-sm"
+				class="whitespace-pre px-4 py-3"
 				:style="preStyle"
 				role="img"
 				aria-label="Terminal preview of powerline statusline"
-			><div class="relative"><div v-html="previewStore.htmlOutput" /><SegmentOverlay class="absolute inset-0" /></div></pre>
+			><div class="relative" :style="contentStyle"><div v-html="previewStore.htmlOutput" /><SegmentOverlay class="absolute inset-0" /><div
+					v-if="reservedStyle"
+					class="pointer-events-none absolute inset-y-0"
+					:style="reservedStyle"
+				><div class="reserved-stripes absolute inset-0" /><div class="absolute inset-0 flex items-center justify-center"><span class="reserved-label">RESERVED</span></div></div></div></pre>
 			<p v-else class="px-4 py-3 text-sm italic text-muted-foreground">
 				Preview will appear here...
 			</p>
@@ -51,3 +76,25 @@ const preStyle = computed(() => ({
 		</ScrollArea>
 	</div>
 </template>
+
+<style scoped>
+.reserved-stripes {
+	border-left: 1px dashed currentColor;
+	opacity: 0.2;
+	background: repeating-linear-gradient(
+		-45deg,
+		currentColor 0,
+		currentColor 1px,
+		transparent 0,
+		transparent 6px
+	);
+}
+
+.reserved-label {
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.15em;
+	text-transform: uppercase;
+	opacity: 0.5;
+}
+</style>
