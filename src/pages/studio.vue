@@ -5,6 +5,7 @@ import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import StudioTopBar from '@/components/studio/StudioTopBar.vue'
 import StudioSidebar from '@/components/studio/StudioSidebar.vue'
 import TerminalPreview from '@/components/studio/TerminalPreview.vue'
+import PreviewControls from '@/components/studio/PreviewControls.vue'
 import ThemePanel from '@/components/studio/panels/ThemePanel.vue'
 import StylePanel from '@/components/studio/panels/StylePanel.vue'
 import SegmentsPanel from '@/components/studio/panels/SegmentsPanel.vue'
@@ -41,8 +42,11 @@ const panelComponents: Record<StudioPanel, Component> = {
 			<StudioTopBar />
 
 			<!-- Terminal Preview -->
-			<div class="shrink-0 border-b border-border px-4 py-6">
-				<TerminalPreview />
+			<div class="shrink-0 border-b border-border">
+				<div class="px-4 py-6">
+					<TerminalPreview />
+				</div>
+				<PreviewControls />
 			</div>
 
 			<!-- Config Panel -->
