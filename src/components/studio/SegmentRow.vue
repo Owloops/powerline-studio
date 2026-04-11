@@ -2,7 +2,7 @@
 import type { DragControls } from 'motion-v'
 import { useAutoAnimate } from '@formkit/auto-animate/vue'
 import { GripVertical } from 'lucide-vue-next'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible'
 import { Switch } from '@/components/ui/switch'
 import { SEGMENT_META, type SegmentKey } from '@/components/studio/segments/segmentMeta'
 import { cn } from '@/lib/utils'
@@ -48,42 +48,41 @@ function handleSwitchUpdate(checked: boolean) {
 				)
 			"
 		>
-			<CollapsibleTrigger as-child>
+			<div
+				role="button"
+				tabindex="0"
+				:class="
+					cn(
+						'flex h-12 cursor-pointer items-center gap-2 rounded-md px-2 transition-colors',
+						'hover:bg-accent/50',
+						selected && 'hover:bg-accent',
+					)
+				"
+				@click.prevent="handleRowClick"
+				@keydown.enter.prevent="handleRowClick"
+				@keydown.space.prevent="handleRowClick"
+			>
+				<!-- Drag handle -->
 				<div
-					role="button"
-					tabindex="0"
-					:class="
-						cn(
-							'flex h-12 cursor-pointer items-center gap-2 rounded-md px-2 transition-colors',
-							'hover:bg-accent/50',
-							selected && 'hover:bg-accent',
-						)
-					"
-					@click.prevent="handleRowClick"
-					@keydown.enter.prevent="handleRowClick"
-					@keydown.space.prevent="handleRowClick"
+					class="flex cursor-grab items-center text-muted-foreground active:cursor-grabbing"
+					@pointerdown.stop="(e: PointerEvent) => handlePointerDown(e, dragControls)"
+					@click.stop
 				>
-					<!-- Drag handle -->
-					<div
-						class="flex cursor-grab items-center text-muted-foreground active:cursor-grabbing"
-						@pointerdown.stop="(e: PointerEvent) => handlePointerDown(e, dragControls)"
-					>
-						<GripVertical class="size-4" />
-					</div>
-
-					<!-- Segment icon + name -->
-					<component
-						:is="SEGMENT_META[segmentKey].icon"
-						class="size-4 shrink-0 text-muted-foreground"
-					/>
-					<span class="flex-1 truncate text-sm font-medium">
-						{{ SEGMENT_META[segmentKey].name }}
-					</span>
-
-					<!-- Enable/disable toggle -->
-					<Switch :checked="enabled" @click.stop @update:checked="handleSwitchUpdate" />
+					<GripVertical class="size-4" />
 				</div>
-			</CollapsibleTrigger>
+
+				<!-- Segment icon + name -->
+				<component
+					:is="SEGMENT_META[segmentKey].icon"
+					class="size-4 shrink-0 text-muted-foreground"
+				/>
+				<span class="flex-1 truncate text-sm font-medium">
+					{{ SEGMENT_META[segmentKey].name }}
+				</span>
+
+				<!-- Enable/disable toggle -->
+				<Switch :checked="enabled" @click.stop @update:checked="handleSwitchUpdate" />
+			</div>
 
 			<CollapsibleContent>
 				<div ref="autoAnimateRef" class="px-2 pb-3 pt-1">

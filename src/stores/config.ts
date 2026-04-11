@@ -6,6 +6,9 @@ import type {
 	ColorTheme,
 	SegmentColor,
 	TuiGridConfig,
+	TuiTitleConfig,
+	TuiFooterConfig,
+	SegmentTemplate,
 	AlignValue,
 } from '@owloops/claude-powerline/browser'
 import { DEFAULT_CONFIG } from '@owloops/claude-powerline/browser'
@@ -178,23 +181,24 @@ export const useConfigStore = defineStore('config', () => {
 		const line = config.value.display.lines[lineIndex]
 		if (!line) return
 
-		const existing = line.segments
+		// Normalize first so all 13 keys are present before reordering
+		const normalized = normalizeSegments(line.segments, SEGMENT_DEFAULTS)
 		const reordered: LineConfig['segments'] = {}
 
-		// Add segments in the requested order (only those that exist in the line)
+		// Add segments in the requested order
 		for (const name of orderedNames) {
-			if (name in existing) {
+			if (name in normalized) {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				reordered[name] = existing[name] as any
+				reordered[name] = normalized[name] as any
 			}
 		}
 
-		// Append any existing segments not mentioned in orderedNames
+		// Append any remaining segments not mentioned in orderedNames
 		const orderedSet = new Set<string>(orderedNames)
-		for (const name of Object.keys(existing) as SegmentName[]) {
+		for (const name of Object.keys(normalized) as SegmentName[]) {
 			if (!orderedSet.has(name)) {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				reordered[name] = existing[name] as any
+				reordered[name] = normalized[name] as any
 			}
 		}
 
@@ -383,6 +387,84 @@ export const useConfigStore = defineStore('config', () => {
 		}
 	}
 
+	function setTuiBox(value: string | undefined) {
+		ensureTuiConfig()
+		const tui = config.value.display.tui!
+		if (value === undefined) {
+			delete tui.box
+		} else {
+			tui.box = value
+		}
+	}
+
+	function setTuiTitle(title: Partial<TuiTitleConfig> | undefined) {
+		ensureTuiConfig()
+		const tui = config.value.display.tui!
+		if (title === undefined) {
+			delete tui.title
+		} else {
+			tui.title = { ...tui.title, ...title }
+			// Clean up: remove undefined keys
+			const t = tui.title!
+			if (t.left === undefined) delete t.left
+			if (t.right === undefined) delete t.right
+			// Remove empty object
+			if (Object.keys(tui.title!).length === 0) delete tui.title
+		}
+	}
+
+	function setTuiFooter(footer: Partial<TuiFooterConfig> | undefined) {
+		ensureTuiConfig()
+		const tui = config.value.display.tui!
+		if (footer === undefined) {
+			delete tui.footer
+		} else {
+			tui.footer = { ...tui.footer, ...footer }
+			const f = tui.footer!
+			if (f.left === undefined) delete f.left
+			if (f.right === undefined) delete f.right
+			if (Object.keys(tui.footer!).length === 0) delete tui.footer
+		}
+	}
+
+	function setTuiSeparator(separator: Partial<{ column: string; divider: string }> | undefined) {
+		ensureTuiConfig()
+		const tui = config.value.display.tui!
+		if (separator === undefined) {
+			delete tui.separator
+		} else {
+			tui.separator = { ...tui.separator, ...separator }
+			const s = tui.separator!
+			if (s.column === undefined) delete s.column
+			if (s.divider === undefined) delete s.divider
+			if (Object.keys(tui.separator!).length === 0) delete tui.separator
+		}
+	}
+
+	function setTuiPadding(horizontal: number | undefined) {
+		ensureTuiConfig()
+		const tui = config.value.display.tui!
+		if (horizontal === undefined) {
+			delete tui.padding
+		} else {
+			tui.padding = { horizontal }
+		}
+	}
+
+	function setTuiSegmentTemplate(segRef: string, template: SegmentTemplate | undefined) {
+		ensureTuiConfig()
+		const tui = config.value.display.tui!
+		if (template === undefined) {
+			if (tui.segments) {
+				delete tui.segments[segRef]
+				if (Object.keys(tui.segments).length === 0) delete tui.segments
+			}
+		} else {
+			if (!tui.segments) tui.segments = {}
+			tui.segments[segRef] = template
+		}
+	}
+
 	function setBudget(path: string, value: number) {
 		if (!config.value.budget) {
 			config.value.budget = {}
@@ -411,6 +493,10 @@ export const useConfigStore = defineStore('config', () => {
 
 	function loadConfig(partial: Partial<PowerlineConfig>) {
 		config.value = deepMerge(structuredClone(DEFAULT_CONFIG), partial as PowerlineConfig)
+		// Normalize all lines to ensure 13 segment keys
+		for (const line of config.value.display.lines) {
+			line.segments = normalizeSegments(line.segments, SEGMENT_DEFAULTS)
+		}
 		rehydrateThemeEditor()
 	}
 
@@ -580,6 +666,13 @@ export const useConfigStore = defineStore('config', () => {
 		setColumnDef,
 		setColumnAlign,
 		toggleAlignOverrides,
+		// TUI accessory actions
+		setTuiBox,
+		setTuiTitle,
+		setTuiFooter,
+		setTuiSeparator,
+		setTuiPadding,
+		setTuiSegmentTemplate,
 		updateSegmentConfig,
 		toggleSegment,
 		reorderSegments,

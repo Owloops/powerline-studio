@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import { Reorder, useDragControls } from 'motion-v'
 import { useMediaQuery } from '@vueuse/core'
 import SegmentRow from '@/components/studio/SegmentRow.vue'
@@ -13,6 +13,12 @@ const configStore = useConfigStore()
 const editorStore = useEditorStore()
 
 const prefersReducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
+
+const whileDragStyle = computed(() =>
+	prefersReducedMotion.value
+		? undefined
+		: { scale: 1.02, boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', zIndex: 10 },
+)
 
 // --- Segment order derived from config ---
 
@@ -110,7 +116,7 @@ watch(
 				:drag-listener="false"
 				:drag-controls="dragControlsMap[key as SegmentKey]"
 				as="div"
-				:while-drag="{ scale: 1.02, boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', zIndex: 10 }"
+				:while-drag="whileDragStyle"
 			>
 				<div :ref="(el: any) => setRowRef(key, el as HTMLElement)">
 					<SegmentRow

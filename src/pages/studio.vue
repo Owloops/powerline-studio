@@ -23,7 +23,20 @@ useHead({ title: 'Powerline Studio' })
 // writes htmlOutput to previewStore reactively.
 useRenderer()
 
-const activePanel = ref<StudioPanel>('theme')
+const editorStore = useEditorStore()
+const activePanel = ref<StudioPanel>(editorStore.activePanel)
+
+// Sync local panel with editor store (for hitbox → segments panel navigation)
+watch(
+	() => editorStore.activePanel,
+	(panel) => {
+		activePanel.value = panel
+	},
+)
+
+watch(activePanel, (panel) => {
+	editorStore.setActivePanel(panel)
+})
 
 const panelComponents: Record<StudioPanel, Component> = {
 	theme: ThemePanel,
