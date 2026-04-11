@@ -11,7 +11,6 @@
 	font-display: swap;
 }
 
-@plugin "../../tailwind-inspira-plugin.js";
 @plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
@@ -21,7 +20,7 @@
 	color: var(--muted-foreground) !important;
 }
 
-/* Shiki dual-theme: apply light/dark CSS variables based on .dark class */
+/* Shiki dual-theme for JSON syntax highlighting in Export panel */
 .shiki,
 .shiki span {
 	color: var(--shiki-light) !important;
@@ -37,11 +36,6 @@
 @theme {
 	--font-sans: 'Inter Variable', system-ui, -apple-system, sans-serif;
 	--font-mono: 'JetBrains Mono', ui-monospace, monospace;
-	--font-public-sans: 'Public Sans Variable', system-ui, sans-serif;
-	--font-geist: 'Geist Variable', system-ui, sans-serif;
-	--font-mona-sans: 'Mona Sans Variable', system-ui, sans-serif;
-	--font-dm-serif: 'DM Serif Display', Georgia, serif;
-	--font-playfair: 'Playfair Display Variable', Georgia, serif;
 	--font-nerd: 'FiraCode Nerd Font Mono', ui-monospace, monospace;
 }
 

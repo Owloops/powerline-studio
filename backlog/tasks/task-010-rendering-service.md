@@ -1,9 +1,9 @@
 ---
 id: task-010-rendering-service
 title: Create rendering service integrating ansi_up and claude-powerline browser entry
-status: "Done"
+status: 'Done'
 created_date: '2026-04-11 09:15'
-updated_date: '2026-04-11 09:27'
+updated_date: '2026-04-11 10:25'
 parent: null
 subtasks:
 dependencies:

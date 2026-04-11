@@ -25,10 +25,7 @@ jobs:
         with:
           cache: true
 
-      - run: vp build --base /dashboard-template/
-        env:
-          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+      - run: vp build --base /powerline-studio/
 
       - name: Add 404 fallback for SPA routing
         run: cp dist/index.html dist/404.html

@@ -1,5 +1,4 @@
 import { fileURLToPath, URL } from 'node:url'
-import { resolve, dirname } from 'node:path'
 import process from 'node:process'
 
 import { defineConfig } from 'vite-plus'
@@ -15,13 +14,9 @@ import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 import MotionResolver from 'motion-v/resolver'
 import Layouts from 'vite-plugin-vue-layouts-next'
-import VueI18n from '@intlify/unplugin-vue-i18n/vite'
 import Unfonts from 'unplugin-fonts/vite'
 import generateSitemap from 'vite-ssg-sitemap'
-import Markdown from 'unplugin-vue-markdown/vite'
-import Shiki from '@shikijs/markdown-it'
-// @ts-expect-error no type declarations available
-import LinkAttributes from 'markdown-it-link-attributes'
+
 const withNitro = process.env.WITH_NITRO === 'true'
 
 export default defineConfig({
@@ -48,7 +43,7 @@ export default defineConfig({
 	},
 	plugins: [
 		VueRouter({
-			extensions: ['.vue', '.md'],
+			extensions: ['.vue'],
 			dts: 'src/typed-router.d.ts',
 			routesFolder: 'src/pages',
 		}),
@@ -56,9 +51,7 @@ export default defineConfig({
 		VueMacros({
 			betterDefine: false,
 			plugins: {
-				vue: vue({
-					include: [/\.vue$/, /\.md$/],
-				}),
+				vue: vue(),
 			},
 		}),
 
@@ -70,7 +63,6 @@ export default defineConfig({
 		AutoImport({
 			imports: [
 				'vue',
-				'vue-i18n',
 				'@vueuse/core',
 				VueRouterAutoImports,
 				{ from: '@unhead/vue', imports: ['useHead', 'useSeoMeta', 'useHeadSafe'] },
@@ -81,14 +73,8 @@ export default defineConfig({
 		}),
 
 		Components({
-			extensions: ['vue', 'md'],
-			globs: [
-				'src/components/**/*.{vue,md}',
-				// Exclude custom DataTable internal components — they use explicit imports
-				// inside DataTable.vue. This prevents them from shadowing shadcn-vue's
-				// Table, TableHeader, TableBody, TableRow, etc.
-				'!src/components/Table/Table{Header,Body,Row,Cell,Filter,FilterRow,Export,Pagination,ColumnFilter}.vue',
-			],
+			extensions: ['vue'],
+			globs: ['src/components/**/*.vue'],
 			dts: 'src/components.d.ts',
 			resolvers: [
 				IconsResolver({
@@ -98,43 +84,12 @@ export default defineConfig({
 			],
 		}),
 
-		Markdown({
-			wrapperClasses: 'prose sm:prose-lg dark:prose-invert m-auto text-left',
-			headEnabled: true,
-			async markdownItSetup(md) {
-				md.use(
-					// @ts-ignore Shiki async plugin type mismatch with markdown-it
-					await Shiki({
-						defaultColor: false,
-						themes: {
-							light: 'vitesse-light',
-							dark: 'vitesse-dark',
-						},
-					}),
-				)
-				md.use(LinkAttributes, {
-					matcher: (link: string) => /^https?:\/\//.test(link),
-					attrs: {
-						target: '_blank',
-						rel: 'noopener',
-					},
-				})
-			},
-		}),
-
 		Icons({
 			compiler: 'vue3',
 			autoInstall: true,
 		}),
 
 		tailwindcss(),
-
-		VueI18n({
-			runtimeOnly: true,
-			compositionOnly: true,
-			fullInstall: true,
-			include: resolve(dirname(fileURLToPath(import.meta.url)), './src/locales/**'),
-		}),
 
 		Unfonts({
 			fontsource: {
@@ -145,44 +100,9 @@ export default defineConfig({
 						styles: ['normal'],
 						subset: 'latin',
 					},
-					{
-						name: 'Public Sans Variable',
-						weights: [400, 500, 600, 700],
-						styles: ['normal'],
-						subset: 'latin',
-					},
-					{
-						name: 'Geist Variable',
-						weights: [400, 500, 600, 700],
-						styles: ['normal'],
-						subset: 'latin',
-					},
-					{
-						name: 'Mona Sans Variable',
-						weights: [400, 500, 600, 700],
-						styles: ['normal'],
-						subset: 'latin',
-					},
-					{
-						name: 'DM Serif Display',
-						weights: [400],
-						styles: ['normal'],
-						subset: 'latin',
-					},
-					{
-						name: 'Playfair Display Variable',
-						weights: [400, 500, 600, 700],
-						styles: ['normal'],
-						subset: 'latin',
-					},
 				],
 			},
 		}),
-
-		// Critical CSS inlining is handled by vite-ssg during SSG builds (via
-		// ssgOptions.beastiesOptions below). The vite-plugin-beasties plugin was
-		// removed from the SPA pipeline because an SPA's initial HTML is an empty
-		// <div id="app"> with nothing above the fold to inline.
 
 		vueDevTools(),
 
@@ -205,6 +125,6 @@ export default defineConfig({
 		},
 	},
 	ssr: {
-		noExternal: ['vue-i18n'],
+		noExternal: [],
 	},
 })

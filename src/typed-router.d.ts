@@ -34,69 +34,6 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/animations': RouteRecordInfo<
-      '/animations',
-      '/animations',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
-    '/charts': RouteRecordInfo<
-      '/charts',
-      '/charts',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
-    '/components': RouteRecordInfo<
-      '/components',
-      '/components',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
-    '/content': RouteRecordInfo<
-      '/content',
-      '/content',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
-    '/eui-components': RouteRecordInfo<
-      '/eui-components',
-      '/eui-components',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
-    '/forms': RouteRecordInfo<
-      '/forms',
-      '/forms',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
-    '/markdown': RouteRecordInfo<
-      '/markdown',
-      '/markdown',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
-    '/supabase': RouteRecordInfo<
-      '/supabase',
-      '/supabase',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
-    '/typography': RouteRecordInfo<
-      '/typography',
-      '/typography',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
   }
 
   /**
@@ -113,60 +50,6 @@ declare module 'vue-router/auto-routes' {
     'src/pages/(home).vue': {
       routes:
         | '/(home)'
-      views:
-        | never
-    }
-    'src/pages/animations.vue': {
-      routes:
-        | '/animations'
-      views:
-        | never
-    }
-    'src/pages/charts.vue': {
-      routes:
-        | '/charts'
-      views:
-        | never
-    }
-    'src/pages/components.vue': {
-      routes:
-        | '/components'
-      views:
-        | never
-    }
-    'src/pages/content.vue': {
-      routes:
-        | '/content'
-      views:
-        | never
-    }
-    'src/pages/eui-components.vue': {
-      routes:
-        | '/eui-components'
-      views:
-        | never
-    }
-    'src/pages/forms.vue': {
-      routes:
-        | '/forms'
-      views:
-        | never
-    }
-    'src/pages/markdown.md': {
-      routes:
-        | '/markdown'
-      views:
-        | never
-    }
-    'src/pages/supabase.vue': {
-      routes:
-        | '/supabase'
-      views:
-        | never
-    }
-    'src/pages/typography.vue': {
-      routes:
-        | '/typography'
       views:
         | never
     }
