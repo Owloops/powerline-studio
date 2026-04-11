@@ -20,14 +20,23 @@ import IconArrowLeftRight from '~icons/lucide/arrow-left-right'
 const activePanel = defineModel<StudioPanel>('activePanel', { required: true })
 
 const { isMobile, setOpenMobile } = useSidebar()
+const configStore = useConfigStore()
 
-const navItems: SidebarNavItem[] = [
+const allNavItems: SidebarNavItem[] = [
 	{ id: 'appearance', label: 'Appearance', icon: IconPalette },
 	{ id: 'segments', label: 'Segments', icon: IconLayoutList },
 	{ id: 'tui', label: 'TUI Layout', icon: IconGrid3x3 },
 	{ id: 'mockData', label: 'Mock Data', icon: IconDatabase },
 	{ id: 'export', label: 'Export & Import', icon: IconArrowLeftRight },
 ]
+
+const navItems = computed(() =>
+	allNavItems.filter((item) => {
+		// Hide Segments panel when TUI style is active (TUI layout defines segment placement)
+		if (item.id === 'segments' && configStore.isTuiStyle) return false
+		return true
+	}),
+)
 
 function selectPanel(id: StudioPanel) {
 	activePanel.value = id

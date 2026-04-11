@@ -2,12 +2,14 @@
 import type { ParsedCell } from '@/types/tui'
 import GridCell from './GridCell.vue'
 import { Button } from '@/components/ui/button'
+import { normalizeSegmentName } from '@/lib/segmentHitboxes'
 
 const props = defineProps<{
 	breakpointIndex: number
 	areas: string[]
 	columns: string[]
 	usedSegmentsByRow: (rowIndex: number) => Set<string>
+	highlightedSegment?: string | null
 }>()
 
 const configStore = useConfigStore()
@@ -50,7 +52,12 @@ function handleCellUpdate(rowIndex: number, cell: ParsedCell, newValue: string) 
 	}
 }
 
-function handleSingleCellUpdate(rowIndex: number, cell: ParsedCell, colOffset: number, newValue: string) {
+function handleSingleCellUpdate(
+	rowIndex: number,
+	cell: ParsedCell,
+	colOffset: number,
+	newValue: string,
+) {
 	configStore.setAreaCell(props.breakpointIndex, rowIndex, cell.startCol + colOffset, newValue)
 }
 </script>
@@ -83,8 +90,15 @@ function handleSingleCellUpdate(rowIndex: number, cell: ParsedCell, colOffset: n
 						:span="cell.span"
 						:start-col="cell.startCol"
 						:used-segments="usedSegmentsByRow(rowIndex)"
+						:highlighted="
+							highlightedSegment != null &&
+							normalizeSegmentName(cell.segment) === highlightedSegment
+						"
 						@update="handleCellUpdate(rowIndex, cell, $event)"
-						@update-single="(colOffset: number, val: string) => handleSingleCellUpdate(rowIndex, cell, colOffset, val)"
+						@update-single="
+							(colOffset: number, val: string) =>
+								handleSingleCellUpdate(rowIndex, cell, colOffset, val)
+						"
 					/>
 				</template>
 			</div>

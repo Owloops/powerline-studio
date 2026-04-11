@@ -2,7 +2,27 @@
 const previewStore = usePreviewStore()
 const editorStore = useEditorStore()
 
+const HITBOX_TITLES: Record<string, string> = {
+	__title_left: 'Title Bar (left)',
+	__title_right: 'Title Bar (right)',
+	__footer_left: 'Footer (left)',
+	__footer_right: 'Footer (right)',
+}
+
+function hitboxTitle(segmentType: string): string {
+	return HITBOX_TITLES[segmentType] ?? segmentType
+}
+
 function handleClick(segmentType: string, sourceLineIndex: number) {
+	// Handle special TUI title/footer hitbox types
+	if (segmentType === '__title_left' || segmentType === '__title_right') {
+		editorStore.selectTuiArea({ kind: 'title' })
+		return
+	}
+	if (segmentType === '__footer_left' || segmentType === '__footer_right') {
+		editorStore.selectTuiArea({ kind: 'footer' })
+		return
+	}
 	editorStore.selectSegment(segmentType, sourceLineIndex)
 }
 </script>
@@ -19,7 +39,7 @@ function handleClick(segmentType: string, sourceLineIndex: number) {
 				top: `${hitbox.line * previewStore.lineHeight}em`,
 				height: `${previewStore.lineHeight}em`,
 			}"
-			:title="hitbox.segmentType"
+			:title="hitboxTitle(hitbox.segmentType)"
 			@click="handleClick(hitbox.segmentType, hitbox.sourceLineIndex)"
 		/>
 	</div>

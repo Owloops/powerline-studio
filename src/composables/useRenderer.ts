@@ -60,6 +60,7 @@ import {
 	buildBlockBar,
 	buildWeeklyBar,
 	composeTemplate,
+	resolveTitleToken,
 } from '@owloops/claude-powerline/browser'
 
 // ---------------------------------------------------------------------------
@@ -521,7 +522,78 @@ function computeTuiHitboxes(
 	if (finalMatrix.length === 0) return []
 
 	// Has title bar: grid path always generates a title bar
-	return extractTuiHitboxes(finalMatrix, colWidths, sepWidth, true)
+	const hitboxes = extractTuiHitboxes(finalMatrix, colWidths, sepWidth, true)
+
+	// --- Title bar hitboxes (output line 0) ---
+	const titleLeft = gridConfig.title?.left ?? '{model}'
+	const titleRight =
+		gridConfig.title?.right !== undefined ? gridConfig.title.right : 'claude-powerline'
+
+	const titleLeftResolved = resolveTitleToken(titleLeft, tuiData, resolvedData)
+	const titleLeftText = titleLeftResolved ? ` ${titleLeftResolved} ` : ''
+	const titleLeftLen = visibleLength(titleLeftText)
+
+	if (titleLeftLen > 0) {
+		hitboxes.push({
+			segmentType: '__title_left',
+			line: 0,
+			charStart: 1, // after topLeft box char
+			charWidth: titleLeftLen,
+			sourceLineIndex: 0,
+		})
+	}
+
+	const hasRight = titleRight !== false
+	if (hasRight && titleRight) {
+		const titleRightResolved = resolveTitleToken(titleRight as string, tuiData, resolvedData)
+		const titleRightText = titleRightResolved ? ` ${titleRightResolved} ` : ''
+		const titleRightLen = visibleLength(titleRightText)
+		if (titleRightLen > 0) {
+			hitboxes.push({
+				segmentType: '__title_right',
+				line: 0,
+				charStart: panelWidth - 1 - titleRightLen, // before topRight box char
+				charWidth: titleRightLen,
+				sourceLineIndex: 0,
+			})
+		}
+	}
+
+	// --- Footer hitboxes (last output line) ---
+	// Footer line = 1 (title) + finalMatrix.length
+	const footerLine = 1 + finalMatrix.length
+	const footerLeft = gridConfig.footer?.left
+		? resolveTitleToken(gridConfig.footer.left, tuiData, resolvedData)
+		: undefined
+	const footerRight = gridConfig.footer?.right
+		? resolveTitleToken(gridConfig.footer.right, tuiData, resolvedData)
+		: undefined
+
+	if (footerLeft) {
+		const footerLeftText = ` ${footerLeft} `
+		const footerLeftLen = visibleLength(footerLeftText)
+		hitboxes.push({
+			segmentType: '__footer_left',
+			line: footerLine,
+			charStart: 1, // after bottomLeft box char
+			charWidth: footerLeftLen,
+			sourceLineIndex: 0,
+		})
+	}
+
+	if (footerRight) {
+		const footerRightText = ` ${footerRight} `
+		const footerRightLen = visibleLength(footerRightText)
+		hitboxes.push({
+			segmentType: '__footer_right',
+			line: footerLine,
+			charStart: panelWidth - 1 - footerRightLen, // before bottomRight box char
+			charWidth: footerRightLen,
+			sourceLineIndex: 0,
+		})
+	}
+
+	return hitboxes
 }
 
 // ---------------------------------------------------------------------------

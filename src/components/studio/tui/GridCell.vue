@@ -9,6 +9,7 @@ const props = defineProps<{
 	startCol: number
 	availableSegments?: string[]
 	usedSegments?: Set<string>
+	highlighted?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -74,12 +75,15 @@ const displayValue = computed(() => {
 
 const cellClasses = computed(() => {
 	const base =
-		'relative flex items-center justify-center rounded-md border px-2 py-1.5 text-xs font-mono cursor-pointer transition-[box-shadow] duration-150 focus:outline-none focus:ring-2 focus:ring-primary/30'
+		'relative flex items-center justify-center rounded-md border px-2 py-1.5 text-xs font-mono cursor-pointer transition-[box-shadow,ring-color] duration-150 focus:outline-none focus:ring-2 focus:ring-primary/30'
 	if (props.value === '.') {
 		return `${base} border-dashed border-muted-foreground/30 text-muted-foreground/50 bg-muted/30`
 	}
 	if (props.value === '---') {
 		return `${base} border-dashed border-muted-foreground/40 text-muted-foreground/60 bg-muted/20`
+	}
+	if (props.highlighted) {
+		return `${base} border-primary bg-primary/15 text-foreground ring-2 ring-primary/50`
 	}
 	return `${base} border-border bg-primary/5 text-foreground hover:ring-2 hover:ring-primary/30`
 })
@@ -105,19 +109,15 @@ const cellClasses = computed(() => {
 						:key="i"
 						class="size-1 rounded-full bg-muted-foreground/20 hover:bg-primary/40 transition-colors"
 						@click.stop="
-							perColumnMode = true;
-							focusedColOffset = i - 1;
+							perColumnMode = true
+							focusedColOffset = i - 1
 							open = true
 						"
 					/>
 				</div>
 			</button>
 		</PopoverTrigger>
-		<PopoverContent
-			class="w-56 p-0"
-			@keydown="handlePerColumnNav"
-			@open-auto-focus.prevent
-		>
+		<PopoverContent class="w-56 p-0" @keydown="handlePerColumnNav" @open-auto-focus.prevent>
 			<div class="p-2">
 				<Input
 					v-model="search"
@@ -136,7 +136,9 @@ const cellClasses = computed(() => {
 			</div>
 			<div class="max-h-48 overflow-y-auto">
 				<div v-for="group in segmentGroups" :key="group.label" class="px-1 py-0.5">
-					<div class="px-2 py-1 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+					<div
+						class="px-2 py-1 text-[10px] font-medium text-muted-foreground uppercase tracking-wider"
+					>
 						{{ group.label }}
 					</div>
 					<button
@@ -153,10 +155,7 @@ const cellClasses = computed(() => {
 						>
 							(used)
 						</span>
-						<span
-							v-else-if="seg === value"
-							class="ml-auto text-[10px] text-primary"
-						>
+						<span v-else-if="seg === value" class="ml-auto text-[10px] text-primary">
 							current
 						</span>
 					</button>

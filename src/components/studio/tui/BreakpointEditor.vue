@@ -9,13 +9,12 @@ import { useTuiValidation } from '@/composables/useTuiValidation'
 const props = defineProps<{
 	breakpointIndex: number
 	breakpoint: TuiGridBreakpoint
+	highlightedSegment?: string | null
 }>()
 
 const configStore = useConfigStore()
 
-const { usedSegmentsInOtherRows } = useTuiValidation(
-	() => configStore.config.display.tui,
-)
+const { usedSegmentsInOtherRows } = useTuiValidation(() => configStore.config.display.tui)
 
 function getUsedSegments(rowIndex: number): Set<string> {
 	return usedSegmentsInOtherRows(props.breakpointIndex, rowIndex).value
@@ -29,14 +28,12 @@ function getUsedSegments(rowIndex: number): Set<string> {
 			:areas="breakpoint.areas"
 			:columns="breakpoint.columns"
 			:used-segments-by-row="getUsedSegments"
+			:highlighted-segment="highlightedSegment"
 		/>
 
 		<Separator />
 
-		<ColumnEditor
-			:breakpoint-index="breakpointIndex"
-			:columns="breakpoint.columns"
-		/>
+		<ColumnEditor :breakpoint-index="breakpointIndex" :columns="breakpoint.columns" />
 
 		<Separator />
 

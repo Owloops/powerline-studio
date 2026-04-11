@@ -26,6 +26,7 @@ import PaddingConfig from '@/components/studio/tui/PaddingConfig.vue'
 import SegmentTemplateEditor from '@/components/studio/tui/SegmentTemplateEditor.vue'
 
 const configStore = useConfigStore()
+const editorStore = useEditorStore()
 const tui = computed(() => configStore.config.display.tui)
 
 // Assign stable ephemeral IDs to each breakpoint for selection tracking
@@ -113,6 +114,32 @@ const footerSectionOpen = shallowRef(false)
 const separatorSectionOpen = shallowRef(false)
 const paddingSectionOpen = shallowRef(false)
 const templateSectionOpen = shallowRef(false)
+
+// --- Highlighted segment in the grid (from preview click) ---
+const highlightedSegment = shallowRef<string | null>(null)
+let highlightTimer: ReturnType<typeof setTimeout> | undefined
+
+// React to TUI area selection from preview clicks
+watch(
+	() => editorStore.selectedTuiArea,
+	(target) => {
+		if (!target) return
+		if (target.kind === 'title') {
+			titleSectionOpen.value = true
+		} else if (target.kind === 'footer') {
+			footerSectionOpen.value = true
+		} else if (target.kind === 'segment') {
+			highlightedSegment.value = target.name
+			// Auto-clear highlight after a few seconds
+			clearTimeout(highlightTimer)
+			highlightTimer = setTimeout(() => {
+				highlightedSegment.value = null
+			}, 2000)
+		}
+		// Clear the selection after processing so it can be re-triggered
+		nextTick(() => editorStore.clearTuiArea())
+	},
+)
 
 // --- Title/Footer handlers ---
 
@@ -270,6 +297,7 @@ const activeSegmentRefs = computed(() => {
 					:key="selectedBreakpointId"
 					:breakpoint-index="selectedBpIndex"
 					:breakpoint="selectedBreakpoint"
+					:highlighted-segment="highlightedSegment"
 				/>
 			</Transition>
 		</template>
