@@ -94,6 +94,9 @@ importers:
       '@vueuse/integrations':
         specifier: ^14.2.1
         version: 14.2.1(fuse.js@7.3.0)(vue@3.6.0-beta.9(typescript@6.0.2))
+      ansi_up:
+        specifier: ^6.0.6
+        version: 6.0.6
       canvas-confetti:
         specifier: ^1.9.4
         version: 1.9.4
@@ -2530,6 +2533,9 @@ packages:
   ansi-styles@6.2.3:
     resolution: {integrity: sha512-4Dj6M28JB+oAH8kFkTLUo+a2jwOFkuqb3yucU0CANcRRUbxS0cP0nZYCGjcc3BNXwRIsUVmDGgzawme7zvJHvg==}
     engines: {node: '>=12'}
+
+  ansi_up@6.0.6:
+    resolution: {integrity: sha512-yIa1x3Ecf8jWP4UWEunNjqNX6gzE4vg2gGz+xqRGY+TBSucnYp6RRdPV4brmtg6bQ1ljD48mZ5iGSEj7QEpRKA==}
 
   ansis@4.2.0:
     resolution: {integrity: sha512-HqZ5rWlFjGiV0tDm3UxxgNRqsOTniqoKZu0pIAfh7TZQMGuZK+hH0drySty0si0QXj1ieop4+SkSfPZBPPkHig==}
@@ -7563,6 +7569,8 @@ snapshots:
       color-convert: 2.0.1
 
   ansi-styles@6.2.3: {}
+
+  ansi_up@6.0.6: {}
 
   ansis@4.2.0: {}
 

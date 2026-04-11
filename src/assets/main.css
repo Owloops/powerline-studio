@@ -3,6 +3,14 @@
 @import 'tw-animate-css';
 @import 'vue-sonner/style.css';
 
+@font-face {
+	font-family: 'FiraCode Nerd Font Mono';
+	src: url('./fonts/FiraCodeNerdFontMono-Regular.woff2') format('woff2');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
 @plugin "../../tailwind-inspira-plugin.js";
 @plugin "@tailwindcss/typography";
 
@@ -34,6 +42,7 @@
 	--font-mona-sans: 'Mona Sans Variable', system-ui, sans-serif;
 	--font-dm-serif: 'DM Serif Display', Georgia, serif;
 	--font-playfair: 'Playfair Display Variable', Georgia, serif;
+	--font-nerd: 'FiraCode Nerd Font Mono', ui-monospace, monospace;
 }
 
 @theme inline {

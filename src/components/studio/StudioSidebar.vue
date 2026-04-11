@@ -1,0 +1,63 @@
+<script setup lang="ts">
+import type { StudioPanel, SidebarNavItem } from '@/types/studio'
+import {
+	Sidebar,
+	SidebarContent,
+	SidebarGroup,
+	SidebarGroupLabel,
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
+	SidebarRail,
+	useSidebar,
+} from '@/components/ui/sidebar'
+import IconPalette from '~icons/lucide/palette'
+import IconPenTool from '~icons/lucide/pen-tool'
+import IconLayoutList from '~icons/lucide/layout-list'
+import IconGrid3x3 from '~icons/lucide/grid-3x3'
+import IconDatabase from '~icons/lucide/database'
+import IconDownload from '~icons/lucide/download'
+
+const activePanel = defineModel<StudioPanel>('activePanel', { required: true })
+
+const { isMobile, setOpenMobile } = useSidebar()
+
+const navItems: SidebarNavItem[] = [
+	{ id: 'theme', label: 'Theme', icon: IconPalette },
+	{ id: 'style', label: 'Style', icon: IconPenTool },
+	{ id: 'segments', label: 'Segments', icon: IconLayoutList },
+	{ id: 'tui', label: 'TUI Layout', icon: IconGrid3x3 },
+	{ id: 'mockData', label: 'Mock Data', icon: IconDatabase },
+	{ id: 'export', label: 'Export', icon: IconDownload },
+]
+
+function selectPanel(id: StudioPanel) {
+	activePanel.value = id
+	if (isMobile.value) {
+		setOpenMobile(false)
+	}
+}
+</script>
+
+<template>
+	<Sidebar collapsible="icon">
+		<SidebarContent>
+			<SidebarGroup>
+				<SidebarGroupLabel>Configuration</SidebarGroupLabel>
+				<SidebarMenu>
+					<SidebarMenuItem v-for="item in navItems" :key="item.id">
+						<SidebarMenuButton
+							:is-active="activePanel === item.id"
+							:tooltip="item.label"
+							@click="selectPanel(item.id)"
+						>
+							<component :is="item.icon" />
+							<span>{{ item.label }}</span>
+						</SidebarMenuButton>
+					</SidebarMenuItem>
+				</SidebarMenu>
+			</SidebarGroup>
+		</SidebarContent>
+		<SidebarRail />
+	</Sidebar>
+</template>
