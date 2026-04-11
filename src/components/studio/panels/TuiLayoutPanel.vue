@@ -20,10 +20,8 @@ import TuiGlobalOptions from '@/components/studio/tui/TuiGlobalOptions.vue'
 import BreakpointManager from '@/components/studio/tui/BreakpointManager.vue'
 import BreakpointEditor from '@/components/studio/tui/BreakpointEditor.vue'
 import BoxStylePicker from '@/components/studio/tui/BoxStylePicker.vue'
-import TemplateEditor from '@/components/studio/tui/TemplateEditor.vue'
 import SeparatorConfig from '@/components/studio/tui/SeparatorConfig.vue'
 import PaddingConfig from '@/components/studio/tui/PaddingConfig.vue'
-import SegmentTemplateEditor from '@/components/studio/tui/SegmentTemplateEditor.vue'
 
 const configStore = useConfigStore()
 const editorStore = useEditorStore()
@@ -109,11 +107,8 @@ function handleRemoveBreakpoint(id: string) {
 // --- Accessory section state ---
 
 const boxSectionOpen = shallowRef(false)
-const titleSectionOpen = shallowRef(false)
-const footerSectionOpen = shallowRef(false)
 const separatorSectionOpen = shallowRef(false)
 const paddingSectionOpen = shallowRef(false)
-const templateSectionOpen = shallowRef(false)
 
 // --- Highlighted segment in the grid (from preview click) ---
 const highlightedSegment = shallowRef<string | null>(null)
@@ -124,11 +119,7 @@ watch(
 	() => editorStore.selectedTuiArea,
 	(target) => {
 		if (!target) return
-		if (target.kind === 'title') {
-			titleSectionOpen.value = true
-		} else if (target.kind === 'footer') {
-			footerSectionOpen.value = true
-		} else if (target.kind === 'segment') {
+		if (target.kind === 'segment') {
 			highlightedSegment.value = target.name
 			// Auto-clear highlight after a few seconds
 			clearTimeout(highlightTimer)
@@ -140,30 +131,6 @@ watch(
 		nextTick(() => editorStore.clearTuiArea())
 	},
 )
-
-// --- Title/Footer handlers ---
-
-const titleConfig = computed(() => configStore.config.display.tui?.title)
-const footerConfig = computed(() => configStore.config.display.tui?.footer)
-
-function updateTitleLeft(value: string | undefined) {
-	configStore.setTuiTitle({ left: value })
-}
-
-function updateTitleRight(value: string | false | undefined) {
-	configStore.setTuiTitle({ right: value })
-}
-
-function updateFooterLeft(value: string | undefined) {
-	configStore.setTuiFooter({ left: value })
-}
-
-function updateFooterRight(value: string | false | undefined) {
-	// Footer right is string | undefined, never false
-	configStore.setTuiFooter({ right: value === false ? undefined : value })
-}
-
-// --- Segment refs from active breakpoint ---
 
 // --- Preset confirmation ---
 
@@ -182,23 +149,6 @@ function confirmPreset() {
 	pendingPreset.value = null
 	presetDialogOpen.value = false
 }
-
-// --- Segment refs from active breakpoint ---
-
-const activeSegmentRefs = computed(() => {
-	const bp = selectedBreakpoint.value
-	if (!bp) return []
-	const refs = new Set<string>()
-	for (const row of bp.areas) {
-		if (row.trim() === '---') continue
-		for (const cell of row.trim().split(/\s+/)) {
-			if (cell !== '.' && cell !== '---') {
-				refs.add(cell)
-			}
-		}
-	}
-	return [...refs]
-})
 </script>
 
 <template>
@@ -284,7 +234,7 @@ const activeSegmentRefs = computed(() => {
 				@remove="handleRemoveBreakpoint"
 			/>
 
-			<!-- Breakpoint Editor -->
+			<!-- Breakpoint Editor (now includes title/footer/columns/alignment/segment templates) -->
 			<Transition
 				enter-active-class="transition-opacity duration-150 ease-out"
 				leave-active-class="transition-opacity duration-100 ease-in"
@@ -320,54 +270,6 @@ const activeSegmentRefs = computed(() => {
 			</CollapsibleContent>
 		</Collapsible>
 
-		<!-- Title Bar Editor -->
-		<Collapsible v-model:open="titleSectionOpen">
-			<CollapsibleTrigger class="flex items-center justify-between w-full py-1.5 text-left">
-				<span class="text-xs font-medium">Title Bar</span>
-				<IconLucide-chevron-right
-					class="size-3.5 text-muted-foreground transition-transform duration-200"
-					:class="{ 'rotate-90': titleSectionOpen }"
-				/>
-			</CollapsibleTrigger>
-			<CollapsibleContent>
-				<div class="pt-2 pb-1">
-					<TemplateEditor
-						label="Title Bar"
-						:left="titleConfig?.left"
-						:right="titleConfig?.right"
-						:allow-disable-right="true"
-						left-placeholder="{model}"
-						right-placeholder="claude-powerline"
-						@update:left="updateTitleLeft"
-						@update:right="updateTitleRight"
-					/>
-				</div>
-			</CollapsibleContent>
-		</Collapsible>
-
-		<!-- Footer Editor -->
-		<Collapsible v-model:open="footerSectionOpen">
-			<CollapsibleTrigger class="flex items-center justify-between w-full py-1.5 text-left">
-				<span class="text-xs font-medium">Footer</span>
-				<IconLucide-chevron-right
-					class="size-3.5 text-muted-foreground transition-transform duration-200"
-					:class="{ 'rotate-90': footerSectionOpen }"
-				/>
-			</CollapsibleTrigger>
-			<CollapsibleContent>
-				<div class="pt-2 pb-1">
-					<TemplateEditor
-						label="Footer"
-						:left="footerConfig?.left"
-						:right="footerConfig?.right ?? undefined"
-						:allow-disable-right="false"
-						@update:left="updateFooterLeft"
-						@update:right="updateFooterRight"
-					/>
-				</div>
-			</CollapsibleContent>
-		</Collapsible>
-
 		<!-- Separator Config -->
 		<Collapsible v-model:open="separatorSectionOpen">
 			<CollapsibleTrigger class="flex items-center justify-between w-full py-1.5 text-left">
@@ -396,22 +298,6 @@ const activeSegmentRefs = computed(() => {
 			<CollapsibleContent>
 				<div class="pt-2 pb-1">
 					<PaddingConfig />
-				</div>
-			</CollapsibleContent>
-		</Collapsible>
-
-		<!-- Segment Template Editor -->
-		<Collapsible v-model:open="templateSectionOpen">
-			<CollapsibleTrigger class="flex items-center justify-between w-full py-1.5 text-left">
-				<span class="text-xs font-medium">Segment Templates</span>
-				<IconLucide-chevron-right
-					class="size-3.5 text-muted-foreground transition-transform duration-200"
-					:class="{ 'rotate-90': templateSectionOpen }"
-				/>
-			</CollapsibleTrigger>
-			<CollapsibleContent>
-				<div class="pt-2 pb-1">
-					<SegmentTemplateEditor :segment-refs="activeSegmentRefs" />
 				</div>
 			</CollapsibleContent>
 		</Collapsible>
