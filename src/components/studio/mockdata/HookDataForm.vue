@@ -25,7 +25,9 @@ const cwd = computed({
 const version = computed({
 	get: () => store.hookData.version ?? '',
 	set: (v: string) => {
-		store.updateHookData({ version: v || undefined })
+		// Direct assignment because deepMerge skips undefined values
+		store.hookData.version = v || undefined
+		store.markCustom()
 	},
 })
 

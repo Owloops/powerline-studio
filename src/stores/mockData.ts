@@ -26,6 +26,10 @@ export const useMockDataStore = defineStore('mockData', () => {
 	const tmuxSessionId = ref<string | null>(DEFAULT_MOCK_DATA.tmuxSessionId)
 	const activePreset = ref('default')
 
+	// Tracks the last named preset (not 'custom') for re-enable restore logic.
+	// When activePreset becomes 'custom', this still holds the original preset id.
+	let _lastNamedPreset = 'default'
+
 	// Flag to suppress custom-detection during preset application
 	let _applyingPreset = false
 
@@ -45,6 +49,7 @@ export const useMockDataStore = defineStore('mockData', () => {
 		todayInfo.value = structuredClone(preset.todayInfo)
 		tmuxSessionId.value = preset.tmuxSessionId
 		activePreset.value = id
+		_lastNamedPreset = id
 		_applyingPreset = false
 	}
 
@@ -54,8 +59,10 @@ export const useMockDataStore = defineStore('mockData', () => {
 		}
 	}
 
+	/** Returns preset data for re-enable restore. Uses last named preset,
+	 *  falling back to DEFAULT_MOCK_DATA if preset has null for that section. */
 	function getActivePresetData(): MockDataPreset {
-		const meta = MOCK_DATA_PRESETS.find((p) => p.id === activePreset.value)
+		const meta = MOCK_DATA_PRESETS.find((p) => p.id === _lastNamedPreset)
 		if (meta) return meta.factory()
 		return structuredClone(DEFAULT_MOCK_DATA)
 	}
