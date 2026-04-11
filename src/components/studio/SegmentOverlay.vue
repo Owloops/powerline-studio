@@ -13,7 +13,7 @@ function hitboxTitle(segmentType: string): string {
 	return HITBOX_TITLES[segmentType] ?? segmentType
 }
 
-function handleClick(segmentType: string, sourceLineIndex: number) {
+function handleClick(segmentType: string, sourceLineIndex: number, cellSegment?: string) {
 	// Handle special TUI title/footer hitbox types
 	if (segmentType === '__title_left' || segmentType === '__title_right') {
 		editorStore.selectTuiArea({ kind: 'title' })
@@ -23,7 +23,7 @@ function handleClick(segmentType: string, sourceLineIndex: number) {
 		editorStore.selectTuiArea({ kind: 'footer' })
 		return
 	}
-	editorStore.selectSegment(segmentType, sourceLineIndex)
+	editorStore.selectSegment(segmentType, sourceLineIndex, cellSegment)
 }
 </script>
 
@@ -40,7 +40,7 @@ function handleClick(segmentType: string, sourceLineIndex: number) {
 				height: `${previewStore.lineHeight}em`,
 			}"
 			:title="hitboxTitle(hitbox.segmentType)"
-			@click="handleClick(hitbox.segmentType, hitbox.sourceLineIndex)"
+			@click="handleClick(hitbox.segmentType, hitbox.sourceLineIndex, hitbox.cellSegment)"
 		/>
 	</div>
 </template>

@@ -7,6 +7,7 @@ import type { GridCell } from '@owloops/claude-powerline/browser'
 
 export interface SegmentHitbox {
 	segmentType: string // config-level name: 'directory', 'git', 'session', etc.
+	cellSegment?: string // raw grid cell name before normalization (TUI only, e.g. 'context.bar')
 	line: number // 0-based output line index
 	charStart: number // character offset from left edge of text content
 	charWidth: number // visible width in characters
@@ -108,6 +109,7 @@ export function extractTuiHitboxes(
 
 			hitboxes.push({
 				segmentType: normalized,
+				cellSegment: cell.segment,
 				line: outputLine,
 				charStart,
 				charWidth,

@@ -725,6 +725,9 @@ export function useRenderer() {
 
 					if (config.display.autoWrap && terminalWidth > 0) {
 						// Auto-wrap: split across lines when too wide
+						// Account for reserved width (e.g. TUI width reserve) so wrapping
+						// happens at the visible area boundary, not the full terminal width.
+						const wrapWidth = terminalWidth - reservedWidth
 						let currentLineSegments: RenderedSegment[] = []
 						let currentLineWidth = 0
 						let charStart = 0
@@ -734,7 +737,7 @@ export function useRenderer() {
 							const isFirst = currentLineSegments.length === 0
 							const segmentWidth = calculateHitboxWidth(textWidth, padding, style, isFirst)
 
-							if (!isFirst && currentLineWidth + segmentWidth > terminalWidth) {
+							if (!isFirst && currentLineWidth + segmentWidth > wrapWidth) {
 								outputLines.push(
 									buildLineFromSegments(currentLineSegments, colors, config, symbols, colorMode),
 								)

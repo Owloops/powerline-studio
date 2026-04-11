@@ -11,7 +11,7 @@ export type SidebarPanel = 'appearance' | 'segments' | 'tui' | 'mockData' | 'exp
 export type TuiAreaTarget =
 	| { kind: 'title' }
 	| { kind: 'footer' }
-	| { kind: 'segment'; name: string }
+	| { kind: 'segment'; name: string; cellSegment?: string }
 
 export const useEditorStore = defineStore('editor', () => {
 	const selectedSegment = ref<string | null>(null)
@@ -61,10 +61,10 @@ export const useEditorStore = defineStore('editor', () => {
 
 	// --- Mutations ---
 
-	function selectSegment(name: string, sourceLineIndex?: number) {
+	function selectSegment(name: string, sourceLineIndex?: number, cellSegment?: string) {
 		// TUI-aware: navigate to TUI layout panel instead of Segments panel
 		if (configStore.isTuiStyle) {
-			selectedTuiArea.value = { kind: 'segment', name }
+			selectedTuiArea.value = { kind: 'segment', name, cellSegment }
 			activePanel.value = 'tui'
 			return
 		}

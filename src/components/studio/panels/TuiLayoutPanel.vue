@@ -102,6 +102,8 @@ function handleRemoveBreakpoint(id: string) {
 
 // --- Highlighted segment in the grid (from preview click) ---
 const highlightedSegment = shallowRef<string | null>(null)
+const openTitleSection = shallowRef(false)
+const openFooterSection = shallowRef(false)
 let highlightTimer: ReturnType<typeof setTimeout> | undefined
 
 // React to TUI area selection from preview clicks
@@ -110,12 +112,25 @@ watch(
 	(target) => {
 		if (!target) return
 		if (target.kind === 'segment') {
-			highlightedSegment.value = target.name
+			// Use the raw cell segment name (e.g. 'context.bar') for exact grid cell matching
+			highlightedSegment.value = target.cellSegment ?? target.name
 			// Auto-clear highlight after a few seconds
 			clearTimeout(highlightTimer)
 			highlightTimer = setTimeout(() => {
 				highlightedSegment.value = null
 			}, 2000)
+		} else if (target.kind === 'title') {
+			// Signal BreakpointEditor to open title section
+			openTitleSection.value = true
+			nextTick(() => {
+				openTitleSection.value = false
+			})
+		} else if (target.kind === 'footer') {
+			// Signal BreakpointEditor to open footer section
+			openFooterSection.value = true
+			nextTick(() => {
+				openFooterSection.value = false
+			})
 		}
 		// Clear the selection after processing so it can be re-triggered
 		nextTick(() => editorStore.clearTuiArea())
@@ -238,6 +253,8 @@ function confirmPreset() {
 					:breakpoint-index="selectedBpIndex"
 					:breakpoint="selectedBreakpoint"
 					:highlighted-segment="highlightedSegment"
+					:open-title="openTitleSection"
+					:open-footer="openFooterSection"
 				/>
 			</Transition>
 		</template>

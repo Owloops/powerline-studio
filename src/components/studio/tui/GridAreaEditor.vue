@@ -2,7 +2,6 @@
 import type { ParsedCell } from '@/types/tui'
 import GridCell from './GridCell.vue'
 import { Button } from '@/components/ui/button'
-import { normalizeSegmentName } from '@/lib/segmentHitboxes'
 
 const props = defineProps<{
 	breakpointIndex: number
@@ -90,10 +89,7 @@ function handleSingleCellUpdate(
 						:span="cell.span"
 						:start-col="cell.startCol"
 						:used-segments="usedSegmentsByRow(rowIndex)"
-						:highlighted="
-							highlightedSegment != null &&
-							normalizeSegmentName(cell.segment) === highlightedSegment
-						"
+						:highlighted="highlightedSegment != null && cell.segment === highlightedSegment"
 						@update="handleCellUpdate(rowIndex, cell, $event)"
 						@update-single="
 							(colOffset: number, val: string) =>

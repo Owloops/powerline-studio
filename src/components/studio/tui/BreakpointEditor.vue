@@ -12,6 +12,8 @@ const props = defineProps<{
 	breakpointIndex: number
 	breakpoint: TuiGridBreakpoint
 	highlightedSegment?: string | null
+	openTitle?: boolean
+	openFooter?: boolean
 }>()
 
 const configStore = useConfigStore()
@@ -65,6 +67,21 @@ const activeSegmentRefs = computed(() => {
 const titleSectionOpen = shallowRef(false)
 const footerSectionOpen = shallowRef(false)
 const templateSectionOpen = shallowRef(false)
+
+// Open title/footer sections when signaled from parent (preview click)
+watch(
+	() => props.openTitle,
+	(val) => {
+		if (val) titleSectionOpen.value = true
+	},
+)
+
+watch(
+	() => props.openFooter,
+	(val) => {
+		if (val) footerSectionOpen.value = true
+	},
+)
 </script>
 
 <template>
