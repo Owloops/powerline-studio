@@ -44,7 +44,9 @@ const dragControlsMap = Object.fromEntries(
 
 // --- Expanded state (multi-open, keyed by segment key) ---
 
-const expandedRows = ref<Record<string, boolean>>({})
+const expandedRows = ref<Record<string, boolean>>(
+	Object.fromEntries(SEGMENT_KEYS.map((key) => [key, false])),
+)
 
 function isExpanded(key: string): boolean {
 	return expandedRows.value[key] ?? false

@@ -81,7 +81,7 @@ function handleSwitchUpdate(checked: boolean) {
 				</span>
 
 				<!-- Enable/disable toggle -->
-				<Switch :checked="enabled" @click.stop @update:checked="handleSwitchUpdate" />
+				<Switch :model-value="enabled" @click.stop @update:model-value="handleSwitchUpdate" />
 			</div>
 
 			<CollapsibleContent>
