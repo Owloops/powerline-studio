@@ -1,0 +1,74 @@
+<script setup lang="ts">
+const store = useMockDataStore()
+
+const modelDisplayName = computed({
+	get: () => store.hookData.model.display_name,
+	set: (v: string) => {
+		store.updateHookData({ model: { ...store.hookData.model, display_name: v } })
+	},
+})
+
+const modelId = computed({
+	get: () => store.hookData.model.id,
+	set: (v: string) => {
+		store.updateHookData({ model: { ...store.hookData.model, id: v } })
+	},
+})
+
+const cwd = computed({
+	get: () => store.hookData.cwd,
+	set: (v: string) => {
+		store.updateHookData({ cwd: v })
+	},
+})
+
+const version = computed({
+	get: () => store.hookData.version ?? '',
+	set: (v: string) => {
+		store.updateHookData({ version: v || undefined })
+	},
+})
+
+const sessionId = computed({
+	get: () => store.hookData.session_id,
+	set: (v: string) => {
+		store.updateHookData({ session_id: v })
+	},
+})
+
+const tmuxId = computed({
+	get: () => store.tmuxSessionId ?? '',
+	set: (v: string) => {
+		store.setTmuxSessionId(v || null)
+	},
+})
+</script>
+
+<template>
+	<div class="space-y-3">
+		<div class="space-y-1.5">
+			<Label class="text-xs text-muted-foreground">Model Display Name</Label>
+			<Input v-model="modelDisplayName" class="h-8 text-xs" />
+		</div>
+		<div class="space-y-1.5">
+			<Label class="text-xs text-muted-foreground">Model ID</Label>
+			<Input v-model="modelId" class="h-8 text-xs" />
+		</div>
+		<div class="space-y-1.5">
+			<Label class="text-xs text-muted-foreground">Working Directory</Label>
+			<Input v-model="cwd" class="h-8 text-xs font-mono" />
+		</div>
+		<div class="space-y-1.5">
+			<Label class="text-xs text-muted-foreground">Version</Label>
+			<Input v-model="version" class="h-8 text-xs" />
+		</div>
+		<div class="space-y-1.5">
+			<Label class="text-xs text-muted-foreground">Session ID</Label>
+			<Input v-model="sessionId" class="h-8 text-xs font-mono" />
+		</div>
+		<div class="space-y-1.5">
+			<Label class="text-xs text-muted-foreground">Tmux Session ID</Label>
+			<Input v-model="tmuxId" class="h-8 text-xs font-mono" placeholder="null (empty = null)" />
+		</div>
+	</div>
+</template>
