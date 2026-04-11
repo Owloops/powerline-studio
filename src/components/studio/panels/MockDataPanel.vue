@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { MOCK_DATA_PRESETS } from '@/data/mockPresets'
+import { DEFAULT_MOCK_DATA } from '@/data/mockPresets'
+import MockDataSection from '@/components/studio/mockdata/MockDataSection.vue'
 import HookDataForm from '@/components/studio/mockdata/HookDataForm.vue'
 import GitInfoForm from '@/components/studio/mockdata/GitInfoForm.vue'
 import UsageInfoForm from '@/components/studio/mockdata/UsageInfoForm.vue'
@@ -24,127 +26,173 @@ const presetLabel = computed(() => {
 	if (store.activePreset === 'custom') return 'Custom'
 	return MOCK_DATA_PRESETS.find((p) => p.id === store.activePreset)?.name ?? store.activePreset
 })
+
+// Toggle helpers that read/write to the store
+function toggleSection(
+	key: 'gitInfo' | 'usageInfo' | 'contextInfo' | 'metricsInfo' | 'blockInfo' | 'todayInfo',
+	enabled: boolean,
+) {
+	if (enabled) {
+		const preset = store.getActivePresetData()
+		const restored =
+			preset[key] ?? structuredClone((DEFAULT_MOCK_DATA as Record<string, unknown>)[key])
+		;(store as Record<string, unknown>)[key] = structuredClone(restored)
+	} else {
+		;(store as Record<string, unknown>)[key] = null
+	}
+	store.markCustom()
+}
+
+function toggleRateLimits(enabled: boolean) {
+	if (enabled) {
+		const preset = store.getActivePresetData()
+		const restored =
+			preset.hookData.rate_limits ?? structuredClone(DEFAULT_MOCK_DATA.hookData.rate_limits)
+		store.hookData.rate_limits = structuredClone(restored)
+	} else {
+		store.hookData.rate_limits = undefined
+	}
+	store.markCustom()
+}
 </script>
 
 <template>
 	<div class="flex flex-col gap-4 p-4">
-		<!-- Preset Selector -->
-		<div class="space-y-1.5">
-			<Label class="text-xs font-medium text-muted-foreground">Preset</Label>
-			<Select v-model="presetValue">
-				<SelectTrigger class="h-9 text-sm">
-					<SelectValue :placeholder="presetLabel" />
-				</SelectTrigger>
-				<SelectContent>
-					<SelectItem v-for="preset in MOCK_DATA_PRESETS" :key="preset.id" :value="preset.id">
-						{{ preset.name }}
-					</SelectItem>
-					<SelectItem v-if="store.activePreset === 'custom'" value="custom" disabled>
-						Custom
-					</SelectItem>
-				</SelectContent>
-			</Select>
+		<!-- Header + Preset Selector -->
+		<div class="flex flex-col gap-1.5">
+			<div class="flex items-center justify-between">
+				<div>
+					<h2 class="text-sm font-medium">Mock Data</h2>
+					<p class="text-xs text-muted-foreground">
+						Simulate Claude Code hook data for the live preview
+					</p>
+				</div>
+				<Select v-model="presetValue" class="w-auto">
+					<SelectTrigger class="h-8 w-36 text-xs">
+						<SelectValue :placeholder="presetLabel" />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem v-for="preset in MOCK_DATA_PRESETS" :key="preset.id" :value="preset.id">
+							{{ preset.name }}
+						</SelectItem>
+						<SelectItem v-if="store.activePreset === 'custom'" value="custom" disabled>
+							Custom
+						</SelectItem>
+					</SelectContent>
+				</Select>
+			</div>
 		</div>
 
-		<Separator />
+		<!-- Sections -->
+		<div class="flex flex-col gap-2">
+			<!-- Claude Hook Data (always enabled, not toggleable) -->
+			<MockDataSection
+				title="Claude Hook Data"
+				description="Core session info: model, cwd, version"
+			>
+				<template #icon>
+					<IconLucide-terminal class="size-3.5 shrink-0 text-muted-foreground" />
+				</template>
+				<HookDataForm />
+			</MockDataSection>
 
-		<!-- Accordion Sections -->
-		<Accordion type="multiple" class="w-full">
-			<AccordionItem value="hook-data">
-				<AccordionTrigger class="py-3 text-xs">
-					<span class="flex items-center gap-2">
-						<IconLucide-terminal class="size-3.5 text-muted-foreground" />
-						Claude Hook Data
-					</span>
-				</AccordionTrigger>
-				<AccordionContent>
-					<HookDataForm />
-				</AccordionContent>
-			</AccordionItem>
+			<!-- Git Info -->
+			<MockDataSection
+				title="Git Info"
+				description="Repository state for git segments"
+				toggleable
+				:enabled="store.gitInfo !== null"
+				@update:enabled="toggleSection('gitInfo', $event)"
+			>
+				<template #icon>
+					<IconLucide-git-branch class="size-3.5 shrink-0 text-muted-foreground" />
+				</template>
+				<GitInfoForm />
+			</MockDataSection>
 
-			<AccordionItem value="git-info">
-				<AccordionTrigger class="py-3 text-xs">
-					<span class="flex items-center gap-2">
-						<IconLucide-git-branch class="size-3.5 text-muted-foreground" />
-						Git Info
-					</span>
-				</AccordionTrigger>
-				<AccordionContent>
-					<GitInfoForm />
-				</AccordionContent>
-			</AccordionItem>
+			<!-- Session Usage -->
+			<MockDataSection
+				title="Session Usage"
+				description="Cost and token usage for current session"
+				toggleable
+				:enabled="store.usageInfo !== null"
+				@update:enabled="toggleSection('usageInfo', $event)"
+			>
+				<template #icon>
+					<IconLucide-coins class="size-3.5 shrink-0 text-muted-foreground" />
+				</template>
+				<UsageInfoForm />
+			</MockDataSection>
 
-			<AccordionItem value="usage-info">
-				<AccordionTrigger class="py-3 text-xs">
-					<span class="flex items-center gap-2">
-						<IconLucide-coins class="size-3.5 text-muted-foreground" />
-						Session Usage
-					</span>
-				</AccordionTrigger>
-				<AccordionContent>
-					<UsageInfoForm />
-				</AccordionContent>
-			</AccordionItem>
+			<!-- Context Window -->
+			<MockDataSection
+				title="Context Window"
+				description="Token capacity and context utilization"
+				toggleable
+				:enabled="store.contextInfo !== null"
+				@update:enabled="toggleSection('contextInfo', $event)"
+			>
+				<template #icon>
+					<IconLucide-brain class="size-3.5 shrink-0 text-muted-foreground" />
+				</template>
+				<ContextInfoForm />
+			</MockDataSection>
 
-			<AccordionItem value="context-info">
-				<AccordionTrigger class="py-3 text-xs">
-					<span class="flex items-center gap-2">
-						<IconLucide-brain class="size-3.5 text-muted-foreground" />
-						Context Window
-					</span>
-				</AccordionTrigger>
-				<AccordionContent>
-					<ContextInfoForm />
-				</AccordionContent>
-			</AccordionItem>
+			<!-- Metrics -->
+			<MockDataSection
+				title="Metrics"
+				description="Response time, duration, line changes"
+				toggleable
+				:enabled="store.metricsInfo !== null"
+				@update:enabled="toggleSection('metricsInfo', $event)"
+			>
+				<template #icon>
+					<IconLucide-activity class="size-3.5 shrink-0 text-muted-foreground" />
+				</template>
+				<MetricsInfoForm />
+			</MockDataSection>
 
-			<AccordionItem value="metrics-info">
-				<AccordionTrigger class="py-3 text-xs">
-					<span class="flex items-center gap-2">
-						<IconLucide-activity class="size-3.5 text-muted-foreground" />
-						Metrics
-					</span>
-				</AccordionTrigger>
-				<AccordionContent>
-					<MetricsInfoForm />
-				</AccordionContent>
-			</AccordionItem>
+			<!-- Block / Rate -->
+			<MockDataSection
+				title="Block / Rate"
+				description="Native utilization and time remaining"
+				toggleable
+				:enabled="store.blockInfo !== null"
+				@update:enabled="toggleSection('blockInfo', $event)"
+			>
+				<template #icon>
+					<IconLucide-shield class="size-3.5 shrink-0 text-muted-foreground" />
+				</template>
+				<BlockInfoForm />
+			</MockDataSection>
 
-			<AccordionItem value="block-info">
-				<AccordionTrigger class="py-3 text-xs">
-					<span class="flex items-center gap-2">
-						<IconLucide-shield class="size-3.5 text-muted-foreground" />
-						Block / Rate
-					</span>
-				</AccordionTrigger>
-				<AccordionContent>
-					<BlockInfoForm />
-				</AccordionContent>
-			</AccordionItem>
+			<!-- Today Usage -->
+			<MockDataSection
+				title="Today Usage"
+				description="Aggregate cost and tokens for today"
+				toggleable
+				:enabled="store.todayInfo !== null"
+				@update:enabled="toggleSection('todayInfo', $event)"
+			>
+				<template #icon>
+					<IconLucide-calendar class="size-3.5 shrink-0 text-muted-foreground" />
+				</template>
+				<TodayInfoForm />
+			</MockDataSection>
 
-			<AccordionItem value="today-info">
-				<AccordionTrigger class="py-3 text-xs">
-					<span class="flex items-center gap-2">
-						<IconLucide-calendar class="size-3.5 text-muted-foreground" />
-						Today Usage
-					</span>
-				</AccordionTrigger>
-				<AccordionContent>
-					<TodayInfoForm />
-				</AccordionContent>
-			</AccordionItem>
-
-			<AccordionItem value="rate-limits">
-				<AccordionTrigger class="py-3 text-xs">
-					<span class="flex items-center gap-2">
-						<IconLucide-gauge class="size-3.5 text-muted-foreground" />
-						Rate Limits
-					</span>
-				</AccordionTrigger>
-				<AccordionContent>
-					<RateLimitsForm />
-				</AccordionContent>
-			</AccordionItem>
-		</Accordion>
+			<!-- Rate Limits -->
+			<MockDataSection
+				title="Rate Limits"
+				description="5-hour and 7-day usage windows"
+				toggleable
+				:enabled="store.hookData.rate_limits !== undefined"
+				@update:enabled="toggleRateLimits($event)"
+			>
+				<template #icon>
+					<IconLucide-gauge class="size-3.5 shrink-0 text-muted-foreground" />
+				</template>
+				<RateLimitsForm />
+			</MockDataSection>
+		</div>
 	</div>
 </template>

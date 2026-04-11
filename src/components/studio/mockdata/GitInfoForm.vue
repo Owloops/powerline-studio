@@ -67,12 +67,7 @@ const stashCountNum = numModel(stashCount as ReturnType<typeof field>)
 </script>
 
 <template>
-	<div class="space-y-3">
-		<div class="flex items-center justify-between">
-			<Label class="text-xs font-medium">Enable Git Info</Label>
-			<Switch :checked="enabled" @update:checked="enabled = $event" />
-		</div>
-
+	<div class="flex flex-col gap-2">
 		<template v-if="enabled">
 			<div class="space-y-1.5">
 				<Label class="text-xs text-muted-foreground">Branch</Label>

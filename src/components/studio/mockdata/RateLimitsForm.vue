@@ -82,16 +82,9 @@ const sevenDayResets = computed({
 </script>
 
 <template>
-	<div class="space-y-3">
-		<div class="flex items-center justify-between">
-			<Label class="text-xs font-medium">Enable Rate Limits</Label>
-			<Switch :checked="enabled" @update:checked="enabled = $event" />
-		</div>
-
+	<div class="flex flex-col gap-2">
 		<template v-if="enabled">
-			<div class="space-y-1.5">
-				<Label class="text-xs font-medium text-muted-foreground">5-Hour Window</Label>
-			</div>
+			<Label class="text-xs font-medium text-muted-foreground">5-Hour Window</Label>
 			<div class="grid grid-cols-2 gap-2">
 				<div class="space-y-1.5">
 					<Label class="text-xs text-muted-foreground"
@@ -109,9 +102,7 @@ const sevenDayResets = computed({
 
 			<Separator />
 
-			<div class="space-y-1.5">
-				<Label class="text-xs font-medium text-muted-foreground">7-Day Window</Label>
-			</div>
+			<Label class="text-xs font-medium text-muted-foreground">7-Day Window</Label>
 			<div class="grid grid-cols-2 gap-2">
 				<div class="space-y-1.5">
 					<Label class="text-xs text-muted-foreground"

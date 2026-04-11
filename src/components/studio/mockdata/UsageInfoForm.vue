@@ -96,12 +96,7 @@ const bdCacheRead = breakdownField('cacheRead')
 </script>
 
 <template>
-	<div class="space-y-3">
-		<div class="flex items-center justify-between">
-			<Label class="text-xs font-medium">Enable Session Usage</Label>
-			<Switch :checked="enabled" @update:checked="enabled = $event" />
-		</div>
-
+	<div class="flex flex-col gap-2">
 		<template v-if="enabled">
 			<div class="grid grid-cols-2 gap-2">
 				<div class="space-y-1.5">

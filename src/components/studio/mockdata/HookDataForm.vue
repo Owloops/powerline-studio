@@ -47,26 +47,30 @@ const tmuxId = computed({
 </script>
 
 <template>
-	<div class="space-y-3">
-		<div class="space-y-1.5">
-			<Label class="text-xs text-muted-foreground">Model Display Name</Label>
-			<Input v-model="modelDisplayName" class="h-8 text-xs" />
-		</div>
-		<div class="space-y-1.5">
-			<Label class="text-xs text-muted-foreground">Model ID</Label>
-			<Input v-model="modelId" class="h-8 text-xs" />
+	<div class="flex flex-col gap-2">
+		<div class="grid grid-cols-2 gap-2">
+			<div class="space-y-1.5">
+				<Label class="text-xs text-muted-foreground">Model Display Name</Label>
+				<Input v-model="modelDisplayName" class="h-8 text-xs" />
+			</div>
+			<div class="space-y-1.5">
+				<Label class="text-xs text-muted-foreground">Model ID</Label>
+				<Input v-model="modelId" class="h-8 text-xs" />
+			</div>
 		</div>
 		<div class="space-y-1.5">
 			<Label class="text-xs text-muted-foreground">Working Directory</Label>
 			<Input v-model="cwd" class="h-8 text-xs font-mono" />
 		</div>
-		<div class="space-y-1.5">
-			<Label class="text-xs text-muted-foreground">Version</Label>
-			<Input v-model="version" class="h-8 text-xs" />
-		</div>
-		<div class="space-y-1.5">
-			<Label class="text-xs text-muted-foreground">Session ID</Label>
-			<Input v-model="sessionId" class="h-8 text-xs font-mono" />
+		<div class="grid grid-cols-2 gap-2">
+			<div class="space-y-1.5">
+				<Label class="text-xs text-muted-foreground">Version</Label>
+				<Input v-model="version" class="h-8 text-xs" />
+			</div>
+			<div class="space-y-1.5">
+				<Label class="text-xs text-muted-foreground">Session ID</Label>
+				<Input v-model="sessionId" class="h-8 text-xs font-mono" />
+			</div>
 		</div>
 		<div class="space-y-1.5">
 			<Label class="text-xs text-muted-foreground">Tmux Session ID</Label>
