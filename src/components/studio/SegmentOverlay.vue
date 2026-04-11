@@ -16,8 +16,8 @@ function handleClick(segmentType: string, sourceLineIndex: number) {
 			:style="{
 				left: `${hitbox.charStart}ch`,
 				width: `${hitbox.charWidth}ch`,
-				top: `${hitbox.line}em`,
-				height: '1em',
+				top: `${hitbox.line * previewStore.lineHeight}em`,
+				height: `${previewStore.lineHeight}em`,
 			}"
 			:title="hitbox.segmentType"
 			@click="handleClick(hitbox.segmentType, hitbox.sourceLineIndex)"

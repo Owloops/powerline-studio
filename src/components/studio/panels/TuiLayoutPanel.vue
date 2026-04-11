@@ -1,9 +1,21 @@
 <script setup lang="ts">
 import type { EditorBreakpoint } from '@/types/tui'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { useTuiValidation } from '@/composables/useTuiValidation'
+import { TUI_PRESETS, type TuiPreset } from '@/lib/tuiPresets'
 import TuiGlobalOptions from '@/components/studio/tui/TuiGlobalOptions.vue'
 import BreakpointManager from '@/components/studio/tui/BreakpointManager.vue'
 import BreakpointEditor from '@/components/studio/tui/BreakpointEditor.vue'
@@ -126,6 +138,26 @@ function updateFooterRight(value: string | false | undefined) {
 
 // --- Segment refs from active breakpoint ---
 
+// --- Preset confirmation ---
+
+const pendingPreset = shallowRef<TuiPreset | null>(null)
+const presetDialogOpen = shallowRef(false)
+
+function requestPreset(preset: TuiPreset) {
+	pendingPreset.value = preset
+	presetDialogOpen.value = true
+}
+
+function confirmPreset() {
+	if (pendingPreset.value) {
+		configStore.applyTuiPreset(pendingPreset.value)
+	}
+	pendingPreset.value = null
+	presetDialogOpen.value = false
+}
+
+// --- Segment refs from active breakpoint ---
+
 const activeSegmentRefs = computed(() => {
 	const bp = selectedBreakpoint.value
 	if (!bp) return []
@@ -148,6 +180,37 @@ const activeSegmentRefs = computed(() => {
 			<h2 class="text-sm font-medium">TUI Layout</h2>
 			<p class="text-xs text-muted-foreground">Configure the grid-based TUI panel layout</p>
 		</div>
+
+		<!-- Presets -->
+		<div class="flex gap-2">
+			<Button
+				v-for="preset in TUI_PRESETS"
+				:key="preset.id"
+				variant="outline"
+				size="sm"
+				class="flex-1"
+				@click="requestPreset(preset)"
+			>
+				<IconLucide-layout-grid class="size-3.5" />
+				{{ preset.name }}
+			</Button>
+		</div>
+
+		<AlertDialog v-model:open="presetDialogOpen">
+			<AlertDialogContent>
+				<AlertDialogHeader>
+					<AlertDialogTitle>Apply {{ pendingPreset?.name }} preset?</AlertDialogTitle>
+					<AlertDialogDescription>
+						{{ pendingPreset?.description }} This will override your current TUI layout,
+						breakpoints, and segment configuration.
+					</AlertDialogDescription>
+				</AlertDialogHeader>
+				<AlertDialogFooter>
+					<AlertDialogCancel>Cancel</AlertDialogCancel>
+					<AlertDialogAction @click="confirmPreset">Apply</AlertDialogAction>
+				</AlertDialogFooter>
+			</AlertDialogContent>
+		</AlertDialog>
 
 		<!-- Validation Errors -->
 		<div

@@ -16,9 +16,9 @@ import { deepMerge } from './utils'
 import { useEditorStore } from './editor'
 import { normalizeSegments } from '@/components/studio/segments/segmentMeta'
 import type { CanonicalTheme, ThemeEditorState } from '@/lib/themes'
+import type { TuiPreset } from '@/lib/tuiPresets'
 import {
 	CANONICAL_THEMES,
-	SEGMENT_KEYS,
 	getCanonicalThemeColors,
 	mergeThemeWithOverrides,
 	deepEqualColorTheme,
@@ -146,6 +146,23 @@ export const useConfigStore = defineStore('config', () => {
 
 	function setTuiConfig(tui: TuiGridConfig | undefined) {
 		config.value.display.tui = tui
+	}
+
+	function applyTuiPreset(preset: TuiPreset) {
+		config.value.display.style = 'tui'
+		config.value.display.padding = 0
+		config.value.display.tui = structuredClone(preset.tui) as TuiGridConfig
+		// Replace the first line's segments with preset segments, keep remaining lines
+		const presetSegments = structuredClone(preset.segments) as LineConfig['segments']
+		if (config.value.display.lines.length === 0) {
+			config.value.display.lines.push({ segments: presetSegments })
+		} else {
+			config.value.display.lines[0]!.segments = presetSegments
+		}
+		// Normalize segments to ensure all 13 keys
+		for (const line of config.value.display.lines) {
+			line.segments = normalizeSegments(line.segments, SEGMENT_DEFAULTS)
+		}
 	}
 
 	function updateSegmentConfig(
@@ -651,6 +668,7 @@ export const useConfigStore = defineStore('config', () => {
 		setPadding,
 		setAutoWrap,
 		setTuiConfig,
+		applyTuiPreset,
 		// TUI actions
 		ensureTuiConfig,
 		setTuiOption,

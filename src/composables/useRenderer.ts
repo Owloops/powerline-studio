@@ -123,7 +123,7 @@ function resolveSymbols(config: PowerlineConfig): PowerlineSymbols {
 function resolveThemeColors(
 	config: PowerlineConfig,
 	colorMode: 'truecolor' | 'ansi256' | 'ansi' | 'none',
-	darkBackground: boolean,
+	terminalBgColor: string,
 ): PowerlineColors {
 	const theme = config.theme
 	let colorTheme: ColorTheme | undefined
@@ -150,7 +150,7 @@ function resolveThemeColors(
 	const fallbackTheme = getTheme('dark', colorMode)!
 
 	const isTui = config.display.style === 'tui'
-	const terminalRef = darkBackground ? '#1e1e1e' : '#f0f0f0'
+	const terminalRef = terminalBgColor
 
 	const getSegmentColors = (segment: Exclude<keyof ColorTheme, 'tui'>) => {
 		const fallback = fallbackTheme[segment]
@@ -312,6 +312,42 @@ function stripControlSequences(ansi: string): string {
 	return ansi.replace(SYNC_RE, '').replace(WS_GUARD_RE, '')
 }
 
+/**
+ * Wrap each visible character in the ansi_up HTML output in a fixed-width
+ * `1ch` cell to enforce monospace grid alignment in the browser.
+ *
+ * Browsers don't enforce terminal-style `wcwidth` rules, so certain Unicode
+ * symbols (Nerd Font icons, dingbats, etc.) render at non-monospace widths.
+ * Wrapping every character in an inline-block `1ch` cell forces correct
+ * column alignment regardless of individual glyph metrics.
+ */
+const TCH_OPEN = '<span class="tch">'
+const TCH_CLOSE = '</span>'
+
+function enforceMonospaceGrid(html: string): string {
+	return html.replace(/>([^<]+)/g, (_, text: string) => {
+		let out = '>'
+		for (const ch of text) {
+			if (ch === '\n') {
+				out += '\n'
+			} else {
+				out += TCH_OPEN + ch + TCH_CLOSE
+			}
+		}
+		return out
+	})
+}
+
+// ---------------------------------------------------------------------------
+// TUI helpers (mirrored from grid.ts internals not exported by the library)
+// ---------------------------------------------------------------------------
+
+function parseFr(colDef: string): number {
+	if (!colDef.endsWith('fr')) return 0
+	const fr = parseInt(colDef.replace('fr', ''), 10)
+	return !isNaN(fr) && fr > 0 ? fr : 0
+}
+
 // ---------------------------------------------------------------------------
 // TUI hitbox computation (mirrors grid logic to extract matrix + colWidths)
 // ---------------------------------------------------------------------------
@@ -400,6 +436,32 @@ function computeTuiHitboxes(
 		)
 		panelWidth = Math.min(maxWidth, Math.max(minWidth, solved.panelWidth))
 		colWidths = solved.colWidths
+
+		// Redistribute surplus from minWidth/maxWidth clamping into fr columns
+		// (mirrors renderGrid logic that the hitbox computation was missing)
+		const surplus = panelWidth - solved.panelWidth
+		if (surplus > 0) {
+			let totalFr = 0
+			for (const colDef of bp.columns) totalFr += parseFr(colDef)
+			if (totalFr > 0) {
+				const frCols: number[] = []
+				let allocated = 0
+				for (let i = 0; i < colWidths.length; i++) {
+					const fr = parseFr(bp.columns[i]!)
+					if (fr > 0) {
+						const add = Math.floor((surplus * fr) / totalFr)
+						colWidths[i]! += add
+						allocated += add
+						frCols.push(i)
+					}
+				}
+				let leftover = surplus - allocated
+				for (let k = 0; leftover > 0 && k < frCols.length; k++) {
+					colWidths[frCols[k]!]! += 1
+					leftover--
+				}
+			}
+		}
 	} else {
 		const innerW = panelWidth - 2
 		const contentW = innerW - 2
@@ -487,14 +549,14 @@ export function useRenderer() {
 		try {
 			const config = structuredClone(toRaw(configStore.config))
 			const colorMode = previewStore.colorMode
-			const darkBg = previewStore.darkBackground
+			const terminalBgColor = previewStore.terminalBgColor
 			const terminalWidth = previewStore.terminalWidth
 			const charset = previewStore.charset
 
 			// Override charset from preview store
 			config.display.charset = charset
 
-			const colors = resolveThemeColors(config, colorMode, darkBg)
+			const colors = resolveThemeColors(config, colorMode, terminalBgColor)
 			let ansi: string
 			let hitboxes: SegmentHitbox[] = []
 
@@ -666,7 +728,7 @@ export function useRenderer() {
 			if (token !== renderToken) return // stale
 
 			const cleanAnsi = stripControlSequences(ansi)
-			const html = ansiUp.ansi_to_html(cleanAnsi)
+			const html = enforceMonospaceGrid(ansiUp.ansi_to_html(cleanAnsi))
 
 			previewStore.setRenderedOutput(cleanAnsi, html, hitboxes)
 		} catch (e) {
@@ -693,7 +755,7 @@ export function useRenderer() {
 			() => previewStore.terminalWidth,
 			() => previewStore.colorMode,
 			() => previewStore.charset,
-			() => previewStore.darkBackground,
+			() => previewStore.terminalTheme,
 		],
 		() => {
 			void debouncedRender()

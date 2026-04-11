@@ -3,23 +3,34 @@ import { Slider } from '@/components/ui/slider'
 import {
 	Select,
 	SelectContent,
+	SelectGroup,
 	SelectItem,
+	SelectLabel,
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select'
-import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
+import { TERMINAL_FONTS } from '@/lib/terminalFonts'
+import { DARK_THEMES, LIGHT_THEMES } from '@/lib/terminalThemes'
 import { storeToRefs } from 'pinia'
 
 const previewStore = usePreviewStore()
 const configStore = useConfigStore()
-const { terminalWidth, colorMode, darkBackground, charset } = storeToRefs(previewStore)
+const { terminalWidth, colorMode, terminalTheme, terminalFont, lineHeight, charset } =
+	storeToRefs(previewStore)
 
 // Slider needs number[] model — bridge to store's number ref
 const sliderModel = computed({
 	get: () => [terminalWidth.value],
 	set: (val: number[]) => {
 		terminalWidth.value = val[0]
+	},
+})
+
+const lineHeightModel = computed({
+	get: () => [lineHeight.value],
+	set: (val: number[]) => {
+		lineHeight.value = Math.round(val[0] * 100) / 100
 	},
 })
 
@@ -72,10 +83,7 @@ const CHARSET_OPTIONS = [
 		<!-- Charset select group -->
 		<div class="flex items-center gap-2">
 			<Label for="preview-charset">Charset</Label>
-			<Select
-				:model-value="charset"
-				@update:model-value="configStore.setCharset"
-			>
+			<Select :model-value="charset" @update:model-value="configStore.setCharset">
 				<SelectTrigger id="preview-charset" class="h-8 w-[110px]" size="sm">
 					<SelectValue />
 				</SelectTrigger>
@@ -87,11 +95,75 @@ const CHARSET_OPTIONS = [
 			</Select>
 		</div>
 
-		<!-- Dark/light background toggle group -->
+		<!-- Line height slider group -->
 		<div class="flex items-center gap-2">
-			<Label for="preview-background">Background</Label>
-			<Switch id="preview-background" v-model="darkBackground" />
-			<span class="text-xs text-muted-foreground">{{ darkBackground ? 'Dark' : 'Light' }}</span>
+			<Label for="preview-line-height">Line Height</Label>
+			<Slider
+				id="preview-line-height"
+				v-model="lineHeightModel"
+				:min="0.5"
+				:max="1.5"
+				:step="0.01"
+				class="w-24"
+			/>
+			<span class="w-8 text-xs tabular-nums text-muted-foreground">{{ lineHeight }}</span>
+		</div>
+
+		<!-- Font select group -->
+		<div class="flex items-center gap-2">
+			<Label for="preview-font">Font</Label>
+			<Select v-model="terminalFont">
+				<SelectTrigger id="preview-font" class="h-8 w-[170px]" size="sm">
+					<SelectValue />
+				</SelectTrigger>
+				<SelectContent>
+					<SelectItem v-for="f in TERMINAL_FONTS" :key="f.id" :value="f.id">
+						{{ f.name }}
+					</SelectItem>
+				</SelectContent>
+			</Select>
+		</div>
+
+		<!-- Terminal theme select group -->
+		<div class="flex items-center gap-2">
+			<Label for="preview-terminal-theme">Terminal</Label>
+			<Select v-model="terminalTheme">
+				<SelectTrigger id="preview-terminal-theme" class="h-8 w-[180px]" size="sm">
+					<span class="flex items-center gap-2">
+						<span
+							class="inline-block size-3 shrink-0 rounded-sm border border-border"
+							:style="{ backgroundColor: previewStore.terminalBgColor }"
+						/>
+						<SelectValue />
+					</span>
+				</SelectTrigger>
+				<SelectContent>
+					<SelectGroup>
+						<SelectLabel>Dark</SelectLabel>
+						<SelectItem v-for="t in DARK_THEMES" :key="t.id" :value="t.id">
+							<span class="flex items-center gap-2">
+								<span
+									class="inline-block size-3 shrink-0 rounded-sm border border-border"
+									:style="{ backgroundColor: t.bg }"
+								/>
+								{{ t.name }}
+							</span>
+						</SelectItem>
+					</SelectGroup>
+					<SelectGroup>
+						<SelectLabel>Light</SelectLabel>
+						<SelectItem v-for="t in LIGHT_THEMES" :key="t.id" :value="t.id">
+							<span class="flex items-center gap-2">
+								<span
+									class="inline-block size-3 shrink-0 rounded-sm border border-border"
+									:style="{ backgroundColor: t.bg }"
+								/>
+								{{ t.name }}
+							</span>
+						</SelectItem>
+					</SelectGroup>
+				</SelectContent>
+			</Select>
 		</div>
 	</div>
 </template>

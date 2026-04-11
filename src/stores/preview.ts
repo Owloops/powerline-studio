@@ -2,6 +2,8 @@ import { ref, shallowRef, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { useConfigStore } from './config'
 import type { SegmentHitbox } from '@/lib/segmentHitboxes'
+import { getTerminalFont } from '@/lib/terminalFonts'
+import { getTerminalTheme } from '@/lib/terminalThemes'
 
 export const usePreviewStore = defineStore('preview', () => {
 	const configStore = useConfigStore()
@@ -10,7 +12,9 @@ export const usePreviewStore = defineStore('preview', () => {
 
 	const terminalWidth = ref(120)
 	const colorMode = ref<'truecolor' | 'ansi256' | 'ansi' | 'none'>('truecolor')
-	const darkBackground = ref(true)
+	const terminalTheme = ref('catppuccin-mocha')
+	const terminalFont = ref('firacode')
+	const lineHeight = ref(1)
 	const ansiOutput = ref('')
 	const htmlOutput = ref('')
 	const segmentHitboxes = shallowRef<SegmentHitbox[]>([])
@@ -18,6 +22,15 @@ export const usePreviewStore = defineStore('preview', () => {
 	// --- Computed ---
 
 	const charset = computed(() => configStore.config.display.charset ?? 'unicode')
+
+	const resolvedFont = computed(() => getTerminalFont(terminalFont.value))
+	const terminalFontFamily = computed(
+		() => `'${resolvedFont.value.fontFamily}', 'FiraCode Nerd Font Mono', monospace`,
+	)
+	const resolvedTheme = computed(() => getTerminalTheme(terminalTheme.value))
+	const darkBackground = computed(() => resolvedTheme.value.isDark)
+	const terminalBgColor = computed(() => resolvedTheme.value.bg)
+	const terminalFgColor = computed(() => resolvedTheme.value.fg)
 
 	// --- Mutations ---
 
@@ -29,8 +42,8 @@ export const usePreviewStore = defineStore('preview', () => {
 		colorMode.value = mode
 	}
 
-	function toggleBackground() {
-		darkBackground.value = !darkBackground.value
+	function setTerminalTheme(id: string) {
+		terminalTheme.value = id
 	}
 
 	function setRenderedOutput(ansi: string, html: string, hitboxes?: SegmentHitbox[]) {
@@ -54,7 +67,13 @@ export const usePreviewStore = defineStore('preview', () => {
 	return {
 		terminalWidth,
 		colorMode,
+		terminalTheme,
+		terminalFont,
+		terminalFontFamily,
+		lineHeight,
 		darkBackground,
+		terminalBgColor,
+		terminalFgColor,
 		ansiOutput,
 		htmlOutput,
 		segmentHitboxes,
@@ -63,7 +82,7 @@ export const usePreviewStore = defineStore('preview', () => {
 		// Mutations
 		setTerminalWidth,
 		setColorMode,
-		toggleBackground,
+		setTerminalTheme,
 		setRenderedOutput,
 		setSegmentHitboxes,
 		clearOutput,

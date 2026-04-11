@@ -5,11 +5,16 @@ import SegmentOverlay from './SegmentOverlay.vue'
 
 const previewStore = usePreviewStore()
 
-const terminalClasses = computed(() =>
-	previewStore.darkBackground
-		? 'bg-terminal-dark text-terminal-dark-fg'
-		: 'bg-terminal-light text-terminal-light-fg',
-)
+const terminalStyle = computed(() => ({
+	'--terminal-bg': previewStore.terminalBgColor,
+	'--terminal-fg': previewStore.terminalFgColor,
+}))
+
+const preStyle = computed(() => ({
+	fontFamily: previewStore.terminalFontFamily,
+	fontFeatureSettings: "'calt' 0, 'liga' 0",
+	lineHeight: previewStore.lineHeight,
+}))
 </script>
 
 <template>
@@ -28,10 +33,14 @@ const terminalClasses = computed(() =>
 		</div>
 
 		<!-- Terminal Body -->
-		<ScrollArea class="min-h-[3rem] max-h-[600px]" :class="terminalClasses">
+		<ScrollArea
+			class="min-h-[3rem] max-h-[600px] bg-(--terminal-bg) text-(--terminal-fg)"
+			:style="terminalStyle"
+		>
 			<pre
 				v-if="previewStore.htmlOutput"
-				class="min-w-max whitespace-pre px-4 py-3 font-nerd text-sm leading-none"
+				class="min-w-max whitespace-pre px-4 py-3 text-sm"
+				:style="preStyle"
 				role="img"
 				aria-label="Terminal preview of powerline statusline"
 			><div class="relative"><div v-html="previewStore.htmlOutput" /><SegmentOverlay class="absolute inset-0" /></div></pre>

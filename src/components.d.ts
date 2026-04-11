@@ -117,6 +117,7 @@ declare module 'vue' {
     IconLucideGauge: typeof import('~icons/lucide/gauge')['default']
     IconLucideGitBranch: typeof import('~icons/lucide/git-branch')['default']
     IconLucideInfo: typeof import('~icons/lucide/info')['default']
+    IconLucideLayoutGrid: typeof import('~icons/lucide/layout-grid')['default']
     IconLucideMinus: typeof import('~icons/lucide/minus')['default']
     IconLucideMoon: typeof import('~icons/lucide/moon')['default']
     IconLucidePalette: typeof import('~icons/lucide/palette')['default']

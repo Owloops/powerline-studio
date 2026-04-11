@@ -11,6 +11,51 @@
 	font-display: swap;
 }
 
+@font-face {
+	font-family: 'JetBrainsMono NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/JetBrainsMonoNerdFontMono-Regular.woff2')
+		format('woff2');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'CaskaydiaCove NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/CaskaydiaCoveNerdFontMono-Regular.woff2')
+		format('woff2');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Iosevka NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/IosevkaNerdFontMono-Regular.woff2')
+		format('woff2');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'UbuntuMono Nerd Font Mono';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/UbuntuMonoNerdFontMono-Regular.woff2')
+		format('woff2');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'ZedMono NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/ZedMonoNerdFontMono-Regular.woff2')
+		format('woff2');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
 @plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
@@ -37,14 +82,10 @@
 	--font-sans: 'Inter Variable', system-ui, -apple-system, sans-serif;
 	--font-mono: 'JetBrains Mono', ui-monospace, monospace;
 	--font-nerd: 'FiraCode Nerd Font Mono', ui-monospace, monospace;
+	--font-nerd--font-feature-settings: 'calt' 0, 'liga' 0;
 }
 
 @theme inline {
-	--color-terminal-dark: #1e1e2e;
-	--color-terminal-dark-fg: #cdd6f4;
-	--color-terminal-light: #fafafa;
-	--color-terminal-light-fg: #24292f;
-
 	--radius-sm: calc(var(--radius) - 4px);
 	--radius-md: calc(var(--radius) - 2px);
 	--radius-lg: var(--radius);
@@ -158,6 +199,14 @@
 	body {
 		@apply bg-background text-foreground;
 	}
+}
+
+@utility tch {
+	display: inline-block;
+	width: 1ch;
+	text-align: center;
+	overflow: visible;
+	vertical-align: top;
 }
 
 @media (prefers-reduced-motion: reduce) {
