@@ -28,6 +28,8 @@ const { values } = useForm({
 	initialValues: budgetConfig.value,
 })
 
+const amountStep = computed(() => (values.type === 'tokens' ? 1 : 0.01))
+
 watch(
 	values,
 	(newValues) => {
@@ -54,7 +56,7 @@ watch(
 	<div class="space-y-3 border-t border-border pt-3">
 		<h4 class="text-xs font-medium uppercase tracking-wide text-muted-foreground">Budget</h4>
 		<FormSelectField name="type" label="Budget Type" :options="BUDGET_TYPE_OPTIONS" />
-		<FormNumberField name="amount" label="Amount" :min="0" :step="0.01" />
+		<FormNumberField name="amount" label="Amount" :min="0" :step="amountStep" />
 		<FormNumberField
 			name="warningThreshold"
 			label="Warning Threshold"

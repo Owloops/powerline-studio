@@ -8,7 +8,7 @@ const props = defineProps<
 	}
 >()
 
-const { controlProps, labelProps, errorMessage, errorMessageProps, setValue, validate, isTouched } =
+const { controlProps, labelProps, errorMessage, errorMessageProps, setValue, validate, isTouched, fieldValue } =
 	useCustomField<string>(props)
 
 function onValueChange(value: string) {
@@ -22,7 +22,7 @@ function onValueChange(value: string) {
 		<label v-bind="labelProps" class="text-sm font-medium text-foreground">
 			{{ label }}
 		</label>
-		<Select v-bind="controlProps" @update:model-value="onValueChange">
+		<Select v-bind="controlProps" :model-value="fieldValue" @update:model-value="onValueChange">
 			<SelectTrigger>
 				<SelectValue :placeholder="placeholder ?? 'Select an option'" />
 			</SelectTrigger>

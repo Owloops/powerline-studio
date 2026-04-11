@@ -136,6 +136,7 @@ watch(
 							<component
 								v-if="segmentConfigMap[key]"
 								:is="segmentConfigMap[key]"
+								:key="`${key}-${editorStore.activeLineIndex}`"
 							/>
 						</template>
 					</SegmentRow>
