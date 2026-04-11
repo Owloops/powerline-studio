@@ -46,6 +46,11 @@
 }
 
 @theme inline {
+	--color-terminal-dark: #1e1e2e;
+	--color-terminal-dark-fg: #cdd6f4;
+	--color-terminal-light: #fafafa;
+	--color-terminal-light-fg: #24292f;
+
 	--radius-sm: calc(var(--radius) - 4px);
 	--radius-md: calc(var(--radius) - 2px);
 	--radius-lg: var(--radius);

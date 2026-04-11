@@ -4,6 +4,7 @@ import type { StudioPanel } from '@/types/studio'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import StudioTopBar from '@/components/studio/StudioTopBar.vue'
 import StudioSidebar from '@/components/studio/StudioSidebar.vue'
+import TerminalPreview from '@/components/studio/TerminalPreview.vue'
 import ThemePanel from '@/components/studio/panels/ThemePanel.vue'
 import StylePanel from '@/components/studio/panels/StylePanel.vue'
 import SegmentsPanel from '@/components/studio/panels/SegmentsPanel.vue'
@@ -16,6 +17,10 @@ definePage({
 })
 
 useHead({ title: 'Powerline Studio' })
+
+// Activate the rendering pipeline — watches config/mock/preview stores and
+// writes htmlOutput to previewStore reactively.
+useRenderer()
 
 const activePanel = ref<StudioPanel>('theme')
 
@@ -35,13 +40,9 @@ const panelComponents: Record<StudioPanel, Component> = {
 		<SidebarInset class="flex flex-col overflow-hidden">
 			<StudioTopBar />
 
-			<!-- Terminal Preview Region -->
-			<div
-				class="flex min-h-[120px] shrink-0 items-center justify-center border-b border-border bg-card px-4 py-6 font-nerd text-card-foreground"
-			>
-				<span class="text-sm text-muted-foreground">
-					Terminal preview &mdash; usr ~/project main
-				</span>
+			<!-- Terminal Preview -->
+			<div class="shrink-0 border-b border-border px-4 py-6">
+				<TerminalPreview />
 			</div>
 
 			<!-- Config Panel -->
