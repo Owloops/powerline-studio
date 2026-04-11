@@ -206,21 +206,21 @@ export const useConfigStore = defineStore('config', () => {
 	}
 
 	function addLine() {
+		if (config.value.display.lines.length >= 5) return
 		const newLine: LineConfig = {
-			segments: structuredClone(SEGMENT_DEFAULTS),
+			segments: {
+				directory: { enabled: true, style: 'basename' },
+				model: { enabled: true },
+			},
 		}
 		config.value.display.lines.push(newLine)
 	}
 
 	function removeLine(lineIndex: number) {
+		if (lineIndex === 0) return
+		if (lineIndex < 0 || lineIndex >= config.value.display.lines.length) return
 		if (config.value.display.lines.length <= 1) return
 		config.value.display.lines.splice(lineIndex, 1)
-
-		// Clamp editor's activeLineIndex to valid range
-		const editorStore = useEditorStore()
-		editorStore.setActiveLineIndex(
-			Math.min(editorStore.activeLineIndex, config.value.display.lines.length - 1),
-		)
 	}
 
 	// --- TUI Actions ---
