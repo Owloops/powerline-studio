@@ -1,4 +1,4 @@
-import { computed, reactive, watch } from 'vue'
+import { computed, reactive, toRaw, watch } from 'vue'
 import { defineStore } from 'pinia'
 import type {
 	PowerlineConfig,
@@ -15,7 +15,7 @@ import { DEFAULT_CONFIG } from '@owloops/claude-powerline/browser'
 import { deepMerge } from './utils'
 import { useEditorStore } from './editor'
 import { normalizeSegments } from '@/components/studio/segments/segmentMeta'
-import type { CanonicalTheme, ThemeEditorState } from '@/lib/themes'
+import type { CanonicalTheme, ThemeEditorState, SavedCustomTheme } from '@/lib/themes'
 import type { TuiPreset } from '@/lib/tuiPresets'
 import {
 	CANONICAL_THEMES,
@@ -567,6 +567,35 @@ export const useConfigStore = defineStore('config', () => {
 		themeEditor.customSourceSnapshot = fresh.customSourceSnapshot
 	}
 
+	// --- Saved Custom Themes ---
+
+	const savedCustomThemes = useStorage<SavedCustomTheme[]>('powerline-studio-custom-themes', [])
+
+	function saveCustomTheme(name: string) {
+		if (!themeEditor.customDraft) return
+		const id = `custom-${Date.now()}`
+		savedCustomThemes.value.push({
+			id,
+			name,
+			colors: structuredClone(toRaw(themeEditor.customDraft)),
+			createdAt: Date.now(),
+		})
+		return id
+	}
+
+	function deleteCustomTheme(id: string) {
+		const index = savedCustomThemes.value.findIndex((t) => t.id === id)
+		if (index !== -1) {
+			savedCustomThemes.value.splice(index, 1)
+		}
+	}
+
+	function loadSavedCustomTheme(saved: SavedCustomTheme) {
+		themeEditor.customDraft = structuredClone(saved.colors)
+		themeEditor.customSourceSnapshot = structuredClone(saved.colors)
+		themeEditor.mode = 'custom'
+	}
+
 	const effectiveColors = computed<ColorTheme>(() => {
 		if (themeEditor.mode === 'custom') {
 			return themeEditor.customDraft ?? getCanonicalThemeColors('dark')
@@ -714,5 +743,10 @@ export const useConfigStore = defineStore('config', () => {
 		updateCustomColor,
 		setColorOverride,
 		resetSegmentOverride,
+		// Saved custom themes
+		savedCustomThemes,
+		saveCustomTheme,
+		deleteCustomTheme,
+		loadSavedCustomTheme,
 	}
 })

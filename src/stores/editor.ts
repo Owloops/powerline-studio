@@ -1,7 +1,7 @@
 import { ref, computed, reactive, watch } from 'vue'
 import { defineStore } from 'pinia'
 
-export type SidebarPanel = 'theme' | 'style' | 'segments' | 'tui' | 'mockData' | 'export'
+export type SidebarPanel = 'appearance' | 'segments' | 'tui' | 'mockData' | 'export'
 
 export const useEditorStore = defineStore('editor', () => {
 	const selectedSegment = ref<string | null>(null)

@@ -1,6 +1,6 @@
 import type { Component } from 'vue'
 
-export type StudioPanel = 'theme' | 'style' | 'segments' | 'tui' | 'mockData' | 'export'
+export type StudioPanel = 'appearance' | 'segments' | 'tui' | 'mockData' | 'export'
 
 export interface SidebarNavItem {
 	id: StudioPanel

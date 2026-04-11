@@ -12,7 +12,6 @@ import {
 	useSidebar,
 } from '@/components/ui/sidebar'
 import IconPalette from '~icons/lucide/palette'
-import IconPenTool from '~icons/lucide/pen-tool'
 import IconLayoutList from '~icons/lucide/layout-list'
 import IconGrid3x3 from '~icons/lucide/grid-3x3'
 import IconDatabase from '~icons/lucide/database'
@@ -23,8 +22,7 @@ const activePanel = defineModel<StudioPanel>('activePanel', { required: true })
 const { isMobile, setOpenMobile } = useSidebar()
 
 const navItems: SidebarNavItem[] = [
-	{ id: 'theme', label: 'Theme', icon: IconPalette },
-	{ id: 'style', label: 'Style', icon: IconPenTool },
+	{ id: 'appearance', label: 'Appearance', icon: IconPalette },
 	{ id: 'segments', label: 'Segments', icon: IconLayoutList },
 	{ id: 'tui', label: 'TUI Layout', icon: IconGrid3x3 },
 	{ id: 'mockData', label: 'Mock Data', icon: IconDatabase },

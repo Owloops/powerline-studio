@@ -6,8 +6,7 @@ import StudioTopBar from '@/components/studio/StudioTopBar.vue'
 import StudioSidebar from '@/components/studio/StudioSidebar.vue'
 import TerminalPreview from '@/components/studio/TerminalPreview.vue'
 import PreviewControls from '@/components/studio/PreviewControls.vue'
-import ThemePanel from '@/components/studio/panels/ThemePanel.vue'
-import StylePanel from '@/components/studio/panels/StylePanel.vue'
+import AppearancePanel from '@/components/studio/panels/AppearancePanel.vue'
 import SegmentsPanel from '@/components/studio/panels/SegmentsPanel.vue'
 import TuiLayoutPanel from '@/components/studio/panels/TuiLayoutPanel.vue'
 import MockDataPanel from '@/components/studio/panels/MockDataPanel.vue'
@@ -35,8 +34,7 @@ watch(activePanel, (panel) => {
 })
 
 const panelComponents: Record<StudioPanel, Component> = {
-	theme: ThemePanel,
-	style: StylePanel,
+	appearance: AppearancePanel,
 	segments: SegmentsPanel,
 	tui: TuiLayoutPanel,
 	mockData: MockDataPanel,
@@ -52,8 +50,8 @@ const panelComponents: Record<StudioPanel, Component> = {
 
 			<!-- Terminal Preview -->
 			<div class="shrink-0 border-b border-border">
-				<div class="px-4 py-6">
-					<TerminalPreview />
+				<div class="overflow-x-auto px-4 py-6">
+					<TerminalPreview class="mx-auto" />
 				</div>
 				<PreviewControls />
 			</div>

@@ -57,6 +57,13 @@ export interface ThemeEditorState {
 	customSourceSnapshot: ColorTheme | null
 }
 
+export interface SavedCustomTheme {
+	id: string
+	name: string
+	colors: ColorTheme
+	createdAt: number
+}
+
 export function getCanonicalThemeColors(theme: CanonicalTheme): ColorTheme {
 	return BUILT_IN_THEMES[theme]!
 }

@@ -20,8 +20,9 @@ const segments = [
 	<button
 		:class="
 			cn(
-				'flex cursor-pointer flex-col gap-2 rounded-xl border bg-card p-3 text-left text-card-foreground shadow-sm transition-all outline-none',
+				'flex cursor-pointer flex-col gap-2 rounded-xl border bg-card p-3 text-left text-card-foreground shadow-sm outline-none',
 				'hover:bg-accent/50',
+				'transition-[background-color,border-color,box-shadow] duration-150',
 				'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
 				'data-[state=checked]:border-primary data-[state=checked]:ring-primary/20 data-[state=checked]:ring-2 data-[state=checked]:bg-primary/5',
 				$attrs.class as HTMLAttributes['class'],
@@ -79,20 +80,12 @@ const segments = [
 
 			<!-- TUI: box-drawing character panel -->
 			<template v-else-if="value === 'tui'">
-				<div class="flex flex-col text-[#cdd6f4]">
-					<div>
-						&#x256D;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x256E;
-					</div>
-					<div>
-						&#x2502;<span :style="{ color: '#3b82f6' }">~/proj </span>&#x2502;<span
-							:style="{ color: '#22c55e' }"
-							>main </span
-						>&#x2502;
-					</div>
-					<div>
-						&#x2570;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x256F;
-					</div>
-				</div>
+				<pre
+					class="text-[#cdd6f4] leading-none"
+					style="font-family: inherit"
+				>&#x256D;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x256E;
+&#x2502;<span :style="{ color: '#3b82f6' }">~/proj </span>&#x2502;<span :style="{ color: '#22c55e' }">main </span>&#x2502;
+&#x2570;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x256F;</pre>
 			</template>
 		</div>
 	</button>

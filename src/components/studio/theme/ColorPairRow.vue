@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
-import ColorSwatch from './ColorSwatch.vue'
+import ColorInput from './ColorInput.vue'
 
 defineProps<{
 	label: string
@@ -18,19 +18,19 @@ const emit = defineEmits<{
 </script>
 
 <template>
-	<div class="grid grid-cols-[1fr_auto_auto_auto] items-center gap-2">
+	<div class="grid grid-cols-[120px_1fr_1fr_auto] items-center gap-2">
 		<span
-			class="text-sm"
+			class="truncate text-xs"
 			:class="isOverridden ? 'font-medium text-foreground' : 'text-muted-foreground'"
 		>
 			{{ label }}
 		</span>
-		<ColorSwatch
+		<ColorInput
 			:color="bg"
 			:label="`${label} background`"
 			@update:color="emit('update:bg', $event)"
 		/>
-		<ColorSwatch
+		<ColorInput
 			:color="fg"
 			:label="`${label} foreground`"
 			@update:color="emit('update:fg', $event)"
