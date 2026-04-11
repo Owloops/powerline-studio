@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { toast } from 'vue-sonner'
 import { useShikiHighlighter } from '@/composables/useShikiHighlighter'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 
 const configStore = useConfigStore()
 
@@ -11,7 +10,6 @@ const INSTALL_COMMAND = 'npm install -g @owloops/claude-powerline'
 const CONFIG_PATH = '~/.claude/claude-powerline.json'
 const SETTINGS_SNIPPET = '{ "statusLine": { "command": "claude-powerline" } }'
 
-// Each copy button gets its own useClipboard instance to isolate `copied` state
 const jsonClipboard = useClipboard({ legacy: true })
 const installClipboard = useClipboard({ legacy: true })
 const pathClipboard = useClipboard({ legacy: true })
@@ -37,91 +35,82 @@ async function copySnippet(clipboard: typeof jsonClipboard, text: string) {
 </script>
 
 <template>
-	<div class="flex flex-col gap-4">
-		<!-- JSON Output -->
-		<div class="relative">
+	<div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+		<!-- Your Config -->
+		<section class="flex flex-col gap-3">
+			<div class="flex items-center justify-between">
+				<h3 class="text-sm font-medium">Your Config</h3>
+				<Button variant="outline" size="sm" @click="copyJson">
+					<IconLucide-clipboard v-if="!jsonClipboard.copied.value" class="size-3.5" />
+					<IconLucide-check v-else class="size-3.5 text-primary" />
+					{{ jsonClipboard.copied.value ? 'Copied!' : 'Copy JSON' }}
+				</Button>
+			</div>
 			<div
 				v-if="!isLoading"
 				v-html="html"
-				class="max-h-100 overflow-auto rounded-md border bg-muted/30 p-4 text-sm [&_pre]:!bg-transparent [&_pre]:!p-0 [&_code]:text-xs"
+				class="max-h-120 overflow-auto rounded-md border p-4 text-sm [&_pre]:!bg-transparent [&_pre]:!p-0 [&_code]:text-xs"
 			/>
 			<pre
 				v-else
-				class="max-h-100 overflow-auto rounded-md border bg-muted/30 p-4 text-xs text-muted-foreground"
-			>{{ configStore.configJson }}</pre>
-		</div>
+				class="max-h-120 overflow-auto rounded-md border p-4 text-xs text-muted-foreground"
+				>{{ configStore.configJson }}</pre
+			>
+		</section>
 
-		<!-- Copy JSON Button -->
-		<Button
-			variant="outline"
-			size="sm"
-			class="w-full"
-			@click="copyJson"
-		>
-			<IconLucide-clipboard v-if="!jsonClipboard.copied.value" class="size-4" />
-			<IconLucide-check v-else class="size-4 text-primary" />
-			{{ jsonClipboard.copied.value ? 'Copied!' : 'Copy JSON' }}
-		</Button>
+		<!-- Installation -->
+		<section class="flex flex-col gap-3">
+			<h3 class="text-sm font-medium">Installation</h3>
 
-		<!-- Installation Instructions -->
-		<Collapsible>
-			<CollapsibleTrigger as-child>
-				<Button variant="ghost" size="sm" class="w-full justify-between">
-					Installation Instructions
-					<IconLucide-chevron-down class="size-4 transition-transform [[data-state=open]_&]:rotate-180" />
-				</Button>
-			</CollapsibleTrigger>
-			<CollapsibleContent>
-				<div class="flex flex-col gap-3 pt-2">
-					<!-- Install command -->
-					<div class="space-y-1">
-						<p class="text-xs font-medium text-muted-foreground">Install</p>
-						<div class="flex items-center gap-2">
-							<code class="flex-1 rounded bg-muted px-2 py-1 text-xs">{{ INSTALL_COMMAND }}</code>
-							<Button
-								variant="ghost"
-								size="icon-sm"
-								@click="copySnippet(installClipboard, INSTALL_COMMAND)"
-							>
-								<IconLucide-clipboard v-if="!installClipboard.copied.value" class="size-3" />
-								<IconLucide-check v-else class="size-3 text-primary" />
-							</Button>
-						</div>
+			<ol class="flex flex-col gap-4 text-sm text-muted-foreground">
+				<!-- Step 1 -->
+				<li class="flex flex-col gap-1.5">
+					<span class="font-medium text-foreground">1. Install the package</span>
+					<div class="flex items-center gap-2">
+						<code class="flex-1 rounded-md border px-3 py-1.5 text-xs">{{ INSTALL_COMMAND }}</code>
+						<Button
+							variant="ghost"
+							size="icon-sm"
+							@click="copySnippet(installClipboard, INSTALL_COMMAND)"
+						>
+							<IconLucide-clipboard v-if="!installClipboard.copied.value" class="size-3.5" />
+							<IconLucide-check v-else class="size-3.5 text-primary" />
+						</Button>
 					</div>
+				</li>
 
-					<!-- Config file path -->
-					<div class="space-y-1">
-						<p class="text-xs font-medium text-muted-foreground">Save config to</p>
-						<div class="flex items-center gap-2">
-							<code class="flex-1 rounded bg-muted px-2 py-1 text-xs">{{ CONFIG_PATH }}</code>
-							<Button
-								variant="ghost"
-								size="icon-sm"
-								@click="copySnippet(pathClipboard, CONFIG_PATH)"
-							>
-								<IconLucide-clipboard v-if="!pathClipboard.copied.value" class="size-3" />
-								<IconLucide-check v-else class="size-3 text-primary" />
-							</Button>
-						</div>
+				<!-- Step 2 -->
+				<li class="flex flex-col gap-1.5">
+					<span class="font-medium text-foreground">2. Save config to file</span>
+					<p class="text-xs">Copy the JSON and save it to:</p>
+					<div class="flex items-center gap-2">
+						<code class="flex-1 rounded-md border px-3 py-1.5 text-xs">{{ CONFIG_PATH }}</code>
+						<Button variant="ghost" size="icon-sm" @click="copySnippet(pathClipboard, CONFIG_PATH)">
+							<IconLucide-clipboard v-if="!pathClipboard.copied.value" class="size-3.5" />
+							<IconLucide-check v-else class="size-3.5 text-primary" />
+						</Button>
 					</div>
+				</li>
 
-					<!-- settings.json snippet -->
-					<div class="space-y-1">
-						<p class="text-xs font-medium text-muted-foreground">Add to settings.json</p>
-						<div class="flex items-center gap-2">
-							<code class="flex-1 rounded bg-muted px-2 py-1 text-xs">{{ SETTINGS_SNIPPET }}</code>
-							<Button
-								variant="ghost"
-								size="icon-sm"
-								@click="copySnippet(settingsClipboard, SETTINGS_SNIPPET)"
-							>
-								<IconLucide-clipboard v-if="!settingsClipboard.copied.value" class="size-3" />
-								<IconLucide-check v-else class="size-3 text-primary" />
-							</Button>
-						</div>
+				<!-- Step 3 -->
+				<li class="flex flex-col gap-1.5">
+					<span class="font-medium text-foreground">3. Enable in Claude Code</span>
+					<p class="text-xs">
+						Add this to your Claude Code <code class="rounded bg-muted px-1">settings.json</code>:
+					</p>
+					<div class="flex items-center gap-2">
+						<code class="flex-1 rounded-md border px-3 py-1.5 text-xs">{{ SETTINGS_SNIPPET }}</code>
+						<Button
+							variant="ghost"
+							size="icon-sm"
+							@click="copySnippet(settingsClipboard, SETTINGS_SNIPPET)"
+						>
+							<IconLucide-clipboard v-if="!settingsClipboard.copied.value" class="size-3.5" />
+							<IconLucide-check v-else class="size-3.5 text-primary" />
+						</Button>
 					</div>
-				</div>
-			</CollapsibleContent>
-		</Collapsible>
+				</li>
+			</ol>
+		</section>
 	</div>
 </template>

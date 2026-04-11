@@ -16,7 +16,7 @@ import IconPenTool from '~icons/lucide/pen-tool'
 import IconLayoutList from '~icons/lucide/layout-list'
 import IconGrid3x3 from '~icons/lucide/grid-3x3'
 import IconDatabase from '~icons/lucide/database'
-import IconDownload from '~icons/lucide/download'
+import IconArrowLeftRight from '~icons/lucide/arrow-left-right'
 
 const activePanel = defineModel<StudioPanel>('activePanel', { required: true })
 
@@ -28,7 +28,7 @@ const navItems: SidebarNavItem[] = [
 	{ id: 'segments', label: 'Segments', icon: IconLayoutList },
 	{ id: 'tui', label: 'TUI Layout', icon: IconGrid3x3 },
 	{ id: 'mockData', label: 'Mock Data', icon: IconDatabase },
-	{ id: 'export', label: 'Export', icon: IconDownload },
+	{ id: 'export', label: 'Export & Import', icon: IconArrowLeftRight },
 ]
 
 function selectPanel(id: StudioPanel) {

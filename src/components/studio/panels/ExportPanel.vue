@@ -14,30 +14,29 @@ function resetToDefaults() {
 
 <template>
 	<div class="flex h-full flex-col">
-		<Tabs default-value="export" class="flex-1">
-			<TabsList class="w-full">
-				<TabsTrigger value="export" class="flex-1">
-					Export
-				</TabsTrigger>
-				<TabsTrigger value="import" class="flex-1">
-					Import
-				</TabsTrigger>
-			</TabsList>
-			<TabsContent value="export" class="p-1">
-				<ExportTab />
-			</TabsContent>
-			<TabsContent value="import" class="p-1">
-				<ImportTab />
-			</TabsContent>
-		</Tabs>
+		<div class="flex-1 p-4">
+			<Tabs default-value="export">
+				<TabsList>
+					<TabsTrigger value="export">
+						<IconLucide-download class="size-3.5" />
+						Export
+					</TabsTrigger>
+					<TabsTrigger value="import">
+						<IconLucide-upload class="size-3.5" />
+						Import
+					</TabsTrigger>
+				</TabsList>
+				<TabsContent value="export" class="pt-4">
+					<ExportTab />
+				</TabsContent>
+				<TabsContent value="import" class="pt-4">
+					<ImportTab />
+				</TabsContent>
+			</Tabs>
+		</div>
 
-		<div class="border-t p-3">
-			<Button
-				variant="destructive"
-				size="sm"
-				class="w-full"
-				@click="resetToDefaults"
-			>
+		<div class="border-t p-4">
+			<Button variant="destructive" size="sm" class="w-full" @click="resetToDefaults">
 				<IconLucide-rotate-ccw class="size-4" />
 				Reset to Defaults
 			</Button>

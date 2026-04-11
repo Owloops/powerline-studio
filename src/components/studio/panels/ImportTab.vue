@@ -7,7 +7,6 @@ const configStore = useConfigStore()
 const textareaValue = ref('')
 const errorMessage = ref('')
 
-// Clear error when user modifies textarea
 watch(textareaValue, () => {
 	if (errorMessage.value) {
 		errorMessage.value = ''
@@ -48,16 +47,25 @@ function loadConfig() {
 		textareaValue.value = ''
 		errorMessage.value = ''
 	} catch (e) {
-		errorMessage.value = e instanceof SyntaxError ? `Invalid JSON: ${e.message}` : 'Failed to parse config.'
+		errorMessage.value =
+			e instanceof SyntaxError ? `Invalid JSON: ${e.message}` : 'Failed to parse config.'
 	}
 }
 </script>
 
 <template>
 	<div class="flex flex-col gap-4">
+		<div class="flex flex-col gap-1.5">
+			<h3 class="text-sm font-medium">Import Config</h3>
+			<p class="text-xs text-muted-foreground">
+				Paste an existing <code class="rounded bg-muted px-1">claude-powerline.json</code> config to
+				load it into the editor.
+			</p>
+		</div>
+
 		<Textarea
 			v-model="textareaValue"
-			placeholder="Paste your claude-powerline.json config here..."
+			placeholder='{ "theme": "dark", "display": { ... } }'
 			class="min-h-48 font-mono text-xs"
 		/>
 
