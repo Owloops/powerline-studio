@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { defineStore } from 'pinia'
 import type {
 	PowerlineConfig,
@@ -68,7 +68,15 @@ export const SEGMENT_DEFAULTS: Required<LineConfig['segments']> = {
 }
 
 export const useConfigStore = defineStore('config', () => {
-	const config = ref<PowerlineConfig>(structuredClone(DEFAULT_CONFIG))
+	const config = useStorage<PowerlineConfig>(
+		'powerline-studio-config',
+		structuredClone(DEFAULT_CONFIG),
+		undefined,
+		{
+			mergeDefaults: (stored, defaults) => deepMerge(defaults, stored),
+			initOnMounted: true,
+		},
+	)
 
 	// --- Computed ---
 
@@ -220,6 +228,10 @@ export const useConfigStore = defineStore('config', () => {
 		config.value = deepMerge(structuredClone(DEFAULT_CONFIG), partial as PowerlineConfig)
 	}
 
+	function resetToDefaults() {
+		config.value = structuredClone(DEFAULT_CONFIG)
+	}
+
 	function $reset() {
 		config.value = structuredClone(DEFAULT_CONFIG)
 	}
@@ -248,6 +260,7 @@ export const useConfigStore = defineStore('config', () => {
 		setModelContextLimit,
 		setCustomColors,
 		loadConfig,
+		resetToDefaults,
 		$reset,
 	}
 })
