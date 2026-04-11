@@ -15,9 +15,12 @@ export const useEditorStore = defineStore('editor', () => {
 
 	// --- Mutations ---
 
-	function selectSegment(name: string) {
+	function selectSegment(name: string, sourceLineIndex?: number) {
 		selectedSegment.value = name
 		activePanel.value = 'segments'
+		if (sourceLineIndex !== undefined) {
+			activeLineIndex.value = sourceLineIndex
+		}
 	}
 
 	function clearSelection() {

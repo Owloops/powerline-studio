@@ -1,6 +1,7 @@
-import { ref, computed } from 'vue'
+import { ref, shallowRef, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { useConfigStore } from './config'
+import type { SegmentHitbox } from '@/lib/segmentHitboxes'
 
 export const usePreviewStore = defineStore('preview', () => {
 	const configStore = useConfigStore()
@@ -12,6 +13,7 @@ export const usePreviewStore = defineStore('preview', () => {
 	const darkBackground = ref(true)
 	const ansiOutput = ref('')
 	const htmlOutput = ref('')
+	const segmentHitboxes = shallowRef<SegmentHitbox[]>([])
 
 	// --- Computed ---
 
@@ -31,14 +33,22 @@ export const usePreviewStore = defineStore('preview', () => {
 		darkBackground.value = !darkBackground.value
 	}
 
-	function setRenderedOutput(ansi: string, html: string) {
+	function setRenderedOutput(ansi: string, html: string, hitboxes?: SegmentHitbox[]) {
 		ansiOutput.value = ansi
 		htmlOutput.value = html
+		if (hitboxes) {
+			segmentHitboxes.value = hitboxes
+		}
+	}
+
+	function setSegmentHitboxes(hitboxes: SegmentHitbox[]) {
+		segmentHitboxes.value = hitboxes
 	}
 
 	function clearOutput() {
 		ansiOutput.value = ''
 		htmlOutput.value = ''
+		segmentHitboxes.value = []
 	}
 
 	return {
@@ -47,6 +57,7 @@ export const usePreviewStore = defineStore('preview', () => {
 		darkBackground,
 		ansiOutput,
 		htmlOutput,
+		segmentHitboxes,
 		// Computed
 		charset,
 		// Mutations
@@ -54,6 +65,7 @@ export const usePreviewStore = defineStore('preview', () => {
 		setColorMode,
 		toggleBackground,
 		setRenderedOutput,
+		setSegmentHitboxes,
 		clearOutput,
 	}
 })

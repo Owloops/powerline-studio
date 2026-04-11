@@ -2,6 +2,8 @@ import { AnsiUp } from 'ansi_up'
 import { useConfigStore } from '@/stores/config'
 import { useMockDataStore } from '@/stores/mockData'
 import { usePreviewStore } from '@/stores/preview'
+import type { SegmentHitbox, NonTuiStyle } from '@/lib/segmentHitboxes'
+import { calculateHitboxWidth, extractTuiHitboxes } from '@/lib/segmentHitboxes'
 import type {
 	PowerlineConfig,
 	PowerlineColors,
@@ -45,6 +47,19 @@ import {
 	RESET_CODE,
 	BOX_CHARS,
 	BOX_CHARS_TEXT,
+	BOX_PRESETS,
+	parseAreas,
+	cullMatrix,
+	calculateColumnWidths,
+	selectBreakpoint,
+	solveFitContentLayout,
+	LATE_RESOLVE_SEGMENTS,
+	resolveSegments,
+	buildContextLine,
+	buildContextBar,
+	buildBlockBar,
+	buildWeeklyBar,
+	composeTemplate,
 } from '@owloops/claude-powerline/browser'
 
 // ---------------------------------------------------------------------------
@@ -288,25 +303,6 @@ function buildLineFromSegments(
 	return line
 }
 
-function calculateSegmentWidth(
-	segment: RenderedSegment,
-	isFirst: boolean,
-	config: PowerlineConfig,
-): number {
-	const isCapsuleStyle = config.display.style === 'capsule'
-	const textWidth = visibleLength(segment.text)
-	const padding = config.display.padding ?? 1
-	const paddingWidth = padding * 2
-
-	if (isCapsuleStyle) {
-		const capsuleOverhead = 2 + paddingWidth + (isFirst ? 0 : 1)
-		return textWidth + capsuleOverhead
-	}
-
-	const powerlineOverhead = 1 + paddingWidth
-	return textWidth + powerlineOverhead
-}
-
 // eslint-disable-next-line no-control-regex
 const SYNC_RE = /\x1b\[\?2026[hl]/g
 // eslint-disable-next-line no-control-regex
@@ -314,6 +310,156 @@ const WS_GUARD_RE = /^\x1b\[0m/gm
 
 function stripControlSequences(ansi: string): string {
 	return ansi.replace(SYNC_RE, '').replace(WS_GUARD_RE, '')
+}
+
+// ---------------------------------------------------------------------------
+// TUI hitbox computation (mirrors grid logic to extract matrix + colWidths)
+// ---------------------------------------------------------------------------
+
+function computeTuiHitboxes(
+	config: PowerlineConfig,
+	tuiData: TuiData,
+	box: BoxChars,
+	rawTerminalWidth: number,
+): SegmentHitbox[] {
+	const gridConfig = config.display.tui
+	if (!gridConfig) return []
+
+	const sym = (config.display.charset || 'unicode') === 'text' ? TEXT_SYMBOLS : SYMBOLS
+	const colors = tuiData.colors
+	const reset = colors.reset
+
+	// Resolve box characters (same logic as renderTuiPanel)
+	let mergedBox: BoxChars
+	if (typeof gridConfig.box === 'string') {
+		mergedBox = BOX_PRESETS[gridConfig.box as keyof typeof BOX_PRESETS] ?? box
+	} else {
+		mergedBox = gridConfig.box ? { ...box, ...gridConfig.box } : box
+	}
+
+	const minWidth = gridConfig.minWidth ?? 32
+	const maxWidth = gridConfig.maxWidth ?? Infinity
+	const colSep = gridConfig.separator?.column ?? '  '
+	const sepWidth = visibleLength(colSep)
+	const fitContent = gridConfig.fitContent ?? false
+	const hPad = gridConfig.padding?.horizontal ?? 0
+
+	// Estimate panel width for segment resolution
+	const estPanelWidth = Math.max(minWidth, rawTerminalWidth - (gridConfig.widthReserve ?? 45))
+	const estInnerWidth = estPanelWidth - 2
+	const estContentWidth = estInnerWidth - 2
+
+	const ctx = {
+		lines: [] as string[],
+		data: tuiData,
+		box: mergedBox,
+		contentWidth: estContentWidth,
+		innerWidth: estInnerWidth,
+		sym,
+		config,
+		reset,
+		colors,
+	}
+	const resolved = resolveSegments(tuiData, ctx)
+	const resolvedData = resolved.data
+	const templates = resolved.templates
+
+	// Select panel width for breakpoint
+	let panelWidth: number
+	if (fitContent) {
+		panelWidth = maxWidth !== Infinity ? Math.min(rawTerminalWidth, maxWidth) : rawTerminalWidth
+	} else {
+		const widthReserve = gridConfig.widthReserve ?? 45
+		panelWidth = Math.min(maxWidth, Math.max(minWidth, rawTerminalWidth - widthReserve))
+	}
+
+	const bp = selectBreakpoint(gridConfig.breakpoints, panelWidth)
+	const rawMatrix = parseAreas(bp.areas)
+	let matrix = cullMatrix(rawMatrix, resolvedData)
+
+	if (matrix.length === 0) return []
+
+	// Collect late-resolve segment names
+	const lateNames = new Set(LATE_RESOLVE_SEGMENTS)
+	if (gridConfig.segments) {
+		for (const key of Object.keys(gridConfig.segments)) {
+			lateNames.add(key)
+		}
+	}
+
+	let colWidths: number[]
+
+	if (fitContent) {
+		const solved = solveFitContentLayout(
+			bp.columns,
+			matrix,
+			resolvedData,
+			sepWidth,
+			hPad,
+			lateNames,
+		)
+		panelWidth = Math.min(maxWidth, Math.max(minWidth, solved.panelWidth))
+		colWidths = solved.colWidths
+	} else {
+		const innerW = panelWidth - 2
+		const contentW = innerW - 2
+		colWidths = calculateColumnWidths(
+			bp.columns,
+			matrix,
+			resolvedData,
+			contentW,
+			sepWidth,
+			lateNames,
+		)
+	}
+
+	// Late-resolve pass (re-resolve width-dependent segments)
+	const pf = colors.partFg
+	const seen = new Set<string>()
+	for (const row of matrix) {
+		if (row.length === 1 && row[0]!.segment === '---') continue
+		for (let i = 0; i < row.length; i++) {
+			const cell = row[i]!
+			if (!cell.spanStart || cell.segment === '.' || cell.segment === '---') continue
+			if (seen.has(cell.segment)) continue
+			seen.add(cell.segment)
+
+			let cellWidth = 0
+			for (let j = 0; j < cell.spanSize; j++) {
+				cellWidth += colWidths[i + j] ?? 0
+			}
+			if (cell.spanSize > 1) {
+				cellWidth += (cell.spanSize - 1) * sepWidth
+			}
+
+			let content: string | undefined
+			if (cell.segment === 'context') {
+				content = buildContextLine(tuiData, cellWidth, sym, reset, colors) ?? ''
+			} else if (cell.segment === 'context.bar') {
+				content = buildContextBar(tuiData, cellWidth, sym, reset, colors, pf)
+			} else if (cell.segment === 'block.bar') {
+				content = buildBlockBar(tuiData, cellWidth, sym, reset, colors, config, pf)
+			} else if (cell.segment === 'weekly.bar') {
+				content = buildWeeklyBar(tuiData, cellWidth, sym, reset, colors, pf)
+			} else {
+				const tmpl = templates[cell.segment]
+				if (tmpl) {
+					content = composeTemplate(tmpl.items, tmpl.gap, tmpl.justify, cellWidth)
+				}
+			}
+
+			if (content !== undefined) {
+				resolvedData[cell.segment] = content
+			}
+		}
+	}
+
+	// Post-lateResolve re-cull
+	const finalMatrix = cullMatrix(matrix, resolvedData)
+	if (finalMatrix.length === 0) return []
+
+	// Has title bar: grid path always generates a title bar
+	return extractTuiHitboxes(finalMatrix, colWidths, sepWidth, true)
 }
 
 // ---------------------------------------------------------------------------
@@ -350,6 +496,7 @@ export function useRenderer() {
 
 			const colors = resolveThemeColors(config, colorMode, darkBg)
 			let ansi: string
+			let hitboxes: SegmentHitbox[] = []
 
 			if (config.display.style === 'tui') {
 				// --- TUI path ---
@@ -373,6 +520,11 @@ export function useRenderer() {
 				}
 
 				ansi = await renderTuiPanel(tuiData, boxChars, colors.reset, terminalWidth, config)
+
+				// Compute TUI hitboxes from grid data
+				if (config.display.tui) {
+					hitboxes = computeTuiHitboxes(config, tuiData, boxChars, terminalWidth)
+				}
 			} else {
 				// --- Non-TUI path (minimal / powerline / capsule) ---
 				const symbols = resolveSymbols(config)
@@ -387,8 +539,17 @@ export function useRenderer() {
 				const tmuxSessionId = mockDataStore.tmuxSessionId
 
 				const outputLines: string[] = []
+				hitboxes = []
+				let outputLineIndex = 0
+				const style = config.display.style as NonTuiStyle
+				const padding = config.display.padding ?? 1
 
-				for (const lineConfig of config.display.lines) {
+				for (
+					let sourceLineIndex = 0;
+					sourceLineIndex < config.display.lines.length;
+					sourceLineIndex++
+				) {
+					const lineConfig = config.display.lines[sourceLineIndex]!
 					const segments = (
 						Object.entries(lineConfig.segments) as [string, AnySegmentConfig | undefined][]
 					)
@@ -430,38 +591,72 @@ export function useRenderer() {
 						// Auto-wrap: split across lines when too wide
 						let currentLineSegments: RenderedSegment[] = []
 						let currentLineWidth = 0
+						let charStart = 0
 
 						for (const segment of renderedSegments) {
-							const segmentWidth = calculateSegmentWidth(
-								segment,
-								currentLineSegments.length === 0,
-								config,
-							)
+							const textWidth = visibleLength(segment.text)
+							const isFirst = currentLineSegments.length === 0
+							const segmentWidth = calculateHitboxWidth(textWidth, padding, style, isFirst)
 
-							if (
-								currentLineSegments.length > 0 &&
-								currentLineWidth + segmentWidth > terminalWidth
-							) {
+							if (!isFirst && currentLineWidth + segmentWidth > terminalWidth) {
 								outputLines.push(
 									buildLineFromSegments(currentLineSegments, colors, config, symbols, colorMode),
 								)
+								outputLineIndex++
 								currentLineSegments = []
 								currentLineWidth = 0
+								charStart = 0
 							}
 
+							// Recalculate width for the actual position (isFirst may change after wrap)
+							const actualWidth = calculateHitboxWidth(
+								textWidth,
+								padding,
+								style,
+								currentLineSegments.length === 0,
+							)
+
+							hitboxes.push({
+								segmentType: segment.type,
+								line: outputLineIndex,
+								charStart,
+								charWidth: actualWidth,
+								sourceLineIndex,
+							})
+
 							currentLineSegments.push(segment)
-							currentLineWidth += segmentWidth
+							charStart += actualWidth
+							currentLineWidth += actualWidth
 						}
 
 						if (currentLineSegments.length > 0) {
 							outputLines.push(
 								buildLineFromSegments(currentLineSegments, colors, config, symbols, colorMode),
 							)
+							outputLineIndex++
 						}
 					} else {
+						let charStart = 0
+						for (let i = 0; i < renderedSegments.length; i++) {
+							const segment = renderedSegments[i]!
+							const textWidth = visibleLength(segment.text)
+							const segWidth = calculateHitboxWidth(textWidth, padding, style, i === 0)
+
+							hitboxes.push({
+								segmentType: segment.type,
+								line: outputLineIndex,
+								charStart,
+								charWidth: segWidth,
+								sourceLineIndex,
+							})
+
+							charStart += segWidth
+						}
+
 						outputLines.push(
 							buildLineFromSegments(renderedSegments, colors, config, symbols, colorMode),
 						)
+						outputLineIndex++
 					}
 				}
 
@@ -473,7 +668,7 @@ export function useRenderer() {
 			const cleanAnsi = stripControlSequences(ansi)
 			const html = ansiUp.ansi_to_html(cleanAnsi)
 
-			previewStore.setRenderedOutput(cleanAnsi, html)
+			previewStore.setRenderedOutput(cleanAnsi, html, hitboxes)
 		} catch (e) {
 			if (token !== renderToken) return
 			renderError.value = e instanceof Error ? e.message : String(e)

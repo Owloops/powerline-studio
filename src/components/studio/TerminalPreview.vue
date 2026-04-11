@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
+import SegmentOverlay from './SegmentOverlay.vue'
 
 const previewStore = usePreviewStore()
 
@@ -30,11 +31,10 @@ const terminalClasses = computed(() =>
 		<ScrollArea class="min-h-[3rem] max-h-[600px]" :class="terminalClasses">
 			<pre
 				v-if="previewStore.htmlOutput"
-				v-html="previewStore.htmlOutput"
 				class="min-w-max whitespace-pre px-4 py-3 font-nerd text-sm leading-none"
 				role="img"
 				aria-label="Terminal preview of powerline statusline"
-			/>
+			><div class="relative"><div v-html="previewStore.htmlOutput" /><SegmentOverlay class="absolute inset-0" /></div></pre>
 			<p v-else class="px-4 py-3 text-sm italic text-muted-foreground">
 				Preview will appear here...
 			</p>
