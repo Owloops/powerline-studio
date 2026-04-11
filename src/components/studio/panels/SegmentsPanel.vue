@@ -3,11 +3,13 @@ import { ref, computed, watch, nextTick } from 'vue'
 import { Reorder, useDragControls } from 'motion-v'
 import { useMediaQuery } from '@vueuse/core'
 import SegmentRow from '@/components/studio/SegmentRow.vue'
+import LineSelector from '@/components/studio/LineSelector.vue'
 import {
 	SEGMENT_KEYS,
 	isSegmentKey,
 	type SegmentKey,
 } from '@/components/studio/segments/segmentMeta'
+import { segmentConfigMap } from '@/components/studio/segments'
 
 const configStore = useConfigStore()
 const editorStore = useEditorStore()
@@ -102,6 +104,8 @@ watch(
 
 <template>
 	<div class="flex flex-col gap-1 p-2">
+		<LineSelector />
+
 		<Reorder.Group
 			axis="y"
 			:values="segmentOrder"
@@ -127,7 +131,14 @@ watch(
 						v-model:expanded="expandedRows[key]"
 						@select="handleSelect(key)"
 						@toggle-enabled="(enabled: boolean) => handleToggleEnabled(key, enabled)"
-					/>
+					>
+						<template #config>
+							<component
+								v-if="segmentConfigMap[key]"
+								:is="segmentConfigMap[key]"
+							/>
+						</template>
+					</SegmentRow>
 				</div>
 			</Reorder.Item>
 		</Reorder.Group>
