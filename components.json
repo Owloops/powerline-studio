@@ -1,0 +1,30 @@
+{
+	"$schema": "https://shadcn-vue.com/schema.json",
+	"style": "reka-vega",
+	"base": "reka",
+	"font": "inter",
+	"typescript": true,
+	"tailwind": {
+		"config": "",
+		"css": "src/assets/main.css",
+		"baseColor": "neutral",
+		"cssVariables": true,
+		"prefix": ""
+	},
+	"iconLibrary": "lucide",
+	"aliases": {
+		"components": "@/components",
+		"utils": "@/lib/utils",
+		"ui": "@/components/ui",
+		"lib": "@/lib",
+		"composables": "@/composables"
+	},
+	"registries": {
+		"@electricity-ui": {
+			"url": "http://localhost:5050/r/{name}.json"
+		},
+		"@inspira": {
+			"url": "https://inspira-ui.com/r/{name}.json"
+		}
+	}
+}
