@@ -18,8 +18,8 @@ function updatePadding(value: number | undefined) {
 </script>
 
 <template>
-	<div class="flex flex-col gap-1.5">
-		<Label class="text-xs">Horizontal padding</Label>
+	<div class="flex items-center gap-2">
+		<Label class="text-xs w-14 shrink-0">Horizontal</Label>
 		<NumberField
 			:model-value="padding"
 			:min="0"
@@ -27,9 +27,9 @@ function updatePadding(value: number | undefined) {
 			:step="1"
 			@update:model-value="updatePadding"
 		>
-			<NumberFieldContent class="max-w-32">
+			<NumberFieldContent class="w-24 h-7">
 				<NumberFieldDecrement />
-				<NumberFieldInput placeholder="0" />
+				<NumberFieldInput class="tabular-nums" placeholder="0" />
 				<NumberFieldIncrement />
 			</NumberFieldContent>
 		</NumberField>

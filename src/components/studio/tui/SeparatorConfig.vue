@@ -35,51 +35,45 @@ function resetDivider() {
 </script>
 
 <template>
-	<div class="grid grid-cols-2 gap-3">
+	<div class="flex flex-col gap-2.5">
 		<!-- Column separator -->
-		<div class="flex flex-col gap-1.5">
-			<div class="flex items-center justify-between">
-				<Label class="text-xs">Column</Label>
-				<Button
-					v-if="separator?.column !== undefined"
-					variant="ghost"
-					size="sm"
-					class="h-6 px-1.5 text-[10px] text-muted-foreground"
-					@click="resetColumn"
-				>
-					<IconLucide-rotate-ccw class="size-3" />
-				</Button>
-			</div>
+		<div class="flex items-center gap-2">
+			<Label class="text-xs w-14 shrink-0">Column</Label>
 			<Input
 				:model-value="separator?.column ?? ''"
 				placeholder="  "
-				class="h-8 text-xs font-mono"
+				class="h-7 w-20 text-xs font-mono"
 				@update:model-value="updateColumn"
 			/>
-			<span class="text-[10px] text-muted-foreground">Default: two spaces</span>
+			<Button
+				variant="ghost"
+				size="icon"
+				class="size-7 shrink-0"
+				:class="separator?.column === undefined ? 'invisible' : ''"
+				@click="resetColumn"
+			>
+				<IconLucide-rotate-ccw class="size-3 text-muted-foreground" />
+			</Button>
 		</div>
 
 		<!-- Divider character -->
-		<div class="flex flex-col gap-1.5">
-			<div class="flex items-center justify-between">
-				<Label class="text-xs">Divider</Label>
-				<Button
-					v-if="separator?.divider !== undefined"
-					variant="ghost"
-					size="sm"
-					class="h-6 px-1.5 text-[10px] text-muted-foreground"
-					@click="resetDivider"
-				>
-					<IconLucide-rotate-ccw class="size-3" />
-				</Button>
-			</div>
+		<div class="flex items-center gap-2">
+			<Label class="text-xs w-14 shrink-0">Divider</Label>
 			<Input
 				:model-value="separator?.divider ?? ''"
 				:placeholder="dividerPlaceholder"
-				class="h-8 text-xs font-mono"
+				class="h-7 w-20 text-xs font-mono"
 				@update:model-value="updateDivider"
 			/>
-			<span class="text-[10px] text-muted-foreground">Default: box horizontal char</span>
+			<Button
+				variant="ghost"
+				size="icon"
+				class="size-7 shrink-0"
+				:class="separator?.divider === undefined ? 'invisible' : ''"
+				@click="resetDivider"
+			>
+				<IconLucide-rotate-ccw class="size-3 text-muted-foreground" />
+			</Button>
 		</div>
 	</div>
 </template>

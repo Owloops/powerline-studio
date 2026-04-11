@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import type { EditorBreakpoint } from '@/types/tui'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -19,9 +17,7 @@ import { TUI_PRESETS, type TuiPreset } from '@/lib/tuiPresets'
 import TuiGlobalOptions from '@/components/studio/tui/TuiGlobalOptions.vue'
 import BreakpointManager from '@/components/studio/tui/BreakpointManager.vue'
 import BreakpointEditor from '@/components/studio/tui/BreakpointEditor.vue'
-import BoxStylePicker from '@/components/studio/tui/BoxStylePicker.vue'
-import SeparatorConfig from '@/components/studio/tui/SeparatorConfig.vue'
-import PaddingConfig from '@/components/studio/tui/PaddingConfig.vue'
+import TuiStylingSection from '@/components/studio/tui/TuiStylingSection.vue'
 
 const configStore = useConfigStore()
 const editorStore = useEditorStore()
@@ -103,12 +99,6 @@ function handleRemoveBreakpoint(id: string) {
 		selectedBreakpointId.value = newIds[0] ?? ''
 	}
 }
-
-// --- Accessory section state ---
-
-const boxSectionOpen = shallowRef(false)
-const separatorSectionOpen = shallowRef(false)
-const paddingSectionOpen = shallowRef(false)
 
 // --- Highlighted segment in the grid (from preview click) ---
 const highlightedSegment = shallowRef<string | null>(null)
@@ -254,52 +244,7 @@ function confirmPreset() {
 
 		<Separator />
 
-		<!-- Box Style Picker -->
-		<Collapsible v-model:open="boxSectionOpen">
-			<CollapsibleTrigger class="flex items-center justify-between w-full py-1.5 text-left">
-				<span class="text-xs font-medium">Box Style</span>
-				<IconLucide-chevron-right
-					class="size-3.5 text-muted-foreground transition-transform duration-200"
-					:class="{ 'rotate-90': boxSectionOpen }"
-				/>
-			</CollapsibleTrigger>
-			<CollapsibleContent>
-				<div class="pt-2 pb-1">
-					<BoxStylePicker />
-				</div>
-			</CollapsibleContent>
-		</Collapsible>
-
-		<!-- Separator Config -->
-		<Collapsible v-model:open="separatorSectionOpen">
-			<CollapsibleTrigger class="flex items-center justify-between w-full py-1.5 text-left">
-				<span class="text-xs font-medium">Separators</span>
-				<IconLucide-chevron-right
-					class="size-3.5 text-muted-foreground transition-transform duration-200"
-					:class="{ 'rotate-90': separatorSectionOpen }"
-				/>
-			</CollapsibleTrigger>
-			<CollapsibleContent>
-				<div class="pt-2 pb-1">
-					<SeparatorConfig />
-				</div>
-			</CollapsibleContent>
-		</Collapsible>
-
-		<!-- Horizontal Padding -->
-		<Collapsible v-model:open="paddingSectionOpen">
-			<CollapsibleTrigger class="flex items-center justify-between w-full py-1.5 text-left">
-				<span class="text-xs font-medium">Horizontal Padding</span>
-				<IconLucide-chevron-right
-					class="size-3.5 text-muted-foreground transition-transform duration-200"
-					:class="{ 'rotate-90': paddingSectionOpen }"
-				/>
-			</CollapsibleTrigger>
-			<CollapsibleContent>
-				<div class="pt-2 pb-1">
-					<PaddingConfig />
-				</div>
-			</CollapsibleContent>
-		</Collapsible>
+		<!-- Visual Style (box, separators, padding) -->
+		<TuiStylingSection />
 	</div>
 </template>
