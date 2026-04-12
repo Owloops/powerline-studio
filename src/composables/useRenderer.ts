@@ -619,7 +619,11 @@ export function useRenderer() {
 		renderError.value = null
 
 		try {
-			const config = structuredClone(toRaw(configStore.config))
+			// JSON round-trip instead of structuredClone(toRaw(...)) because
+			// store mutations (e.g. applyTuiPreset) can leave nested reactive
+			// proxies inside the raw object tree, which structuredClone cannot
+			// handle.  JSON serialization strips all proxies reliably.
+			const config: PowerlineConfig = JSON.parse(JSON.stringify(configStore.config))
 			const colorMode = previewStore.colorMode
 			const terminalBgColor = previewStore.terminalBgColor
 			const terminalWidth = previewStore.terminalWidth
@@ -841,11 +845,19 @@ export function useRenderer() {
 		{ deep: true },
 	)
 
-	// Sync preview store's reservedWidth into TUI config for export.
-	// On load, seed the preview slider from any existing TUI widthReserve.
-	if (configStore.isTuiStyle && configStore.config.display.tui?.widthReserve != null) {
-		previewStore.reservedWidth = configStore.config.display.tui.widthReserve
-	}
+	// Sync reservedWidth between preview store and TUI config.
+	// When switching TO TUI, seed the preview slider from the TUI config's
+	// widthReserve (so persisted/preset values are respected on first render).
+	// When the slider changes while in TUI mode, write back to the TUI config.
+	watch(
+		() => configStore.isTuiStyle,
+		(isTui) => {
+			if (isTui && configStore.config.display.tui?.widthReserve != null) {
+				previewStore.reservedWidth = configStore.config.display.tui.widthReserve
+			}
+		},
+		{ immediate: true },
+	)
 
 	watch(
 		() => previewStore.reservedWidth,

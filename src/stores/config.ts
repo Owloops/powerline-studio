@@ -160,9 +160,12 @@ export const useConfigStore = defineStore('config', () => {
 		} else {
 			config.value.display.lines[0]!.segments = presetSegments
 		}
-		// Normalize segments to ensure all 13 keys
+		// Normalize segments to ensure all 13 keys.
+		// Use toRaw() to avoid leaking reactive proxies into the new plain
+		// object that normalizeSegments builds — otherwise the raw object tree
+		// ends up with mixed reactive/plain children that break structuredClone.
 		for (const line of config.value.display.lines) {
-			line.segments = normalizeSegments(line.segments, SEGMENT_DEFAULTS)
+			line.segments = normalizeSegments(toRaw(line.segments), SEGMENT_DEFAULTS)
 		}
 	}
 
@@ -212,7 +215,7 @@ export const useConfigStore = defineStore('config', () => {
 		if (!line) return
 
 		// Normalize first so all 13 keys are present before reordering
-		const normalized = normalizeSegments(line.segments, SEGMENT_DEFAULTS)
+		const normalized = normalizeSegments(toRaw(line.segments), SEGMENT_DEFAULTS)
 		const reordered: LineConfig['segments'] = {}
 
 		// Add segments in the requested order
@@ -540,7 +543,7 @@ export const useConfigStore = defineStore('config', () => {
 		config.value = deepMerge(structuredClone(DEFAULT_CONFIG), partial as PowerlineConfig)
 		// Normalize all lines to ensure 13 segment keys
 		for (const line of config.value.display.lines) {
-			line.segments = normalizeSegments(line.segments, SEGMENT_DEFAULTS)
+			line.segments = normalizeSegments(toRaw(line.segments), SEGMENT_DEFAULTS)
 		}
 		rehydrateThemeEditor()
 	}
