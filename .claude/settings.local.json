@@ -43,7 +43,8 @@
 			"mcp__supabase__apply_migration",
 			"mcp__css-studio__css-studio",
 			"Bash(cp -r /c/Users/Juugo/Documents/Projects/dashboard-template /c/Users/Juugo/Documents/Projects/powerline-studio)",
-			"Bash(rm -rf /c/Users/Juugo/Documents/Projects/powerline-studio/.git)"
+			"Bash(rm -rf /c/Users/Juugo/Documents/Projects/powerline-studio/.git)",
+			"mcp__uidotsh__uidotsh_fetch"
 		],
 		"additionalDirectories": [
 			"C:\\Users\\Juugo\\Documents\\Projects\\electricity-ui",

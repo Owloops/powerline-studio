@@ -1,9 +1,9 @@
 ---
 id: task-023b-flat-layout-editor
 title: 'Interactive flat layout editor with segment popovers and drag reorder'
-status: 'To Do'
+status: 'Done'
 created_date: '2026-04-11 23:10'
-updated_date: '2026-04-11 23:10'
+updated_date: '2026-04-12 09:51'
 parent: task-023-redesign-studio-ui
 subtasks:
 dependencies:

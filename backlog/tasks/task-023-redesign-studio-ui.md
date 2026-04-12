@@ -1,9 +1,9 @@
 ---
 id: task-023-redesign-studio-ui
 title: 'Redesign studio UI: single-page workflow with interactive layout editor'
-status: 'To Do'
+status: 'Done'
 created_date: '2026-04-11 23:10'
-updated_date: '2026-04-11 23:10'
+updated_date: '2026-04-12 09:51'
 parent: null
 subtasks:
   - task-023a-scaffolding
@@ -495,11 +495,11 @@ accordion, alert, alert-dialog, badge, button, card, checkbox, collapsible, dial
 
 <!-- TODO:BEGIN -->
 
-- [ ] task-023a: Scaffolding — page layout, editor store refactor, style/theme section, presets
-- [ ] task-023b: Flat Layout Editor — interactive segment editor for non-TUI modes
-- [ ] task-023c: TUI Layout Editor — interactive grid editor for TUI mode
-- [ ] task-023d: Preview Bridge — connect preview overlay to layout editor
-- [ ] task-023e: Export & Mock Data — bottom page sections
+- [x] task-023a: Scaffolding — page layout, editor store refactor, style/theme section, presets
+- [x] task-023b: Flat Layout Editor — interactive segment editor for non-TUI modes
+- [x] task-023c: TUI Layout Editor — interactive grid editor for TUI mode
+- [x] task-023d: Preview Bridge — connect preview overlay to layout editor
+- [x] task-023e: Export & Mock Data — bottom page sections
 
 <!-- TODO:END -->
 

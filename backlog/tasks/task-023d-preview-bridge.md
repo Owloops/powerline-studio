@@ -1,9 +1,9 @@
 ---
 id: task-023d-preview-bridge
 title: 'Preview ↔ layout editor bridge: click-to-scroll, highlight, and popover sync'
-status: 'To Do'
+status: 'Done'
 created_date: '2026-04-11 23:10'
-updated_date: '2026-04-11 23:10'
+updated_date: '2026-04-12 09:51'
 parent: task-023-redesign-studio-ui
 subtasks:
 dependencies:

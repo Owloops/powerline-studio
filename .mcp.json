@@ -1,7 +1,7 @@
 {
 	"mcpServers": {
 		"css-studio": {
-			"args": ["/c", "npx", "-y", "cssstudio"],
+			"args": ["/c", "cssstudio"],
 			"command": "cmd"
 		},
 		"nuxt": {
@@ -9,7 +9,7 @@
 			"url": "https://nuxt.com/mcp"
 		},
 		"shadcn": {
-			"args": ["/c", "npx", "-y", "shadcn-vue@latest", "mcp"],
+			"args": ["/c", "shadcn-vue", "mcp"],
 			"command": "cmd"
 		},
 		"supabase": {

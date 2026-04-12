@@ -1,9 +1,9 @@
 ---
 id: task-023c-tui-layout-editor
 title: 'Interactive TUI layout editor with grid, popovers, breakpoints, and options'
-status: 'To Do'
+status: 'Done'
 created_date: '2026-04-11 23:10'
-updated_date: '2026-04-11 23:10'
+updated_date: '2026-04-12 09:51'
 parent: task-023-redesign-studio-ui
 subtasks:
 dependencies:
