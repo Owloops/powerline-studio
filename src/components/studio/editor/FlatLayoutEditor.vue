@@ -4,7 +4,7 @@ import { Reorder } from 'motion-v'
 import { useMediaQuery } from '@vueuse/core'
 import { Sparkles, Plus, Trash2 } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import SegmentPicker from '@/components/studio/SegmentPicker.vue'
 import SegmentChip from './SegmentChip.vue'
 import SegmentConfigPopover from './SegmentConfigPopover.vue'
@@ -268,22 +268,24 @@ watch(
 		</div>
 
 		<!-- Add Line button -->
-		<Tooltip>
-			<TooltipTrigger as-child>
-				<div>
-					<Button
-						variant="outline"
-						size="sm"
-						:disabled="!canAddLine"
-						class="w-full border-dashed"
-						@click="handleAddLine"
-					>
-						<Plus class="size-4" />
-						Add Line
-					</Button>
-				</div>
-			</TooltipTrigger>
-			<TooltipContent v-if="!canAddLine"> Maximum of 5 lines reached </TooltipContent>
-		</Tooltip>
+		<TooltipProvider :delay-duration="300">
+			<Tooltip>
+				<TooltipTrigger as-child>
+					<div>
+						<Button
+							variant="outline"
+							size="sm"
+							:disabled="!canAddLine"
+							class="w-full border-dashed"
+							@click="handleAddLine"
+						>
+							<Plus class="size-4" />
+							Add Line
+						</Button>
+					</div>
+				</TooltipTrigger>
+				<TooltipContent v-if="!canAddLine"> Maximum of 5 lines reached </TooltipContent>
+			</Tooltip>
+		</TooltipProvider>
 	</section>
 </template>
