@@ -116,20 +116,20 @@ function updateFooterRight(value: string | false | undefined) {
 	configStore.setTuiFooter({ right: value === false ? undefined : value })
 }
 
-// Title/footer display text for the clickable strips
+// Title/footer display text for the clickable strips — split into left/right for independent truncation
 const titlePreview = computed(() => {
 	const left = titleConfig.value?.left ?? '{model}'
 	const right = titleConfig.value?.right
-	if (right === false) return left || '(no title)'
+	if (right === false) return { left: left || '(no title)', right: '' }
 	const rightText = right ?? 'claude-powerline'
-	return `${left || '(empty)'}  ...  ${rightText || '(empty)'}`
+	return { left: left || '(empty)', right: rightText || '(empty)' }
 })
 
 const footerPreview = computed(() => {
 	const left = footerConfig.value?.left
 	const right = footerConfig.value?.right
-	if (!left && !right) return '(no footer configured)'
-	return `${left || '(empty)'}  ...  ${right || '(empty)'}`
+	if (!left && !right) return { left: '(no footer configured)', right: '' }
+	return { left: left || '(empty)', right: right || '(empty)' }
 })
 
 // --- TUI Options ---
@@ -279,83 +279,120 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 			</span>
 		</div>
 
-		<!-- Title Bar (clickable strip) -->
-		<Popover v-model:open="titlePopoverOpen">
-			<PopoverTrigger as-child>
-				<button
-					ref="titleTriggerRef"
-					class="flex items-center gap-2 rounded-t-lg border border-b-0 border-border bg-muted/30 px-3 py-2 text-left text-xs transition-colors hover:bg-muted/50"
-					:class="titlePopoverOpen ? 'ring-1 ring-primary/30 border-primary/40' : ''"
-				>
-					<IconLucide-panel-top class="size-3.5 shrink-0 text-muted-foreground" />
-					<span class="flex-1 truncate font-mono text-muted-foreground">
-						{{ titlePreview }}
-					</span>
-					<IconLucide-pencil class="size-3 text-muted-foreground/50" />
-				</button>
-			</PopoverTrigger>
-			<PopoverContent class="w-96 p-4" align="start" @open-auto-focus.prevent>
-				<div class="flex items-center gap-1.5 pb-3">
-					<IconLucide-panel-top class="size-3.5 text-muted-foreground" />
-					<span class="text-xs font-medium">Title Bar</span>
-				</div>
-				<TemplateEditor
-					label="Title Bar"
-					:left="titleConfig?.left"
-					:right="titleConfig?.right"
-					:allow-disable-right="true"
-					left-placeholder="{model}"
-					right-placeholder="claude-powerline"
-					@update:left="updateTitleLeft"
-					@update:right="updateTitleRight"
-				/>
-			</PopoverContent>
-		</Popover>
+		<!-- Seamless Title / Grid / Footer unit -->
+		<div class="rounded-lg border border-border overflow-hidden">
+			<!-- Title Bar (clickable strip) -->
+			<TooltipProvider :delay-duration="400">
+				<Tooltip :open="titlePopoverOpen ? false : undefined">
+					<Popover v-model:open="titlePopoverOpen">
+						<TooltipTrigger as-child>
+							<PopoverTrigger as-child>
+								<button
+									ref="titleTriggerRef"
+									class="flex w-full items-center gap-2 border-b border-border bg-muted/30 px-3 py-2 text-left text-xs transition-colors hover:bg-muted/50"
+									:class="titlePopoverOpen ? 'ring-1 ring-inset ring-primary/30' : ''"
+								>
+									<IconLucide-panel-top class="size-3.5 shrink-0 text-muted-foreground" />
+									<span
+										class="flex min-w-0 flex-1 items-center gap-0 font-mono text-xs text-muted-foreground"
+									>
+										<span class="truncate min-w-0">{{ titlePreview.left }}</span>
+										<span v-if="titlePreview.right" class="shrink-0 px-1.5 text-muted-foreground/40"
+											>...</span
+										>
+										<span v-if="titlePreview.right" class="truncate min-w-0 text-right">{{
+											titlePreview.right
+										}}</span>
+									</span>
+									<IconLucide-pencil class="size-3 shrink-0 text-muted-foreground/50" />
+								</button>
+							</PopoverTrigger>
+						</TooltipTrigger>
+						<PopoverContent class="w-96 p-4" align="start" @open-auto-focus.prevent>
+							<div class="flex items-center gap-1.5 pb-3">
+								<IconLucide-panel-top class="size-3.5 text-muted-foreground" />
+								<span class="text-xs font-medium">Title Bar</span>
+							</div>
+							<TemplateEditor
+								label="Title Bar"
+								:left="titleConfig?.left"
+								:right="titleConfig?.right"
+								:allow-disable-right="true"
+								left-placeholder="{model}"
+								right-placeholder="claude-powerline"
+								@update:left="updateTitleLeft"
+								@update:right="updateTitleRight"
+							/>
+						</PopoverContent>
+					</Popover>
+					<TooltipContent side="bottom" align="start" class="max-w-sm font-mono text-xs">
+						<div>Left: {{ titlePreview.left }}</div>
+						<div v-if="titlePreview.right">Right: {{ titlePreview.right }}</div>
+					</TooltipContent>
+				</Tooltip>
+			</TooltipProvider>
 
-		<!-- Grid Visual -->
-		<div
-			v-if="selectedBreakpoint"
-			ref="gridRef"
-			class="rounded-lg border border-border bg-background p-3"
-		>
-			<TuiGridVisual
-				:breakpoint-index="selectedBpIndex"
-				:areas="selectedBreakpoint.areas"
-				:columns="selectedBreakpoint.columns"
-				:highlighted-segment="highlightedSegment"
-			/>
+			<!-- Grid Visual -->
+			<div v-if="selectedBreakpoint" ref="gridRef" class="bg-background p-3">
+				<TuiGridVisual
+					:breakpoint-index="selectedBpIndex"
+					:areas="selectedBreakpoint.areas"
+					:columns="selectedBreakpoint.columns"
+					:highlighted-segment="highlightedSegment"
+				/>
+			</div>
+
+			<!-- Footer (clickable strip) -->
+			<TooltipProvider :delay-duration="400">
+				<Tooltip :open="footerPopoverOpen ? false : undefined">
+					<Popover v-model:open="footerPopoverOpen">
+						<TooltipTrigger as-child>
+							<PopoverTrigger as-child>
+								<button
+									ref="footerTriggerRef"
+									class="flex w-full items-center gap-2 border-t border-border bg-muted/30 px-3 py-2 text-left text-xs transition-colors hover:bg-muted/50"
+									:class="footerPopoverOpen ? 'ring-1 ring-inset ring-primary/30' : ''"
+								>
+									<IconLucide-panel-bottom class="size-3.5 shrink-0 text-muted-foreground" />
+									<span
+										class="flex min-w-0 flex-1 items-center gap-0 font-mono text-xs text-muted-foreground"
+									>
+										<span class="truncate min-w-0">{{ footerPreview.left }}</span>
+										<span
+											v-if="footerPreview.right"
+											class="shrink-0 px-1.5 text-muted-foreground/40"
+											>...</span
+										>
+										<span v-if="footerPreview.right" class="truncate min-w-0 text-right">{{
+											footerPreview.right
+										}}</span>
+									</span>
+									<IconLucide-pencil class="size-3 shrink-0 text-muted-foreground/50" />
+								</button>
+							</PopoverTrigger>
+						</TooltipTrigger>
+						<PopoverContent class="w-96 p-4" align="start" @open-auto-focus.prevent>
+							<div class="flex items-center gap-1.5 pb-3">
+								<IconLucide-panel-bottom class="size-3.5 text-muted-foreground" />
+								<span class="text-xs font-medium">Footer</span>
+							</div>
+							<TemplateEditor
+								label="Footer"
+								:left="footerConfig?.left"
+								:right="footerConfig?.right ?? undefined"
+								:allow-disable-right="false"
+								@update:left="updateFooterLeft"
+								@update:right="updateFooterRight"
+							/>
+						</PopoverContent>
+					</Popover>
+					<TooltipContent side="bottom" align="start" class="max-w-sm font-mono text-xs">
+						<div>Left: {{ footerPreview.left }}</div>
+						<div v-if="footerPreview.right">Right: {{ footerPreview.right }}</div>
+					</TooltipContent>
+				</Tooltip>
+			</TooltipProvider>
 		</div>
-
-		<!-- Footer (clickable strip) -->
-		<Popover v-model:open="footerPopoverOpen">
-			<PopoverTrigger as-child>
-				<button
-					ref="footerTriggerRef"
-					class="flex items-center gap-2 rounded-b-lg border border-t-0 border-border bg-muted/30 px-3 py-2 text-left text-xs transition-colors hover:bg-muted/50"
-					:class="footerPopoverOpen ? 'ring-1 ring-primary/30 border-primary/40' : ''"
-				>
-					<IconLucide-panel-bottom class="size-3.5 shrink-0 text-muted-foreground" />
-					<span class="flex-1 truncate font-mono text-muted-foreground">
-						{{ footerPreview }}
-					</span>
-					<IconLucide-pencil class="size-3 text-muted-foreground/50" />
-				</button>
-			</PopoverTrigger>
-			<PopoverContent class="w-96 p-4" align="start" @open-auto-focus.prevent>
-				<div class="flex items-center gap-1.5 pb-3">
-					<IconLucide-panel-bottom class="size-3.5 text-muted-foreground" />
-					<span class="text-xs font-medium">Footer</span>
-				</div>
-				<TemplateEditor
-					label="Footer"
-					:left="footerConfig?.left"
-					:right="footerConfig?.right ?? undefined"
-					:allow-disable-right="false"
-					@update:left="updateFooterLeft"
-					@update:right="updateFooterRight"
-				/>
-			</PopoverContent>
-		</Popover>
 
 		<Separator />
 
