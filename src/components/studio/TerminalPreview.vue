@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import PreviewControls from './PreviewControls.vue'
 import SegmentOverlay from './SegmentOverlay.vue'
 
 const previewStore = usePreviewStore()
@@ -48,14 +52,40 @@ const effectiveWidth = computed(() =>
 			<span class="flex-1 text-center text-xs text-muted-foreground">
 				powerline-studio — bash
 			</span>
-			<Badge variant="secondary" class="shrink-0">
-				{{ effectiveWidth }}/{{ previewStore.terminalWidth }} cols
-			</Badge>
+			<div class="flex shrink-0 items-center gap-1">
+				<Badge variant="secondary">
+					{{ effectiveWidth }}/{{ previewStore.terminalWidth }} cols
+				</Badge>
+				<Popover>
+					<TooltipProvider :delay-duration="300">
+						<Tooltip>
+							<TooltipTrigger as-child>
+								<PopoverTrigger as-child>
+									<Button variant="ghost" size="icon-sm" class="size-7">
+										<IconLucide-settings-2 class="size-3.5" />
+										<span class="sr-only">Configure terminal preview</span>
+									</Button>
+								</PopoverTrigger>
+							</TooltipTrigger>
+							<TooltipContent side="bottom"> Configure terminal preview </TooltipContent>
+						</Tooltip>
+					</TooltipProvider>
+					<PopoverContent
+						align="end"
+						side="bottom"
+						:side-offset="8"
+						update-position-strategy="always"
+						class="w-80 p-0"
+					>
+						<PreviewControls />
+					</PopoverContent>
+				</Popover>
+			</div>
 		</div>
 
 		<!-- Terminal Body -->
 		<ScrollArea
-			class="min-h-[3rem] max-h-[600px] bg-(--terminal-bg) text-(--terminal-fg)"
+			class="min-h-[3rem] max-h-[40svh] bg-(--terminal-bg) text-(--terminal-fg)"
 			:style="terminalStyle"
 		>
 			<pre

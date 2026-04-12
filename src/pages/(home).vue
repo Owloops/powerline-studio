@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible'
 import StudioHeader from '@/components/studio/StudioHeader.vue'
 import TerminalPreview from '@/components/studio/TerminalPreview.vue'
-import PreviewControls from '@/components/studio/PreviewControls.vue'
 import PresetSection from '@/components/studio/sections/PresetSection.vue'
 import StyleThemeSection from '@/components/studio/sections/StyleThemeSection.vue'
 import FlatLayoutEditor from '@/components/studio/editor/FlatLayoutEditor.vue'
@@ -17,42 +15,29 @@ useHead({ title: 'Powerline Studio' })
 useRenderer()
 
 const configStore = useConfigStore()
-const editorStore = useEditorStore()
 </script>
 
 <template>
-	<div class="flex h-full flex-col">
+	<div class="flex flex-col">
 		<StudioHeader />
 
-		<!-- Scrollable content -->
-		<div class="flex-1 overflow-y-auto">
-			<!-- Terminal Preview -->
-			<div class="shrink-0 border-b border-border">
-				<div class="overflow-x-auto px-4 py-6">
-					<TerminalPreview class="mx-auto" />
-				</div>
+		<!-- Terminal Preview — sticky after header scrolls away -->
+		<div class="sticky top-0 z-30 border-b border-border bg-background px-4 py-3">
+			<TerminalPreview class="mx-auto" />
+		</div>
 
-				<!-- Collapsible Preview Controls -->
-				<Collapsible :open="editorStore.showPreviewControls">
-					<CollapsibleContent>
-						<PreviewControls />
-					</CollapsibleContent>
-				</Collapsible>
-			</div>
+		<!-- Section Flow -->
+		<div class="mx-auto flex max-w-4xl flex-col gap-8 px-4 py-6">
+			<PresetSection />
+			<StyleThemeSection />
 
-			<!-- Section Flow -->
-			<div class="mx-auto flex max-w-4xl flex-col gap-8 px-4 py-6">
-				<PresetSection />
-				<StyleThemeSection />
+			<!-- Layout Editor -->
+			<FlatLayoutEditor v-if="!configStore.isTuiStyle" />
+			<TuiLayoutEditor v-else />
 
-				<!-- Layout Editor -->
-				<FlatLayoutEditor v-if="!configStore.isTuiStyle" />
-				<TuiLayoutEditor v-else />
-
-				<!-- Export & Mock Data -->
-				<ExportSection />
-				<MockDataSettingsSection />
-			</div>
+			<!-- Export & Mock Data -->
+			<ExportSection />
+			<MockDataSettingsSection />
 		</div>
 	</div>
 </template>

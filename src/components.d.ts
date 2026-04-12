@@ -124,7 +124,6 @@ declare module 'vue' {
     IconLucideColumns3: typeof import('~icons/lucide/columns3')['default']
     IconLucideGauge: typeof import('~icons/lucide/gauge')['default']
     IconLucideGitBranch: typeof import('~icons/lucide/git-branch')['default']
-    IconLucideGrid2x2: typeof import('~icons/lucide/grid2x2')['default']
     IconLucideInfo: typeof import('~icons/lucide/info')['default']
     IconLucideLayoutGrid: typeof import('~icons/lucide/layout-grid')['default']
     IconLucideLayoutTemplate: typeof import('~icons/lucide/layout-template')['default']

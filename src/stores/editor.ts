@@ -26,7 +26,6 @@ export const useEditorStore = defineStore('editor', () => {
 	const selectedTuiArea = ref<TuiAreaTarget | null>(null)
 	const focusedSegment = ref<FocusedSegment | null>(null)
 	const focusedTuiArea = ref<FocusedTuiArea | null>(null)
-	const showPreviewControls = ref(false)
 	let skipSelectionClear = false
 	let focusedSegmentTimer: ReturnType<typeof setTimeout> | undefined
 	let focusedTuiAreaTimer: ReturnType<typeof setTimeout> | undefined
@@ -119,10 +118,6 @@ export const useEditorStore = defineStore('editor', () => {
 		focusedTuiArea.value = null
 	}
 
-	function togglePreviewControls() {
-		showPreviewControls.value = !showPreviewControls.value
-	}
-
 	return {
 		selectedSegment,
 		expandedSections,
@@ -130,7 +125,6 @@ export const useEditorStore = defineStore('editor', () => {
 		selectedTuiArea,
 		focusedSegment,
 		focusedTuiArea,
-		showPreviewControls,
 		// Computed
 		hasSelection,
 		// Mutations
@@ -144,6 +138,5 @@ export const useEditorStore = defineStore('editor', () => {
 		clearFocusedSegment,
 		setFocusedTuiArea,
 		clearFocusedTuiArea,
-		togglePreviewControls,
 	}
 })

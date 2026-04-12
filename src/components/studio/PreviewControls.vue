@@ -70,42 +70,48 @@ const CHARSET_OPTIONS = [
 </script>
 
 <template>
-	<div
-		class="flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-border bg-muted/50 px-4 py-2"
-	>
-		<!-- Width slider group -->
-		<div class="flex items-center gap-2">
-			<Label for="preview-width">Width</Label>
-			<Slider
-				id="preview-width"
-				v-model="sliderModel"
-				:min="30"
-				:max="240"
-				:step="1"
-				class="w-32"
-			/>
-			<span class="w-14 text-xs tabular-nums text-muted-foreground">{{ terminalWidth }} cols</span>
+	<div class="flex flex-col gap-3 p-4">
+		<!-- Width slider -->
+		<div class="flex items-center justify-between gap-3">
+			<Label for="preview-width" class="w-20 shrink-0 text-xs">Width</Label>
+			<div class="flex flex-1 items-center gap-2">
+				<Slider
+					id="preview-width"
+					v-model="sliderModel"
+					:min="30"
+					:max="240"
+					:step="1"
+					class="flex-1"
+				/>
+				<span class="w-14 text-right text-xs tabular-nums text-muted-foreground"
+					>{{ terminalWidth }} cols</span
+				>
+			</div>
 		</div>
 
-		<!-- Reserved width slider group -->
-		<div class="flex items-center gap-2">
-			<Label for="preview-reserved">Reserved</Label>
-			<Slider
-				id="preview-reserved"
-				v-model="reservedModel"
-				:min="0"
-				:max="100"
-				:step="1"
-				class="w-24"
-			/>
-			<span class="w-14 text-xs tabular-nums text-muted-foreground">{{ reservedWidth }} cols</span>
+		<!-- Reserved width slider -->
+		<div class="flex items-center justify-between gap-3">
+			<Label for="preview-reserved" class="w-20 shrink-0 text-xs">Reserved</Label>
+			<div class="flex flex-1 items-center gap-2">
+				<Slider
+					id="preview-reserved"
+					v-model="reservedModel"
+					:min="0"
+					:max="100"
+					:step="1"
+					class="flex-1"
+				/>
+				<span class="w-14 text-right text-xs tabular-nums text-muted-foreground"
+					>{{ reservedWidth }} cols</span
+				>
+			</div>
 		</div>
 
-		<!-- Color mode select group -->
-		<div class="flex items-center gap-2">
-			<Label for="preview-color-mode">Color</Label>
+		<!-- Color mode select -->
+		<div class="flex items-center justify-between gap-3">
+			<Label for="preview-color-mode" class="w-20 shrink-0 text-xs">Color</Label>
 			<Select v-model="colorMode">
-				<SelectTrigger id="preview-color-mode" class="h-8 w-[130px]" size="sm">
+				<SelectTrigger id="preview-color-mode" class="h-8 flex-1" size="sm">
 					<SelectValue />
 				</SelectTrigger>
 				<SelectContent position="popper" side="bottom">
@@ -116,11 +122,11 @@ const CHARSET_OPTIONS = [
 			</Select>
 		</div>
 
-		<!-- Charset select group -->
-		<div class="flex items-center gap-2">
-			<Label for="preview-charset">Charset</Label>
+		<!-- Charset select -->
+		<div class="flex items-center justify-between gap-3">
+			<Label for="preview-charset" class="w-20 shrink-0 text-xs">Charset</Label>
 			<Select :model-value="charset" @update:model-value="configStore.setCharset">
-				<SelectTrigger id="preview-charset" class="h-8 w-[110px]" size="sm">
+				<SelectTrigger id="preview-charset" class="h-8 flex-1" size="sm">
 					<SelectValue />
 				</SelectTrigger>
 				<SelectContent position="popper" side="bottom">
@@ -131,39 +137,47 @@ const CHARSET_OPTIONS = [
 			</Select>
 		</div>
 
-		<!-- Font size slider group -->
-		<div class="flex items-center gap-2">
-			<Label for="preview-font-size">Size</Label>
-			<Slider
-				id="preview-font-size"
-				v-model="fontSizeModel"
-				:min="10"
-				:max="24"
-				:step="1"
-				class="w-24"
-			/>
-			<span class="w-10 text-xs tabular-nums text-muted-foreground">{{ fontSize }}px</span>
+		<!-- Font size slider -->
+		<div class="flex items-center justify-between gap-3">
+			<Label for="preview-font-size" class="w-20 shrink-0 text-xs">Font Size</Label>
+			<div class="flex flex-1 items-center gap-2">
+				<Slider
+					id="preview-font-size"
+					v-model="fontSizeModel"
+					:min="10"
+					:max="24"
+					:step="1"
+					class="flex-1"
+				/>
+				<span class="w-10 text-right text-xs tabular-nums text-muted-foreground"
+					>{{ fontSize }}px</span
+				>
+			</div>
 		</div>
 
-		<!-- Line height slider group -->
-		<div class="flex items-center gap-2">
-			<Label for="preview-line-height">Line Height</Label>
-			<Slider
-				id="preview-line-height"
-				v-model="lineHeightModel"
-				:min="0.5"
-				:max="1.5"
-				:step="0.01"
-				class="w-24"
-			/>
-			<span class="w-8 text-xs tabular-nums text-muted-foreground">{{ lineHeight }}</span>
+		<!-- Line height slider -->
+		<div class="flex items-center justify-between gap-3">
+			<Label for="preview-line-height" class="w-20 shrink-0 text-xs">Line Height</Label>
+			<div class="flex flex-1 items-center gap-2">
+				<Slider
+					id="preview-line-height"
+					v-model="lineHeightModel"
+					:min="0.5"
+					:max="1.5"
+					:step="0.01"
+					class="flex-1"
+				/>
+				<span class="w-8 text-right text-xs tabular-nums text-muted-foreground">{{
+					lineHeight
+				}}</span>
+			</div>
 		</div>
 
-		<!-- Font select group -->
-		<div class="flex items-center gap-2">
-			<Label for="preview-font">Font</Label>
+		<!-- Font select -->
+		<div class="flex items-center justify-between gap-3">
+			<Label for="preview-font" class="w-20 shrink-0 text-xs">Font</Label>
 			<Select v-model="terminalFont">
-				<SelectTrigger id="preview-font" class="h-8 w-[170px]" size="sm">
+				<SelectTrigger id="preview-font" class="h-8 flex-1" size="sm">
 					<SelectValue />
 				</SelectTrigger>
 				<SelectContent position="popper" side="bottom">
@@ -174,11 +188,11 @@ const CHARSET_OPTIONS = [
 			</Select>
 		</div>
 
-		<!-- Terminal theme select group -->
-		<div class="flex items-center gap-2">
-			<Label for="preview-terminal-theme">Terminal</Label>
+		<!-- Terminal theme select -->
+		<div class="flex items-center justify-between gap-3">
+			<Label for="preview-terminal-theme" class="w-20 shrink-0 text-xs">Theme</Label>
 			<Select v-model="terminalTheme">
-				<SelectTrigger id="preview-terminal-theme" class="h-8 w-[180px]" size="sm">
+				<SelectTrigger id="preview-terminal-theme" class="h-8 flex-1" size="sm">
 					<span class="flex items-center gap-2">
 						<span
 							class="inline-block size-3 shrink-0 rounded-sm border border-border"
