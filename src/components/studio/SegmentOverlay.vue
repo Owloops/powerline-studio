@@ -25,12 +25,7 @@ function handleClick(segmentType: string, sourceLineIndex: number, cellSegment?:
 		return
 	}
 
-	// For flat mode, switch line if needed
-	if (!configStore.isTuiStyle && sourceLineIndex !== editorStore.activeLineIndex) {
-		editorStore.setActiveLineIndex(sourceLineIndex)
-	}
-
-	editorStore.scrollToSegment(segmentType, cellSegment)
+	editorStore.scrollToSegment(segmentType, cellSegment, sourceLineIndex)
 }
 </script>
 

@@ -58,19 +58,19 @@ function handleOpenChange(value: boolean) {
 		<PopoverTrigger as-child>
 			<slot />
 		</PopoverTrigger>
-		<PopoverContent :side-offset="8" align="start" class="w-80 p-0" @open-auto-focus.prevent>
+		<PopoverContent :side-offset="8" align="start" class="w-96 p-0" @open-auto-focus.prevent>
 			<!-- Header -->
-			<div class="flex items-center gap-3 px-4 pt-4" :class="hasConfigOptions ? 'pb-0' : 'pb-1'">
+			<div class="flex items-center gap-3 px-4 pt-3" :class="hasConfigOptions ? 'pb-0' : 'pb-1'">
 				<component :is="meta.icon" class="size-4 shrink-0 text-muted-foreground" />
-				<span class="flex-1 text-sm font-semibold">{{ meta.name }}</span>
+				<span class="min-w-0 flex-1 text-sm font-semibold">{{ meta.name }}</span>
 				<Switch :model-value="isEnabled" @update:model-value="handleToggleEnabled" />
 			</div>
 
 			<!-- Config form (only for segments with real options) -->
 			<template v-if="hasConfigOptions">
-				<Separator class="mt-3" />
+				<Separator class="mt-2" />
 				<ScrollArea class="max-h-72">
-					<div class="px-4 py-3">
+					<div class="compact-fields px-4 py-2.5">
 						<component :is="segmentConfigMap[segmentKey]" :key="`${segmentKey}-${lineIndex}`" />
 					</div>
 				</ScrollArea>
@@ -79,7 +79,7 @@ function handleOpenChange(value: boolean) {
 			<Separator />
 
 			<!-- Footer -->
-			<div class="px-4 py-3">
+			<div class="px-4 py-2">
 				<Button
 					variant="ghost"
 					size="sm"
@@ -93,3 +93,55 @@ function handleOpenChange(value: boolean) {
 		</PopoverContent>
 	</Popover>
 </template>
+
+<style scoped>
+/*
+ * Compact form layout for popover config panels.
+ * Flips vertical form field containers to horizontal rows.
+ * FormSwitchField already uses horizontal layout — no change needed.
+ */
+.compact-fields :deep(> .flex.flex-col) {
+	gap: 0.5rem;
+}
+
+.compact-fields :deep(.flex.flex-col.gap-1\.5) {
+	flex-direction: row;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.375rem;
+}
+
+.compact-fields :deep(.flex.flex-col.gap-1\.5 > label) {
+	flex-shrink: 0;
+	width: 5.5rem;
+	font-size: 0.75rem;
+}
+
+.compact-fields :deep(.flex.flex-col.gap-1\.5 > input),
+.compact-fields :deep(.flex.flex-col.gap-1\.5 > button[role='combobox']) {
+	flex: 1;
+	min-width: 0;
+}
+
+/* Error/description text takes full width below */
+.compact-fields :deep(.flex.flex-col.gap-1\.5 > p) {
+	width: 100%;
+	font-size: 0.75rem;
+}
+
+/* Smaller input heights */
+.compact-fields :deep(input) {
+	height: 2rem;
+	font-size: 0.75rem;
+}
+
+.compact-fields :deep(button[role='combobox']) {
+	height: 2rem;
+	font-size: 0.75rem;
+}
+
+/* Reduce switch field gap in compact mode */
+.compact-fields :deep(.flex.flex-col.gap-1 > .flex.items-center.gap-3 > label) {
+	font-size: 0.75rem;
+}
+</style>

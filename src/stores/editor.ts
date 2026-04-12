@@ -14,6 +14,7 @@ export type TuiAreaTarget =
 export interface FocusedSegment {
 	name: string
 	cellSegment?: string
+	lineIndex?: number
 	source: 'preview' | 'editor'
 }
 
@@ -96,9 +97,9 @@ export const useEditorStore = defineStore('editor', () => {
 		activeLineIndex.value = index
 	}
 
-	function scrollToSegment(name: string, cellSegment?: string) {
+	function scrollToSegment(name: string, cellSegment?: string, lineIndex?: number) {
 		clearTimeout(focusedSegmentTimer)
-		focusedSegment.value = { name, cellSegment, source: 'preview' }
+		focusedSegment.value = { name, cellSegment, lineIndex, source: 'preview' }
 		focusedSegmentTimer = setTimeout(clearFocusedSegment, 2000)
 	}
 

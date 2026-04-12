@@ -2,12 +2,15 @@
 import { ref, computed, watch, nextTick } from 'vue'
 import { Reorder } from 'motion-v'
 import { useMediaQuery } from '@vueuse/core'
-import { Sparkles } from 'lucide-vue-next'
-import LineSelector from '@/components/studio/LineSelector.vue'
+import { Sparkles, Plus, Trash2 } from 'lucide-vue-next'
+import { Button } from '@/components/ui/button'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import SegmentPicker from '@/components/studio/SegmentPicker.vue'
 import SegmentChip from './SegmentChip.vue'
 import SegmentConfigPopover from './SegmentConfigPopover.vue'
 import { isSegmentKey, type SegmentKey } from '@/components/studio/segments/segmentMeta'
+import { normalizeSegments } from '@/components/studio/segments/segmentMeta'
+import { SEGMENT_DEFAULTS } from '@/stores/config'
 
 const configStore = useConfigStore()
 const editorStore = useEditorStore()
@@ -22,41 +25,59 @@ const whileDragStyle = computed(() =>
 
 const displayStyle = computed(() => configStore.activeStyle as 'minimal' | 'powerline' | 'capsule')
 
-// --- Enabled segment keys derived from config ---
+const lines = computed(() => configStore.config.display.lines)
+const lineCount = computed(() => lines.value.length)
+const canAddLine = computed(() => lineCount.value < 5)
 
-const enabledSegmentKeys = computed<SegmentKey[]>(() => {
-	const segments = configStore.currentLineSegments
-	return (Object.keys(segments) as SegmentKey[]).filter((key) => segments[key]?.enabled)
-})
+// --- Per-line enabled segment keys derived from config directly ---
 
-const enabledKeySet = computed(() => new Set<string>(enabledSegmentKeys.value))
+function getLineEnabledKeys(lineIndex: number): SegmentKey[] {
+	const line = configStore.config.display.lines[lineIndex]
+	if (!line) return []
+	const normalized = normalizeSegments(line.segments, SEGMENT_DEFAULTS)
+	return (Object.keys(normalized) as SegmentKey[]).filter((key) => normalized[key]?.enabled)
+}
 
-// Local order state for drag reorder
-const segmentOrder = ref<SegmentKey[]>([...enabledSegmentKeys.value])
+function getLineEnabledKeySet(lineIndex: number): Set<string> {
+	return new Set<string>(getLineEnabledKeys(lineIndex))
+}
 
-watch(enabledSegmentKeys, (newKeys) => {
-	const newSet = new Set(newKeys)
-	const kept = segmentOrder.value.filter((key) => newSet.has(key))
-	const keptSet = new Set(kept)
-	const added = newKeys.filter((key) => !keptSet.has(key))
-	const merged = [...kept, ...added]
-	if (JSON.stringify(merged) !== JSON.stringify(segmentOrder.value)) {
-		segmentOrder.value = merged
-	}
-})
+// Local order state per line for drag reorder
+const segmentOrders = ref<Record<number, SegmentKey[]>>({})
 
-// --- Popover state ---
+// Initialize and sync segment orders per line
+watch(
+	() => configStore.config.display.lines.map((line, i) => getLineEnabledKeys(i)),
+	(allLineKeys) => {
+		const newOrders: Record<number, SegmentKey[]> = {}
+		for (let i = 0; i < allLineKeys.length; i++) {
+			const newKeys = allLineKeys[i]!
+			const existing = segmentOrders.value[i] ?? []
+			const newSet = new Set(newKeys)
+			const kept = existing.filter((key) => newSet.has(key))
+			const keptSet = new Set(kept)
+			const added = newKeys.filter((key) => !keptSet.has(key))
+			newOrders[i] = [...kept, ...added]
+		}
+		segmentOrders.value = newOrders
+	},
+	{ immediate: true, deep: true },
+)
+
+// --- Popover state using composite keys ---
 
 const openPopover = ref<string | null>(null)
 
-function togglePopover(key: string) {
-	openPopover.value = openPopover.value === key ? null : key
+function compositeKey(lineIndex: number, segmentKey: string): string {
+	return `${lineIndex}:${segmentKey}`
 }
 
-function setPopoverOpen(key: string, value: boolean) {
+function setPopoverOpen(lineIndex: number, key: string, value: boolean) {
+	const ck = compositeKey(lineIndex, key)
 	if (value) {
-		openPopover.value = key
-	} else if (openPopover.value === key) {
+		openPopover.value = ck
+		editorStore.setActiveLineIndex(lineIndex)
+	} else if (openPopover.value === ck) {
 		openPopover.value = null
 	}
 }
@@ -65,33 +86,55 @@ function setPopoverOpen(key: string, value: boolean) {
 
 const chipEls = ref<Record<string, Element | null>>({})
 
-function setChipRef(key: string) {
+function setChipRef(lineIndex: number, key: string) {
+	const ck = compositeKey(lineIndex, key)
 	return (el: Element | ComponentPublicInstance | null) => {
-		chipEls.value[key] = el instanceof Element ? el : ((el as ComponentPublicInstance)?.$el ?? null)
+		chipEls.value[ck] = el instanceof Element ? el : ((el as ComponentPublicInstance)?.$el ?? null)
 	}
 }
 
 // --- Handlers ---
 
-function handleReorder(newOrder: SegmentKey[]) {
-	segmentOrder.value = newOrder
-	const disabledKeys = (Object.keys(configStore.currentLineSegments) as SegmentKey[]).filter(
-		(key) => !enabledKeySet.value.has(key),
+function handleReorder(lineIndex: number, newOrder: SegmentKey[]) {
+	segmentOrders.value[lineIndex] = newOrder
+	const lineEnabledSet = getLineEnabledKeySet(lineIndex)
+	const line = configStore.config.display.lines[lineIndex]
+	if (!line) return
+	const normalized = normalizeSegments(line.segments, SEGMENT_DEFAULTS)
+	const disabledKeys = (Object.keys(normalized) as SegmentKey[]).filter(
+		(key) => !lineEnabledSet.has(key),
 	)
-	configStore.reorderSegments(editorStore.activeLineIndex, [...newOrder, ...disabledKeys])
+	configStore.reorderSegments(lineIndex, [...newOrder, ...disabledKeys])
 }
 
-function handleAddSegment(key: SegmentKey) {
-	configStore.toggleSegment(editorStore.activeLineIndex, key, true)
+function handleAddSegment(lineIndex: number, key: SegmentKey) {
+	editorStore.setActiveLineIndex(lineIndex)
+	configStore.toggleSegment(lineIndex, key, true)
 	nextTick(() => {
-		openPopover.value = key
+		openPopover.value = compositeKey(lineIndex, key)
 	})
 }
 
-function handleRemoveSegment(key: string) {
+function handleRemoveSegment(lineIndex: number, key: string) {
+	const ck = compositeKey(lineIndex, key)
+	if (openPopover.value === ck) {
+		openPopover.value = null
+	}
 	if (editorStore.selectedSegment === key) {
 		editorStore.clearSelection()
 	}
+}
+
+function handleAddLine() {
+	configStore.addLine()
+}
+
+function handleRemoveLine(lineIndex: number) {
+	// Clear stale composite-keyed state before indices shift
+	openPopover.value = null
+	highlightedChip.value = null
+	chipEls.value = {}
+	configStore.removeLine(lineIndex)
 }
 
 // --- Selection sync: external focusedSegment -> scroll + highlight ---
@@ -105,17 +148,21 @@ watch(
 		if (!focused || !isSegmentKey(focused.name)) return
 		if (focused.source !== 'preview') return
 
-		openPopover.value = focused.name
+		const lineIndex = focused.lineIndex ?? 0
+		const ck = compositeKey(lineIndex, focused.name)
+
+		editorStore.setActiveLineIndex(lineIndex)
+		openPopover.value = ck
 
 		// Apply highlight animation
 		clearTimeout(highlightTimer)
-		highlightedChip.value = focused.name
+		highlightedChip.value = ck
 		highlightTimer = setTimeout(() => {
 			highlightedChip.value = null
 		}, 2000)
 
 		await nextTick()
-		const el = chipEls.value[focused.name]
+		const el = chipEls.value[ck]
 		if (el) {
 			el.scrollIntoView({
 				behavior: prefersReducedMotion.value ? 'auto' : 'smooth',
@@ -128,78 +175,115 @@ watch(
 
 <template>
 	<section class="flex flex-col gap-4">
-		<div class="flex items-center justify-between gap-4">
-			<div>
-				<h2 class="text-sm font-semibold">Layout Editor</h2>
-				<p class="text-xs text-muted-foreground">Click segments to configure, drag to reorder</p>
-			</div>
-			<LineSelector />
+		<div>
+			<h2 class="text-sm font-semibold">Layout Editor</h2>
+			<p class="text-xs text-muted-foreground">Click segments to configure, drag to reorder</p>
 		</div>
 
-		<!-- Segment chips layout -->
-		<div class="rounded-lg border border-border bg-card p-4">
-			<template v-if="segmentOrder.length > 0">
-				<Reorder.Group
-					axis="x"
-					:values="segmentOrder"
-					as="div"
-					class="flex flex-wrap items-center"
-					:class="[
-						displayStyle === 'minimal' && 'gap-2',
-						displayStyle === 'capsule' && 'gap-2',
-						displayStyle === 'powerline' && 'gap-0',
-					]"
-					@update:values="handleReorder"
-				>
-					<Reorder.Item
-						v-for="(key, index) in segmentOrder"
-						:key="key"
-						:value="key"
-						as="div"
-						class="cursor-grab active:cursor-grabbing"
-						:while-drag="whileDragStyle"
+		<!-- All lines rendered simultaneously -->
+		<div class="flex flex-col gap-3">
+			<div
+				v-for="(line, lineIndex) in lines"
+				:key="lineIndex"
+				class="flex flex-col gap-2 rounded-lg border border-border bg-card p-3"
+			>
+				<!-- Line header -->
+				<div class="flex items-center justify-between gap-2">
+					<span class="text-xs font-medium text-muted-foreground">Line {{ lineIndex + 1 }}</span>
+					<Button
+						v-if="lineIndex > 0"
+						variant="ghost"
+						size="icon-sm"
+						class="!size-6 text-muted-foreground hover:text-destructive"
+						@click="handleRemoveLine(lineIndex)"
 					>
-						<SegmentConfigPopover
-							:ref="setChipRef(key)"
-							:segment-key="key as SegmentKey"
-							:line-index="editorStore.activeLineIndex"
-							:open="openPopover === key"
-							@update:open="setPopoverOpen(key, $event)"
-							@remove="handleRemoveSegment(key)"
+						<Trash2 class="size-3.5" />
+						<span class="sr-only">Remove Line {{ lineIndex + 1 }}</span>
+					</Button>
+				</div>
+
+				<!-- Segment chips -->
+				<template v-if="(segmentOrders[lineIndex] ?? []).length > 0">
+					<Reorder.Group
+						axis="x"
+						:values="segmentOrders[lineIndex] ?? []"
+						as="div"
+						class="flex flex-wrap items-center"
+						:class="[
+							displayStyle === 'minimal' && 'gap-2',
+							displayStyle === 'capsule' && 'gap-2',
+							displayStyle === 'powerline' && 'gap-0',
+						]"
+						@update:values="handleReorder(lineIndex, $event)"
+					>
+						<Reorder.Item
+							v-for="(key, segIndex) in segmentOrders[lineIndex] ?? []"
+							:key="key"
+							:value="key"
+							as="div"
+							class="cursor-grab hover:z-10 active:cursor-grabbing"
+							:while-drag="whileDragStyle"
 						>
-							<SegmentChip
+							<SegmentConfigPopover
+								:ref="setChipRef(lineIndex, key)"
 								:segment-key="key as SegmentKey"
-								:display-style="displayStyle"
-								:selected="openPopover === key"
-								:highlighted="highlightedChip === key"
-								:is-first="index === 0"
-								:is-last="index === segmentOrder.length - 1"
-							/>
-						</SegmentConfigPopover>
-					</Reorder.Item>
-				</Reorder.Group>
+								:line-index="lineIndex"
+								:open="openPopover === compositeKey(lineIndex, key)"
+								@update:open="setPopoverOpen(lineIndex, key, $event)"
+								@remove="handleRemoveSegment(lineIndex, key)"
+							>
+								<SegmentChip
+									:segment-key="key as SegmentKey"
+									:display-style="displayStyle"
+									:selected="openPopover === compositeKey(lineIndex, key)"
+									:highlighted="highlightedChip === compositeKey(lineIndex, key)"
+									:is-first="segIndex === 0"
+									:is-last="segIndex === (segmentOrders[lineIndex] ?? []).length - 1"
+								/>
+							</SegmentConfigPopover>
+						</Reorder.Item>
+					</Reorder.Group>
 
-				<!-- Add Segment inline at end -->
-				<div class="mt-3">
-					<SegmentPicker :enabled-keys="enabledKeySet" @add="handleAddSegment" />
-				</div>
-			</template>
+					<SegmentPicker
+						:enabled-keys="getLineEnabledKeySet(lineIndex)"
+						@add="handleAddSegment(lineIndex, $event)"
+					/>
+				</template>
 
-			<!-- Empty state -->
-			<div v-else class="flex flex-col items-center gap-3 py-8 text-center">
-				<div class="flex size-10 items-center justify-center rounded-full bg-muted">
-					<Sparkles class="size-5 text-muted-foreground" />
-				</div>
-				<div class="space-y-1">
-					<p class="text-sm font-medium text-foreground">No segments yet</p>
-					<p class="text-xs text-muted-foreground">
-						Add segments to build your statusline, or choose a preset above
-					</p>
-				</div>
-				<div class="pt-1">
-					<SegmentPicker :enabled-keys="enabledKeySet" @add="handleAddSegment" />
+				<!-- Empty state per line -->
+				<div v-else class="flex flex-col items-center gap-3 py-6 text-center">
+					<div class="flex size-8 items-center justify-center rounded-full bg-muted">
+						<Sparkles class="size-4 text-muted-foreground" />
+					</div>
+					<div class="space-y-1">
+						<p class="text-sm font-medium text-foreground">No segments</p>
+						<p class="text-xs text-muted-foreground">Add segments to this line</p>
+					</div>
+					<SegmentPicker
+						:enabled-keys="getLineEnabledKeySet(lineIndex)"
+						@add="handleAddSegment(lineIndex, $event)"
+					/>
 				</div>
 			</div>
 		</div>
+
+		<!-- Add Line button -->
+		<Tooltip>
+			<TooltipTrigger as-child>
+				<div>
+					<Button
+						variant="outline"
+						size="sm"
+						:disabled="!canAddLine"
+						class="w-full border-dashed"
+						@click="handleAddLine"
+					>
+						<Plus class="size-4" />
+						Add Line
+					</Button>
+				</div>
+			</TooltipTrigger>
+			<TooltipContent v-if="!canAddLine"> Maximum of 5 lines reached </TooltipContent>
+		</Tooltip>
 	</section>
 </template>
