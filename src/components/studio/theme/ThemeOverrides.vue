@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ColorTheme, SegmentColor } from '@owloops/claude-powerline/browser'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import ColorPairRow from './ColorPairRow.vue'
 import { SEGMENT_KEYS, SEGMENT_LABELS } from '@/lib/themes'
@@ -45,19 +46,15 @@ function resetSegment(key: keyof ColorTheme) {
 
 <template>
 	<div class="flex flex-col gap-3">
-		<Separator />
 		<Collapsible v-model:open="isOpen">
 			<CollapsibleTrigger
 				class="flex w-full items-center justify-between rounded-md px-1 py-1 text-sm font-medium hover:bg-accent/50"
 			>
 				<span class="flex items-center gap-2">
 					Customize Colors
-					<span
-						v-if="overrideCount > 0"
-						class="inline-flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-primary-foreground"
-					>
+					<Badge v-if="overrideCount > 0" variant="primary" class="px-1.5 py-0 text-[10px]">
 						{{ overrideCount }}
-					</span>
+					</Badge>
 				</span>
 				<IconLucide-chevron-down
 					class="size-4 text-muted-foreground transition-transform duration-200"
@@ -81,6 +78,7 @@ function resetSegment(key: keyof ColorTheme) {
 				</div>
 			</CollapsibleContent>
 		</Collapsible>
+		<Separator />
 	</div>
 </template>
 

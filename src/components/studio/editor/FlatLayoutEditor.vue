@@ -11,6 +11,7 @@ import SegmentConfigPopover from './SegmentConfigPopover.vue'
 import { isSegmentKey, type SegmentKey } from '@/components/studio/segments/segmentMeta'
 import { normalizeSegments } from '@/components/studio/segments/segmentMeta'
 import { SEGMENT_DEFAULTS } from '@/stores/config'
+import { cn } from '@/lib/utils'
 
 const configStore = useConfigStore()
 const editorStore = useEditorStore()
@@ -181,11 +182,11 @@ watch(
 		</div>
 
 		<!-- All lines rendered simultaneously -->
-		<div class="flex flex-col gap-3">
+		<div class="flex flex-col divide-y divide-dashed divide-border">
 			<div
 				v-for="(line, lineIndex) in lines"
 				:key="lineIndex"
-				class="flex flex-col gap-2 rounded-lg border border-border bg-card p-3"
+				class="flex flex-col gap-2 py-3 first:pt-0 last:pb-0"
 			>
 				<!-- Line header -->
 				<div class="flex items-center justify-between gap-2">
@@ -203,7 +204,10 @@ watch(
 				</div>
 
 				<!-- Segment chips -->
-				<template v-if="(segmentOrders[lineIndex] ?? []).length > 0">
+				<div
+					v-if="(segmentOrders[lineIndex] ?? []).length > 0"
+					class="flex items-center justify-between gap-2"
+				>
 					<Reorder.Group
 						axis="x"
 						:values="segmentOrders[lineIndex] ?? []"
@@ -221,7 +225,19 @@ watch(
 							:key="key"
 							:value="key"
 							as="div"
-							class="cursor-grab hover:z-10 active:cursor-grabbing"
+							:class="
+								cn(
+									'reorder-chip cursor-grab active:cursor-grabbing',
+									displayStyle === 'minimal' && 'rounded-md border border-border',
+									displayStyle === 'powerline' &&
+										'border-y border-l border-border first:rounded-l-md last:rounded-r-md last:border-r',
+									displayStyle === 'capsule' && 'rounded-full border border-border',
+									openPopover === compositeKey(lineIndex, key) &&
+										'border-r border-primary ring-2 ring-primary/20',
+									highlightedChip === compositeKey(lineIndex, key) && 'segment-highlight-pulse',
+								)
+							"
+							:style="openPopover === compositeKey(lineIndex, key) ? { zIndex: 10 } : undefined"
 							:while-drag="whileDragStyle"
 						>
 							<SegmentConfigPopover
@@ -237,18 +253,17 @@ watch(
 									:display-style="displayStyle"
 									:selected="openPopover === compositeKey(lineIndex, key)"
 									:highlighted="highlightedChip === compositeKey(lineIndex, key)"
-									:is-first="segIndex === 0"
-									:is-last="segIndex === (segmentOrders[lineIndex] ?? []).length - 1"
 								/>
 							</SegmentConfigPopover>
 						</Reorder.Item>
 					</Reorder.Group>
 
 					<SegmentPicker
+						class="ml-auto shrink-0"
 						:enabled-keys="getLineEnabledKeySet(lineIndex)"
 						@add="handleAddSegment(lineIndex, $event)"
 					/>
-				</template>
+				</div>
 
 				<!-- Empty state per line -->
 				<div v-else class="flex flex-col items-center gap-3 py-6 text-center">
@@ -289,3 +304,37 @@ watch(
 		</TooltipProvider>
 	</section>
 </template>
+
+<style scoped>
+.reorder-chip:hover,
+.reorder-chip:focus {
+	z-index: 10 !important;
+}
+
+.reorder-chip:focus {
+	border-right-width: 1px !important;
+}
+
+.segment-highlight-pulse {
+	animation: segment-pulse 2s ease-out;
+}
+
+@keyframes segment-pulse {
+	0% {
+		box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4);
+	}
+	20% {
+		box-shadow: 0 0 0 4px hsl(var(--primary) / 0.3);
+	}
+	100% {
+		box-shadow: 0 0 0 0 hsl(var(--primary) / 0);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.segment-highlight-pulse {
+		animation: none;
+		box-shadow: 0 0 0 3px hsl(var(--primary) / 0.3);
+	}
+}
+</style>

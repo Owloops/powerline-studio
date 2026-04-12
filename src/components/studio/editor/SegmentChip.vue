@@ -7,8 +7,6 @@ const props = defineProps<{
 	displayStyle: 'minimal' | 'powerline' | 'capsule'
 	selected?: boolean
 	highlighted?: boolean
-	isFirst?: boolean
-	isLast?: boolean
 }>()
 
 defineEmits<{
@@ -23,30 +21,16 @@ const meta = computed(() => SEGMENT_META[props.segmentKey])
 		type="button"
 		:class="
 			cn(
-				'group relative flex cursor-pointer items-center gap-1.5 text-xs font-medium outline-none transition-all duration-150',
+				'group relative flex cursor-pointer items-center gap-1.5 rounded-[inherit] text-xs font-medium outline-none transition-all duration-150',
 				'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
+				!selected && 'bg-card hover:bg-accent/50',
+				selected && 'bg-primary/5',
 				// Minimal style
-				displayStyle === 'minimal' &&
-					'rounded-md border border-border bg-card px-2.5 py-1.5 hover:bg-accent/50',
-				displayStyle === 'minimal' &&
-					selected &&
-					'border-primary bg-primary/5 ring-2 ring-primary/20',
+				displayStyle === 'minimal' && 'px-2.5 py-1.5',
 				// Powerline style
-				displayStyle === 'powerline' &&
-					'gap-1 rounded-none border-y border-l border-border bg-card py-1.5 pr-1 pl-2.5 hover:bg-accent/50',
-				displayStyle === 'powerline' && isFirst && 'rounded-l-md',
-				displayStyle === 'powerline' && isLast && 'rounded-r-md border-r',
-				displayStyle === 'powerline' &&
-					selected &&
-					'border-primary bg-primary/5 ring-2 ring-primary/20',
+				displayStyle === 'powerline' && 'gap-1 py-1.5 pr-1 pl-2.5',
 				// Capsule style
-				displayStyle === 'capsule' &&
-					'rounded-full border border-border bg-card px-3 py-1.5 hover:bg-accent/50',
-				displayStyle === 'capsule' &&
-					selected &&
-					'border-primary bg-primary/5 ring-2 ring-primary/20',
-				// Highlight pulse from preview click
-				highlighted && 'segment-highlight-pulse',
+				displayStyle === 'capsule' && 'px-3 py-1.5',
 			)
 		"
 		@click="$emit('click')"
@@ -63,28 +47,3 @@ const meta = computed(() => SEGMENT_META[props.segmentKey])
 		>
 	</button>
 </template>
-
-<style scoped>
-.segment-highlight-pulse {
-	animation: segment-pulse 2s ease-out;
-}
-
-@keyframes segment-pulse {
-	0% {
-		box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4);
-	}
-	20% {
-		box-shadow: 0 0 0 4px hsl(var(--primary) / 0.3);
-	}
-	100% {
-		box-shadow: 0 0 0 0 hsl(var(--primary) / 0);
-	}
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.segment-highlight-pulse {
-		animation: none;
-		box-shadow: 0 0 0 3px hsl(var(--primary) / 0.3);
-	}
-}
-</style>

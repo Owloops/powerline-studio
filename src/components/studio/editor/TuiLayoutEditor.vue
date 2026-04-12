@@ -43,31 +43,33 @@ const sortedBreakpoints = computed(() => {
 })
 
 // Breakpoint-width sync: when user clicks a breakpoint tab,
-// set terminalWidth to show that breakpoint's range in the preview
+// adjust terminalWidth only if needed to land within that breakpoint's range.
 function selectBreakpoint(index: number) {
 	selectedBpIndex.value = index
 	const bp = breakpoints.value[index]
 	if (!bp) return
-	// Set terminal width so the preview renders at this breakpoint's range.
-	// For the default (minWidth=0) breakpoint, use a modest width that
-	// stays below any other breakpoint's minWidth.
+
+	const sorted = [...breakpoints.value].sort((a, b) => a.minWidth - b.minWidth)
+	const sortedIdx = sorted.indexOf(bp)
+	const effectiveWidth = previewStore.terminalWidth - previewStore.reservedWidth
+	const nextMin = sortedIdx < sorted.length - 1 ? sorted[sortedIdx + 1]!.minWidth : Infinity
+
 	if (bp.minWidth > 0) {
-		const targetWidth = bp.minWidth + previewStore.reservedWidth
-		previewStore.setTerminalWidth(targetWidth)
+		if (effectiveWidth < bp.minWidth) {
+			previewStore.setTerminalWidth(bp.minWidth + previewStore.reservedWidth)
+		} else if (effectiveWidth >= nextMin) {
+			previewStore.setTerminalWidth(Math.max(30, nextMin - 1) + previewStore.reservedWidth)
+		}
 	} else {
-		// Default breakpoint: find the smallest non-zero minWidth and go below it
-		const smallestNonZero = breakpoints.value
-			.filter((b) => b.minWidth > 0)
-			.reduce((min, b) => Math.min(min, b.minWidth), Infinity)
-		if (smallestNonZero !== Infinity) {
-			const targetWidth = Math.max(30, smallestNonZero - 1) + previewStore.reservedWidth
-			previewStore.setTerminalWidth(targetWidth)
+		// Default breakpoint: need to be below the next breakpoint's minWidth
+		if (nextMin !== Infinity && effectiveWidth >= nextMin) {
+			previewStore.setTerminalWidth(Math.max(30, nextMin - 1) + previewStore.reservedWidth)
 		}
 	}
 }
 
 function addBreakpoint() {
-	configStore.addBreakpoint()
+	configStore.addBreakpoint(selectedBpIndex.value)
 	// Select the newly added breakpoint
 	nextTick(() => {
 		selectedBpIndex.value = breakpoints.value.length - 1
@@ -291,13 +293,13 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 		<div class="rounded-lg border border-border overflow-hidden">
 			<!-- Title Bar (clickable strip) -->
 			<TooltipProvider :delay-duration="400">
-				<Tooltip :open="titlePopoverOpen ? false : undefined">
+				<Tooltip :disabled="titlePopoverOpen">
 					<Popover v-model:open="titlePopoverOpen">
 						<TooltipTrigger as-child>
 							<PopoverTrigger as-child>
 								<button
 									ref="titleTriggerRef"
-									class="flex w-full items-center gap-2 border-b border-border bg-muted/30 px-3 py-2 text-left text-xs transition-colors hover:bg-muted/50"
+									class="flex w-full items-center gap-2 rounded-t-lg border-b border-border bg-muted/30 px-3 py-2 text-left text-xs transition-colors hover:bg-muted/50"
 									:class="titlePopoverOpen ? 'ring-1 ring-inset ring-primary/30' : ''"
 								>
 									<IconLucide-panel-top class="size-3.5 shrink-0 text-muted-foreground" />
@@ -352,13 +354,13 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 
 			<!-- Footer (clickable strip) -->
 			<TooltipProvider :delay-duration="400">
-				<Tooltip :open="footerPopoverOpen ? false : undefined">
+				<Tooltip :disabled="footerPopoverOpen">
 					<Popover v-model:open="footerPopoverOpen">
 						<TooltipTrigger as-child>
 							<PopoverTrigger as-child>
 								<button
 									ref="footerTriggerRef"
-									class="flex w-full items-center gap-2 border-t border-border bg-muted/30 px-3 py-2 text-left text-xs transition-colors hover:bg-muted/50"
+									class="flex w-full items-center gap-2 rounded-b-lg border-t border-border bg-muted/30 px-3 py-2 text-left text-xs transition-colors hover:bg-muted/50"
 									:class="footerPopoverOpen ? 'ring-1 ring-inset ring-primary/30' : ''"
 								>
 									<IconLucide-panel-bottom class="size-3.5 shrink-0 text-muted-foreground" />

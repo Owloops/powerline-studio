@@ -15,9 +15,9 @@ export const TUI_PRESETS: TuiPreset[] = [
 		description: 'Git + context window only. Minimal footprint.',
 		tui: {
 			fitContent: true,
-			minWidth: 50,
-			padding: { horizontal: 2 },
-			separator: { column: '  ' },
+			minWidth: 30,
+			padding: { horizontal: 1 },
+			separator: { column: '' },
 			title: {
 				left: '{model}',
 				right: '{dir}',
@@ -48,9 +48,9 @@ export const TUI_PRESETS: TuiPreset[] = [
 		description: 'Git + context + block usage with progress bars.',
 		tui: {
 			fitContent: true,
-			minWidth: 55,
-			padding: { horizontal: 2 },
-			separator: { column: '  ' },
+			minWidth: 45,
+			padding: { horizontal: 1 },
+			separator: { column: '' },
 			title: {
 				left: '{model}',
 				right: '{dir}',
@@ -90,8 +90,8 @@ export const TUI_PRESETS: TuiPreset[] = [
 		tui: {
 			fitContent: true,
 			minWidth: 60,
-			padding: { horizontal: 2 },
-			separator: { column: '  ' },
+			padding: { horizontal: 1 },
+			separator: { column: '' },
 			title: {
 				left: '{model.icon}  {model.value}',
 				right: '{dir}',
@@ -116,7 +116,7 @@ export const TUI_PRESETS: TuiPreset[] = [
 						'block.icon    block.bar    block.bar    block.value     block.time',
 						'weekly.icon   weekly.bar   weekly.bar   weekly.pct      weekly.time',
 						'---',
-						'session       session       .           today           today',
+						'session       session       session     today           today',
 					],
 					columns: ['auto', '1fr', 'auto', 'auto', 'auto'],
 					align: ['left', 'left', 'right', 'right', 'right'],

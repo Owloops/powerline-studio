@@ -2,13 +2,38 @@
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import PreviewControls from './PreviewControls.vue'
 import SegmentOverlay from './SegmentOverlay.vue'
 
 const previewStore = usePreviewStore()
 
 const popoverOpen = ref(false)
+const triggerRef = ref<InstanceType<typeof Button> | null>(null)
+const anchorStyle = ref<{
+	position: string
+	top: string
+	left: string
+	width: string
+	height: string
+}>()
+
+watch(popoverOpen, (open) => {
+	const el = triggerRef.value?.$el as HTMLElement | undefined
+	if (open && el) {
+		const rect = el.getBoundingClientRect()
+		anchorStyle.value = {
+			position: 'fixed',
+			top: `${rect.top}px`,
+			left: `${rect.left}px`,
+			width: `${rect.width}px`,
+			height: `${rect.height}px`,
+		}
+	} else {
+		anchorStyle.value = undefined
+	}
+})
 
 const terminalStyle = computed(() => ({
 	'--terminal-bg': previewStore.terminalBgColor,
@@ -19,7 +44,7 @@ const preStyle = computed(() => ({
 	fontFamily: previewStore.terminalFontFamily,
 	fontFeatureSettings: "'calt' 0, 'liga' 0",
 	fontSize: `${previewStore.fontSize}px`,
-	lineHeight: previewStore.lineHeight,
+	lineHeight: previewStore.effectiveLineHeight,
 }))
 
 const contentStyle = computed(() => ({
@@ -57,22 +82,39 @@ const effectiveWidth = computed(() =>
 				<Badge variant="secondary">
 					{{ effectiveWidth }}/{{ previewStore.terminalWidth }} cols
 				</Badge>
-				<Popover v-model:open="popoverOpen">
-					<PopoverTrigger as-child>
-						<Button
-							variant="ghost"
-							size="icon-sm"
-							class="ml-3 size-7 hover:!bg-foreground/10"
-							title="Configure terminal preview"
-						>
-							<IconLucide-settings-2 class="size-3.5" />
-							<span class="sr-only">Configure terminal preview</span>
-						</Button>
-					</PopoverTrigger>
-					<PopoverContent align="end" side="bottom" :side-offset="8" class="w-80 p-0">
-						<PreviewControls />
-					</PopoverContent>
-				</Popover>
+				<TooltipProvider :delay-duration="300" :disable-hoverable-content="true">
+					<Tooltip :disabled="popoverOpen">
+						<TooltipTrigger as-child>
+							<div class="ml-3 inline-flex">
+								<Popover v-model:open="popoverOpen">
+									<PopoverTrigger as-child>
+										<Button
+											ref="triggerRef"
+											variant="ghost"
+											size="icon-sm"
+											class="size-7 hover:!bg-foreground/10"
+										>
+											<IconLucide-settings-2 class="size-3.5" />
+											<span class="sr-only">Configure terminal preview</span>
+										</Button>
+									</PopoverTrigger>
+									<PopoverAnchor
+										v-if="anchorStyle"
+										as="div"
+										class="pointer-events-none"
+										:style="anchorStyle"
+									/>
+									<PopoverContent align="end" side="bottom" :side-offset="8" class="w-80 p-0">
+										<PreviewControls />
+									</PopoverContent>
+								</Popover>
+							</div>
+						</TooltipTrigger>
+						<TooltipContent side="bottom" :side-offset="8">
+							Configure terminal preview
+						</TooltipContent>
+					</Tooltip>
+				</TooltipProvider>
 			</div>
 		</div>
 

@@ -143,6 +143,7 @@ declare module 'vue' {
     IconLucideShield: typeof import('~icons/lucide/shield')['default']
     IconLucideSun: typeof import('~icons/lucide/sun')['default']
     IconLucideTerminal: typeof import('~icons/lucide/terminal')['default']
+    IconLucideUndo2: typeof import('~icons/lucide/undo2')['default']
     IconLucideUpload: typeof import('~icons/lucide/upload')['default']
     IconLucideX: typeof import('~icons/lucide/x')['default']
     ImportTab: typeof import('./components/studio/panels/ImportTab.vue')['default']

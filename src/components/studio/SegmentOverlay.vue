@@ -38,8 +38,8 @@ function handleClick(segmentType: string, sourceLineIndex: number, cellSegment?:
 			:style="{
 				left: `${hitbox.charStart}ch`,
 				width: `${hitbox.charWidth}ch`,
-				top: `${hitbox.line * previewStore.lineHeight}em`,
-				height: `${previewStore.lineHeight}em`,
+				top: `${hitbox.line * previewStore.effectiveLineHeight}em`,
+				height: `${previewStore.effectiveLineHeight}em`,
 			}"
 			:title="hitboxTitle(hitbox.segmentType)"
 			@click="handleClick(hitbox.segmentType, hitbox.sourceLineIndex, hitbox.cellSegment)"

@@ -80,6 +80,16 @@ export function extractTuiHitboxes(
 	const extraWallPad = Math.max(0, 1 - hPad)
 	const leftOffset = 1 + extraWallPad
 
+	function colLeftPad(c: number): number {
+		const shrink = align?.[c] === 'right' ? (padShrink?.[c] ?? 0) : 0
+		return hPad - shrink
+	}
+
+	function colRightPad(c: number): number {
+		const shrink = align?.[c] === 'left' ? (padShrink?.[c] ?? 0) : 0
+		return hPad - shrink
+	}
+
 	let outputLine = hasTitleBar ? 1 : 0
 
 	for (const row of matrix) {
@@ -95,30 +105,20 @@ export function extractTuiHitboxes(
 			const normalized = normalizeSegmentName(cell.segment)
 			if (!normalized) continue
 
-			// Left pad of first column in this cell
-			const leftShrink = align?.[colIdx] === 'right' ? (padShrink?.[colIdx] ?? 0) : 0
-			const cellLeftPad = hPad - leftShrink
-
-			// charStart: border + wall pad + left cell pad + prior columns
-			let charStart = leftOffset + cellLeftPad
+			// charStart: at the cell's left padding edge
+			let charStart = leftOffset
 			for (let c = 0; c < colIdx; c++) {
-				const rShrink = align?.[c] === 'left' ? (padShrink?.[c] ?? 0) : 0
-				const lShrink = align?.[c + 1] === 'right' ? (padShrink?.[c + 1] ?? 0) : 0
-				const colTotalPad = hPad - rShrink + (hPad - lShrink)
-				charStart += (colWidths[c] ?? 0) + colTotalPad + separatorWidth
+				charStart += colLeftPad(c) + (colWidths[c] ?? 0) + colRightPad(c) + separatorWidth
 			}
 
-			// charWidth: spanned column widths + internal padding
+			// charWidth: leftPad + content + rightPad for the full cell
+			const lastCol = colIdx + cell.spanSize - 1
 			let charWidth = 0
-			for (let j = 0; j < cell.spanSize; j++) {
-				charWidth += colWidths[colIdx + j] ?? 0
+			for (let c = colIdx; c <= lastCol; c++) {
+				charWidth += colLeftPad(c) + (colWidths[c] ?? 0) + colRightPad(c)
 			}
 			if (cell.spanSize > 1) {
-				for (let j = colIdx; j < colIdx + cell.spanSize - 1; j++) {
-					const rShrink = align?.[j] === 'left' ? (padShrink?.[j] ?? 0) : 0
-					const lShrink = align?.[j + 1] === 'right' ? (padShrink?.[j + 1] ?? 0) : 0
-					charWidth += separatorWidth + (hPad - rShrink) + (hPad - lShrink)
-				}
+				charWidth += (cell.spanSize - 1) * separatorWidth
 			}
 
 			hitboxes.push({

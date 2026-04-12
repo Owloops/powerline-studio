@@ -54,10 +54,10 @@ function handleOpenChange(value: boolean) {
 				variant="outline"
 				size="sm"
 				:disabled="!hasAvailableSegments"
-				class="w-full border-dashed"
+				class="h-7 border-dashed px-2 text-xs"
 			>
-				<Plus class="size-4" />
-				Add Segment
+				<Plus class="size-3.5" />
+				Add
 			</Button>
 		</PopoverTrigger>
 		<PopoverContent align="start" :side-offset="4" class="w-64 p-0">

@@ -168,7 +168,7 @@ const CHARSET_OPTIONS = [
 					class="flex-1"
 				/>
 				<span class="w-8 text-right text-xs tabular-nums text-muted-foreground">{{
-					lineHeight
+					lineHeight.toFixed(2)
 				}}</span>
 			</div>
 		</div>

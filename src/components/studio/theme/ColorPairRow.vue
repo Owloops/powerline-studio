@@ -44,7 +44,7 @@ const emit = defineEmits<{
 			:aria-label="`Reset ${label} to theme default`"
 			@click="emit('reset')"
 		>
-			<IconLucide-x class="size-3.5" />
+			<IconLucide-undo-2 class="size-3.5" />
 		</Button>
 		<div v-else class="size-6" />
 	</div>

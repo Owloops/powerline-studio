@@ -234,7 +234,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 										v-for="seg in segments"
 										:key="seg.label"
 										:style="{ background: seg.bg, color: '#fff' }"
-										class="inline-block px-0.5"
+										class="inline-block px-1"
 										>{{ seg.label }}</span
 									>
 								</template>
@@ -242,7 +242,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 									<template v-for="(seg, i) in segments" :key="seg.label">
 										<span
 											:style="{ background: seg.bg, color: '#fff' }"
-											class="inline-block px-0.5"
+											class="inline-block px-1"
 											>{{ seg.label }}</span
 										>
 										<span
@@ -271,9 +271,9 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 									<pre
 										class="text-[#cdd6f4] leading-none"
 										style="font-family: inherit"
-									>&#x256D;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x256E;
-&#x2502; <span :style="{ color: '#3b82f6' }">~/proj</span> &#x2502; <span :style="{ color: '#22c55e' }">main</span> &#x2502;
-&#x2570;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x256F;</pre>
+									>&#x256D;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x256E;
+&#x2502; <span :style="{ color: '#3b82f6' }">~/project</span> &#x2502; <span :style="{ color: '#22c55e' }">main</span> &#x2502; <span :style="{ color: '#a855f7' }">Sonnet</span> &#x2502;
+&#x2570;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x256F;</pre>
 								</template>
 							</span>
 						</span>
@@ -281,7 +281,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 					<SelectContent position="popper" side="bottom">
 						<SelectItem v-for="s in styles" :key="s.value" :value="s.value">
 							<div class="flex items-center gap-3">
-								<span>{{ s.title }}</span>
+								<span class="w-16">{{ s.title }}</span>
 								<span
 									:class="[
 										'flex items-center overflow-hidden rounded bg-[#1e1e2e] px-1 font-nerd text-[10px] leading-tight',
@@ -293,7 +293,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 											v-for="seg in segments"
 											:key="seg.label"
 											:style="{ background: seg.bg, color: '#fff' }"
-											class="inline-block px-0.5"
+											class="inline-block px-1"
 											>{{ seg.label }}</span
 										>
 									</template>
@@ -301,7 +301,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 										<template v-for="(seg, i) in segments" :key="seg.label">
 											<span
 												:style="{ background: seg.bg, color: '#fff' }"
-												class="inline-block px-0.5"
+												class="inline-block px-1"
 												>{{ seg.label }}</span
 											>
 											<span
@@ -330,9 +330,9 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 										<pre
 											class="text-[#cdd6f4] leading-none"
 											style="font-family: inherit"
-										>&#x256D;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x256E;
-&#x2502; <span :style="{ color: '#3b82f6' }">~/proj</span> &#x2502; <span :style="{ color: '#22c55e' }">main</span> &#x2502;
-&#x2570;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x256F;</pre>
+										>&#x256D;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x256E;
+&#x2502; <span :style="{ color: '#3b82f6' }">~/project</span> &#x2502; <span :style="{ color: '#22c55e' }">main</span> &#x2502; <span :style="{ color: '#a855f7' }">Sonnet</span> &#x2502;
+&#x2570;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x256F;</pre>
 									</template>
 								</span>
 							</div>
@@ -353,27 +353,37 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 								class="rounded bg-muted px-1 py-0.5 text-[10px] leading-none text-muted-foreground"
 								>modified</span
 							>
-							<span class="flex gap-px overflow-hidden rounded">
+							<span class="flex gap-px overflow-hidden rounded text-[9px] font-medium leading-none">
 								<span
 									v-for="seg in PREVIEW_SEGMENTS"
 									:key="seg"
-									class="block size-3.5"
-									:style="{ backgroundColor: triggerThemeColors[seg].bg }"
-								/>
+									class="flex h-3.5 items-center px-1.5"
+									:style="{
+										backgroundColor: triggerThemeColors[seg].bg,
+										color: triggerThemeColors[seg].fg,
+									}"
+									>Ab</span
+								>
 							</span>
 						</span>
 					</SelectTrigger>
 					<SelectContent position="popper" side="bottom">
 						<SelectItem v-for="name in CANONICAL_THEMES" :key="name" :value="name">
 							<div class="flex items-center gap-3">
-								<span>{{ CANONICAL_THEME_LABELS[name] }}</span>
-								<span class="flex gap-px overflow-hidden rounded">
+								<span class="w-24">{{ CANONICAL_THEME_LABELS[name] }}</span>
+								<span
+									class="flex gap-px overflow-hidden rounded text-[9px] font-medium leading-none"
+								>
 									<span
 										v-for="seg in PREVIEW_SEGMENTS"
 										:key="seg"
-										class="block size-3.5"
-										:style="{ backgroundColor: getCanonicalThemeColors(name)[seg].bg }"
-									/>
+										class="flex h-3.5 items-center px-1.5"
+										:style="{
+											backgroundColor: getCanonicalThemeColors(name)[seg].bg,
+											color: getCanonicalThemeColors(name)[seg].fg,
+										}"
+										>Ab</span
+									>
 								</span>
 							</div>
 						</SelectItem>
@@ -404,8 +414,8 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 
 		<!-- Non-TUI: Padding, Auto-wrap -->
 		<template v-if="!configStore.isTuiStyle">
-			<div class="grid grid-cols-2 items-end gap-3">
-				<div class="flex flex-col gap-1.5">
+			<div class="flex items-end gap-3">
+				<div class="flex w-28 shrink-0 flex-col gap-1.5">
 					<Label for="padding" class="text-xs font-medium text-muted-foreground">Padding</Label>
 					<NumberField
 						id="padding"
@@ -648,13 +658,14 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 						class="flex flex-1 cursor-pointer items-center gap-2 text-left text-sm"
 						@click="handleLoadSaved(saved)"
 					>
-						<span class="flex gap-px overflow-hidden rounded">
+						<span class="flex gap-px overflow-hidden rounded text-[9px] font-medium leading-none">
 							<span
 								v-for="seg in PREVIEW_SEGMENTS"
 								:key="seg"
-								class="block size-3"
-								:style="{ backgroundColor: saved.colors[seg].bg }"
-							/>
+								class="flex h-3 items-center px-1.5"
+								:style="{ backgroundColor: saved.colors[seg].bg, color: saved.colors[seg].fg }"
+								>Ab</span
+							>
 						</span>
 						<span>{{ saved.name }}</span>
 					</button>

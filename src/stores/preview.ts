@@ -10,12 +10,12 @@ export const usePreviewStore = defineStore('preview', () => {
 
 	// --- State ---
 
-	const terminalWidth = ref(120)
+	const terminalWidth = ref(145)
 	const colorMode = ref<'truecolor' | 'ansi256' | 'ansi' | 'none'>('truecolor')
 	const terminalTheme = ref('catppuccin-mocha')
 	const terminalFont = ref('firacode')
 	const fontSize = ref(14)
-	const lineHeight = ref(1.15)
+	const lineHeight = ref(1)
 	const reservedWidth = ref(45)
 	const ansiOutput = ref('')
 	const htmlOutput = ref('')
@@ -33,6 +33,14 @@ export const usePreviewStore = defineStore('preview', () => {
 	const darkBackground = computed(() => resolvedTheme.value.isDark)
 	const terminalBgColor = computed(() => resolvedTheme.value.bg)
 	const terminalFgColor = computed(() => resolvedTheme.value.fg)
+
+	const baseLineHeight = computed(() =>
+		configStore.isTuiStyle ? resolvedFont.value.tuiLineHeight : 1.5,
+	)
+	const effectiveLineHeight = computed(() => {
+		const offset = lineHeight.value - 1
+		return Math.round((baseLineHeight.value + offset) * 100) / 100
+	})
 
 	// --- Mutations ---
 
@@ -83,6 +91,7 @@ export const usePreviewStore = defineStore('preview', () => {
 		segmentHitboxes,
 		// Computed
 		charset,
+		effectiveLineHeight,
 		// Mutations
 		setTerminalWidth,
 		setColorMode,

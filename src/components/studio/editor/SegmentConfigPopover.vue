@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -29,18 +28,9 @@ const configStore = useConfigStore()
 
 const meta = computed(() => SEGMENT_META[props.segmentKey])
 
-const isEnabled = computed(() => {
-	const seg = configStore.currentLineSegments[props.segmentKey]
-	return seg?.enabled ?? false
-})
-
 const hasConfigOptions = computed(() => {
 	return !!segmentConfigMap[props.segmentKey] && !NO_OPTIONS_SEGMENTS.has(props.segmentKey)
 })
-
-function handleToggleEnabled(checked: boolean) {
-	configStore.toggleSegment(props.lineIndex, props.segmentKey, checked)
-}
 
 function handleRemove() {
 	configStore.toggleSegment(props.lineIndex, props.segmentKey, false)
@@ -58,12 +48,20 @@ function handleOpenChange(value: boolean) {
 		<PopoverTrigger as-child>
 			<slot />
 		</PopoverTrigger>
-		<PopoverContent :side-offset="8" align="start" class="w-96 p-0" @open-auto-focus.prevent>
+		<PopoverContent :side-offset="8" align="start" class="w-96 gap-0 p-0" @open-auto-focus.prevent>
 			<!-- Header -->
-			<div class="flex items-center gap-3 px-4 pt-3" :class="hasConfigOptions ? 'pb-0' : 'pb-1'">
+			<div class="flex items-center gap-3 px-4 pt-3" :class="hasConfigOptions ? 'pb-0' : 'pb-3'">
 				<component :is="meta.icon" class="size-4 shrink-0 text-muted-foreground" />
 				<span class="min-w-0 flex-1 text-sm font-semibold">{{ meta.name }}</span>
-				<Switch :model-value="isEnabled" @update:model-value="handleToggleEnabled" />
+				<Button
+					variant="ghost"
+					size="icon-sm"
+					class="size-7 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+					@click="handleRemove"
+				>
+					<Trash2 class="size-3.5" />
+					<span class="sr-only">Remove segment</span>
+				</Button>
 			</div>
 
 			<!-- Config form (only for segments with real options) -->
@@ -75,21 +73,6 @@ function handleOpenChange(value: boolean) {
 					</div>
 				</ScrollArea>
 			</template>
-
-			<Separator />
-
-			<!-- Footer -->
-			<div class="px-4 py-2">
-				<Button
-					variant="ghost"
-					size="sm"
-					class="w-full justify-start gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive"
-					@click="handleRemove"
-				>
-					<Trash2 class="size-3.5" />
-					Remove Segment
-				</Button>
-			</div>
 		</PopoverContent>
 	</Popover>
 </template>

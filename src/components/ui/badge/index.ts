@@ -9,6 +9,7 @@ export const badgeVariants = cva(
 		variants: {
 			variant: {
 				default: 'bg-gray-400/10 text-gray-400 inset-ring-gray-400/20',
+				primary: 'bg-primary/10 text-primary inset-ring-primary/20',
 				secondary: 'bg-blue-400/10 text-blue-400 inset-ring-blue-400/30',
 				destructive: 'bg-red-400/10 text-red-400 inset-ring-red-400/20',
 				outline: 'bg-transparent text-foreground inset-ring-border',

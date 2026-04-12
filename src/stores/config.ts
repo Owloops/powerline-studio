@@ -290,17 +290,29 @@ export const useConfigStore = defineStore('config', () => {
 		config.value.display.tui!.widthReserve = value
 	}
 
-	function addBreakpoint() {
+	function addBreakpoint(copyFromIndex?: number) {
 		ensureTuiConfig()
 		const tui = config.value.display.tui!
 		const maxMin = tui.breakpoints.reduce((max, bp) => Math.max(max, bp.minWidth), 0)
 		const newMinWidth = maxMin + 20
-		const colCount = tui.breakpoints[0]?.columns.length ?? 2
-		tui.breakpoints.push({
-			minWidth: newMinWidth,
-			areas: [Array(colCount).fill('.').join(' ')],
-			columns: tui.breakpoints[0]?.columns.slice() ?? ['auto', '1fr'],
-		})
+		const source = copyFromIndex != null ? tui.breakpoints[copyFromIndex] : undefined
+		if (source) {
+			tui.breakpoints.push(
+				structuredClone(
+					toRaw({
+						...toRaw(source),
+						minWidth: newMinWidth,
+					}),
+				),
+			)
+		} else {
+			const colCount = tui.breakpoints[0]?.columns.length ?? 2
+			tui.breakpoints.push({
+				minWidth: newMinWidth,
+				areas: [Array(colCount).fill('.').join(' ')],
+				columns: tui.breakpoints[0]?.columns.slice() ?? ['auto', '1fr'],
+			})
+		}
 	}
 
 	function removeBreakpoint(bpIndex: number) {
