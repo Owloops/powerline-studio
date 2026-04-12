@@ -71,15 +71,18 @@ export function extractTuiHitboxes(
 	colWidths: number[],
 	separatorWidth: number,
 	hasTitleBar: boolean,
+	horizontalPadding = 0,
+	align?: string[],
+	padShrink?: number[],
 ): SegmentHitbox[] {
 	const hitboxes: SegmentHitbox[] = []
-	// Border + padding offset: 1 box char + 1 space = 2 chars from left edge
-	const leftOffset = 2
+	const hPad = horizontalPadding
+	const extraWallPad = Math.max(0, 1 - hPad)
+	const leftOffset = 1 + extraWallPad
 
 	let outputLine = hasTitleBar ? 1 : 0
 
 	for (const row of matrix) {
-		// Divider row — single cell with segment "---"
 		if (row.length === 1 && row[0]!.segment === '---') {
 			outputLine++
 			continue
@@ -92,19 +95,30 @@ export function extractTuiHitboxes(
 			const normalized = normalizeSegmentName(cell.segment)
 			if (!normalized) continue
 
-			// Compute charStart: border+padding + sum of prior column widths + prior separators
-			let charStart = leftOffset
+			// Left pad of first column in this cell
+			const leftShrink = align?.[colIdx] === 'right' ? (padShrink?.[colIdx] ?? 0) : 0
+			const cellLeftPad = hPad - leftShrink
+
+			// charStart: border + wall pad + left cell pad + prior columns
+			let charStart = leftOffset + cellLeftPad
 			for (let c = 0; c < colIdx; c++) {
-				charStart += (colWidths[c] ?? 0) + separatorWidth
+				const rShrink = align?.[c] === 'left' ? (padShrink?.[c] ?? 0) : 0
+				const lShrink = align?.[c + 1] === 'right' ? (padShrink?.[c + 1] ?? 0) : 0
+				const colTotalPad = hPad - rShrink + (hPad - lShrink)
+				charStart += (colWidths[c] ?? 0) + colTotalPad + separatorWidth
 			}
 
-			// Compute charWidth: sum of spanned column widths + internal separators
+			// charWidth: spanned column widths + internal padding
 			let charWidth = 0
 			for (let j = 0; j < cell.spanSize; j++) {
 				charWidth += colWidths[colIdx + j] ?? 0
 			}
 			if (cell.spanSize > 1) {
-				charWidth += (cell.spanSize - 1) * separatorWidth
+				for (let j = colIdx; j < colIdx + cell.spanSize - 1; j++) {
+					const rShrink = align?.[j] === 'left' ? (padShrink?.[j] ?? 0) : 0
+					const lShrink = align?.[j + 1] === 'right' ? (padShrink?.[j + 1] ?? 0) : 0
+					charWidth += separatorWidth + (hPad - rShrink) + (hPad - lShrink)
+				}
 			}
 
 			hitboxes.push({

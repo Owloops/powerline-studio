@@ -401,16 +401,18 @@ function computeTuiHitboxes(
 	const resolvedData = resolved.data
 	const templates = resolved.templates
 
-	// Select panel width for breakpoint
+	// Breakpoint selection always uses available width (terminal - reserve)
+	const widthReserve = gridConfig.widthReserve ?? 45
+	const availableWidth = Math.min(maxWidth, Math.max(minWidth, rawTerminalWidth - widthReserve))
+	const bp = selectBreakpoint(gridConfig.breakpoints, availableWidth)
+
+	// Panel width for rendering
 	let panelWidth: number
 	if (fitContent) {
 		panelWidth = maxWidth !== Infinity ? Math.min(rawTerminalWidth, maxWidth) : rawTerminalWidth
 	} else {
-		const widthReserve = gridConfig.widthReserve ?? 45
-		panelWidth = Math.min(maxWidth, Math.max(minWidth, rawTerminalWidth - widthReserve))
+		panelWidth = availableWidth
 	}
-
-	const bp = selectBreakpoint(gridConfig.breakpoints, panelWidth)
 	const rawMatrix = parseAreas(bp.areas)
 	let matrix = cullMatrix(rawMatrix, resolvedData)
 
@@ -465,7 +467,8 @@ function computeTuiHitboxes(
 		}
 	} else {
 		const innerW = panelWidth - 2
-		const contentW = innerW - 2
+		const ewp = Math.max(0, 1 - hPad)
+		const contentW = innerW - ewp * 2 - bp.columns.length * hPad * 2
 		colWidths = calculateColumnWidths(
 			bp.columns,
 			matrix,
@@ -474,6 +477,67 @@ function computeTuiHitboxes(
 			sepWidth,
 			lateNames,
 		)
+	}
+
+	// Adaptive padding: absorb alignment gaps, redistribute savings to fr columns
+	const align: string[] = bp.align || bp.columns.map(() => 'left')
+	const padShrink = Array.from<number>({ length: bp.columns.length }).fill(0)
+	if (hPad > 0) {
+		const maxContent = Array.from<number>({ length: bp.columns.length }).fill(0)
+		for (const row of matrix) {
+			if (row.length === 1 && row[0]!.segment === '---') continue
+			for (let ci = 0; ci < row.length; ci++) {
+				const cell = row[ci]!
+				if (!cell.spanStart || cell.spanSize !== 1) continue
+				if (cell.segment === '.' || cell.segment === '---') continue
+				if (lateNames.has(cell.segment)) continue
+				const len = visibleLength(resolvedData[cell.segment] || '')
+				if (len > maxContent[ci]!) maxContent[ci] = len
+			}
+		}
+
+		let totalSavings = 0
+		for (let ci = 0; ci < bp.columns.length; ci++) {
+			if (parseFr(bp.columns[ci]!) > 0) continue
+			if (maxContent[ci]! <= 0) continue
+			const gap = colWidths[ci]! - maxContent[ci]!
+			if (gap <= 0) continue
+			padShrink[ci] = Math.min(hPad, gap)
+			totalSavings += padShrink[ci]!
+		}
+
+		if (totalSavings > 0) {
+			let totalFr = 0
+			for (const colDef of bp.columns) totalFr += parseFr(colDef)
+			if (totalFr > 0) {
+				const frCols: number[] = []
+				let allocated = 0
+				for (let ci = 0; ci < colWidths.length; ci++) {
+					const fr = parseFr(bp.columns[ci]!)
+					if (fr > 0) {
+						const add = Math.floor((totalSavings * fr) / totalFr)
+						colWidths[ci]! += add
+						allocated += add
+						frCols.push(ci)
+					}
+				}
+				let leftover = totalSavings - allocated
+				for (let k = 0; leftover > 0 && k < frCols.length; k++) {
+					colWidths[frCols[k]!]! += 1
+					leftover--
+				}
+			}
+		}
+	}
+
+	function spanInnerPad(colIdx: number, spanSize: number): number {
+		let pad = 0
+		for (let j = colIdx; j < colIdx + spanSize - 1; j++) {
+			const rShrink = align[j] === 'left' ? (padShrink[j] ?? 0) : 0
+			const lShrink = align[j + 1] === 'right' ? (padShrink[j + 1] ?? 0) : 0
+			pad += hPad - rShrink + (hPad - lShrink)
+		}
+		return pad
 	}
 
 	// Late-resolve pass (re-resolve width-dependent segments)
@@ -494,20 +558,21 @@ function computeTuiHitboxes(
 			if (cell.spanSize > 1) {
 				cellWidth += (cell.spanSize - 1) * sepWidth
 			}
+			const resolveWidth = cellWidth + spanInnerPad(i, cell.spanSize)
 
 			let content: string | undefined
 			if (cell.segment === 'context') {
-				content = buildContextLine(tuiData, cellWidth, sym, reset, colors) ?? ''
+				content = buildContextLine(tuiData, resolveWidth, sym, reset, colors) ?? ''
 			} else if (cell.segment === 'context.bar') {
-				content = buildContextBar(tuiData, cellWidth, sym, reset, colors, pf)
+				content = buildContextBar(tuiData, resolveWidth, sym, reset, colors, pf)
 			} else if (cell.segment === 'block.bar') {
-				content = buildBlockBar(tuiData, cellWidth, sym, reset, colors, config, pf)
+				content = buildBlockBar(tuiData, resolveWidth, sym, reset, colors, config, pf)
 			} else if (cell.segment === 'weekly.bar') {
-				content = buildWeeklyBar(tuiData, cellWidth, sym, reset, colors, pf)
+				content = buildWeeklyBar(tuiData, resolveWidth, sym, reset, colors, pf)
 			} else {
 				const tmpl = templates[cell.segment]
 				if (tmpl) {
-					content = composeTemplate(tmpl.items, tmpl.gap, tmpl.justify, cellWidth)
+					content = composeTemplate(tmpl.items, tmpl.gap, tmpl.justify, resolveWidth)
 				}
 			}
 
@@ -522,7 +587,15 @@ function computeTuiHitboxes(
 	if (finalMatrix.length === 0) return []
 
 	// Has title bar: grid path always generates a title bar
-	const hitboxes = extractTuiHitboxes(finalMatrix, colWidths, sepWidth, true)
+	const hitboxes = extractTuiHitboxes(
+		finalMatrix,
+		colWidths,
+		sepWidth,
+		true,
+		hPad,
+		align,
+		padShrink,
+	)
 
 	// --- Title bar hitboxes (output line 0) ---
 	const titleLeft = gridConfig.title?.left ?? '{model}'
