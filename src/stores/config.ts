@@ -17,6 +17,7 @@ import { useEditorStore } from './editor'
 import { normalizeSegments } from '@/components/studio/segments/segmentMeta'
 import type { CanonicalTheme, ThemeEditorState, SavedCustomTheme } from '@/lib/themes'
 import type { TuiPreset } from '@/lib/tuiPresets'
+import type { FlatPreset } from '@/lib/flatPresets'
 import {
 	CANONICAL_THEMES,
 	getCanonicalThemeColors,
@@ -163,6 +164,18 @@ export const useConfigStore = defineStore('config', () => {
 		for (const line of config.value.display.lines) {
 			line.segments = normalizeSegments(line.segments, SEGMENT_DEFAULTS)
 		}
+	}
+
+	function applyFlatPreset(preset: FlatPreset) {
+		config.value.display.style = preset.style
+		config.value.display.tui = undefined
+		// Replace lines with preset lines
+		config.value.display.lines = preset.lines.map((line) => ({
+			segments: normalizeSegments(
+				structuredClone(line.segments) as LineConfig['segments'],
+				SEGMENT_DEFAULTS,
+			),
+		}))
 	}
 
 	function updateSegmentConfig(
@@ -713,6 +726,7 @@ export const useConfigStore = defineStore('config', () => {
 		setAutoWrap,
 		setTuiConfig,
 		applyTuiPreset,
+		applyFlatPreset,
 		// TUI actions
 		ensureTuiConfig,
 		setTuiOption,

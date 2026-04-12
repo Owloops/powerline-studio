@@ -351,7 +351,7 @@ declare global {
 	} from 'vue'
 	import('vue')
 	// @ts-ignore
-	export type { SidebarPanel, TuiAreaTarget } from './stores/editor'
+	export type { TuiAreaTarget, FocusedSegment } from './stores/editor'
 	import('./stores/editor')
 }
 

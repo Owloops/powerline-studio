@@ -1,8 +1,6 @@
 import { ref, computed, reactive, watch } from 'vue'
 import { defineStore } from 'pinia'
 
-export type SidebarPanel = 'appearance' | 'segments' | 'tui' | 'mockData' | 'export'
-
 /**
  * TUI area targets for navigation from preview clicks.
  * 'title' / 'footer' open the corresponding collapsible section in TuiLayoutPanel.
@@ -13,12 +11,19 @@ export type TuiAreaTarget =
 	| { kind: 'footer' }
 	| { kind: 'segment'; name: string; cellSegment?: string }
 
+export interface FocusedSegment {
+	name: string
+	cellSegment?: string
+	source: 'preview' | 'editor'
+}
+
 export const useEditorStore = defineStore('editor', () => {
 	const selectedSegment = ref<string | null>(null)
-	const activePanel = ref<SidebarPanel>('segments')
 	const expandedSections = reactive(new Set<string>())
 	const activeLineIndex = ref(0)
 	const selectedTuiArea = ref<TuiAreaTarget | null>(null)
+	const focusedSegment = ref<FocusedSegment | null>(null)
+	const showPreviewControls = ref(false)
 	let skipSelectionClear = false
 
 	// --- Computed ---
@@ -47,25 +52,12 @@ export const useEditorStore = defineStore('editor', () => {
 		clearSelection()
 	})
 
-	// Auto-redirect when display style changes
-	watch(
-		() => configStore.isTuiStyle,
-		(isTui) => {
-			if (isTui && activePanel.value === 'segments') {
-				activePanel.value = 'tui'
-			} else if (!isTui && activePanel.value === 'tui') {
-				activePanel.value = 'segments'
-			}
-		},
-	)
-
 	// --- Mutations ---
 
 	function selectSegment(name: string, sourceLineIndex?: number, cellSegment?: string) {
-		// TUI-aware: navigate to TUI layout panel instead of Segments panel
+		// TUI-aware: set TUI area target
 		if (configStore.isTuiStyle) {
 			selectedTuiArea.value = { kind: 'segment', name, cellSegment }
-			activePanel.value = 'tui'
 			return
 		}
 
@@ -74,12 +66,10 @@ export const useEditorStore = defineStore('editor', () => {
 			activeLineIndex.value = sourceLineIndex
 		}
 		selectedSegment.value = name
-		activePanel.value = 'segments'
 	}
 
 	function selectTuiArea(target: TuiAreaTarget) {
 		selectedTuiArea.value = target
-		activePanel.value = 'tui'
 	}
 
 	function clearTuiArea() {
@@ -88,10 +78,6 @@ export const useEditorStore = defineStore('editor', () => {
 
 	function clearSelection() {
 		selectedSegment.value = null
-	}
-
-	function setActivePanel(panel: SidebarPanel) {
-		activePanel.value = panel
 	}
 
 	function toggleSection(sectionId: string) {
@@ -106,12 +92,25 @@ export const useEditorStore = defineStore('editor', () => {
 		activeLineIndex.value = index
 	}
 
+	function scrollToSegment(name: string, cellSegment?: string) {
+		focusedSegment.value = { name, cellSegment, source: 'preview' }
+	}
+
+	function clearFocusedSegment() {
+		focusedSegment.value = null
+	}
+
+	function togglePreviewControls() {
+		showPreviewControls.value = !showPreviewControls.value
+	}
+
 	return {
 		selectedSegment,
-		activePanel,
 		expandedSections,
 		activeLineIndex,
 		selectedTuiArea,
+		focusedSegment,
+		showPreviewControls,
 		// Computed
 		hasSelection,
 		// Mutations
@@ -119,8 +118,10 @@ export const useEditorStore = defineStore('editor', () => {
 		selectTuiArea,
 		clearTuiArea,
 		clearSelection,
-		setActivePanel,
 		toggleSection,
 		setActiveLineIndex,
+		scrollToSegment,
+		clearFocusedSegment,
+		togglePreviewControls,
 	}
 })
