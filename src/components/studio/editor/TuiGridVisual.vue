@@ -44,6 +44,11 @@ const pickerSearch = shallowRef('')
 // Track which column header popover is open
 const openColumnPopover = shallowRef<number | null>(null)
 
+function handleRemoveColumn(colIdx: number) {
+	configStore.removeColumn(props.breakpointIndex, colIdx)
+	openColumnPopover.value = null
+}
+
 // Column definition parsing/editing helpers
 function parseColumnDef(col: string): { type: 'auto' | 'fr' | 'fixed'; value: number } {
 	if (col === 'auto') return { type: 'auto', value: 0 }
@@ -271,10 +276,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 						<button
 							v-if="columns.length > 1"
 							class="flex items-center gap-1 rounded px-2 py-1 text-xs text-destructive hover:bg-destructive/10 transition-colors"
-							@click="
-								configStore.removeColumn(breakpointIndex, colIdx)
-								openColumnPopover = null
-							"
+							@click="handleRemoveColumn(colIdx)"
 						>
 							<IconLucide-x class="size-3" />
 							Remove column
@@ -410,13 +412,16 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 									</span>
 
 									<!-- Inline change button -->
-									<button
-										class="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full border border-border bg-background text-muted-foreground opacity-0 shadow-sm transition-opacity group-hover/cell:opacity-100 hover:text-foreground"
+									<div
+										role="button"
+										tabindex="0"
+										class="absolute -right-1 -top-1 flex size-5 cursor-pointer items-center justify-center rounded-full border border-border bg-background text-muted-foreground opacity-0 shadow-sm transition-opacity group-hover/cell:opacity-100 hover:text-foreground"
 										title="Change segment"
 										@click.stop="openSegmentPicker(rowIndex, cell)"
+										@keydown.enter.stop="openSegmentPicker(rowIndex, cell)"
 									>
 										<IconLucide-replace class="size-2.5" />
-									</button>
+									</div>
 								</button>
 							</TuiCellPopover>
 
