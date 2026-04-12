@@ -9,6 +9,8 @@ import SegmentOverlay from './SegmentOverlay.vue'
 
 const previewStore = usePreviewStore()
 
+const popoverOpen = ref(false)
+
 const terminalStyle = computed(() => ({
 	'--terminal-bg': previewStore.terminalBgColor,
 	'--terminal-fg': previewStore.terminalFgColor,
@@ -56,30 +58,24 @@ const effectiveWidth = computed(() =>
 				<Badge variant="secondary">
 					{{ effectiveWidth }}/{{ previewStore.terminalWidth }} cols
 				</Badge>
-				<Popover>
-					<TooltipProvider :delay-duration="300">
-						<Tooltip>
-							<TooltipTrigger as-child>
-								<PopoverTrigger as-child>
+				<TooltipProvider :delay-duration="300">
+					<Popover v-model:open="popoverOpen">
+						<Tooltip :open="popoverOpen ? false : undefined">
+							<PopoverTrigger as-child>
+								<TooltipTrigger as-child>
 									<Button variant="ghost" size="icon-sm" class="size-7">
 										<IconLucide-settings-2 class="size-3.5" />
 										<span class="sr-only">Configure terminal preview</span>
 									</Button>
-								</PopoverTrigger>
-							</TooltipTrigger>
+								</TooltipTrigger>
+							</PopoverTrigger>
 							<TooltipContent side="bottom"> Configure terminal preview </TooltipContent>
 						</Tooltip>
-					</TooltipProvider>
-					<PopoverContent
-						align="end"
-						side="bottom"
-						:side-offset="8"
-						update-position-strategy="always"
-						class="w-80 p-0"
-					>
-						<PreviewControls />
-					</PopoverContent>
-				</Popover>
+						<PopoverContent align="end" side="bottom" :side-offset="8" class="w-80 p-0">
+							<PreviewControls />
+						</PopoverContent>
+					</Popover>
+				</TooltipProvider>
 			</div>
 		</div>
 
