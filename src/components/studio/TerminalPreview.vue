@@ -3,7 +3,6 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import PreviewControls from './PreviewControls.vue'
 import SegmentOverlay from './SegmentOverlay.vue'
 
@@ -58,24 +57,22 @@ const effectiveWidth = computed(() =>
 				<Badge variant="secondary">
 					{{ effectiveWidth }}/{{ previewStore.terminalWidth }} cols
 				</Badge>
-				<TooltipProvider :delay-duration="300">
-					<Popover v-model:open="popoverOpen">
-						<Tooltip :open="popoverOpen ? false : undefined">
-							<PopoverTrigger as-child>
-								<TooltipTrigger as-child>
-									<Button variant="ghost" size="icon-sm" class="size-7">
-										<IconLucide-settings-2 class="size-3.5" />
-										<span class="sr-only">Configure terminal preview</span>
-									</Button>
-								</TooltipTrigger>
-							</PopoverTrigger>
-							<TooltipContent side="bottom"> Configure terminal preview </TooltipContent>
-						</Tooltip>
-						<PopoverContent align="end" side="bottom" :side-offset="8" class="w-80 p-0">
-							<PreviewControls />
-						</PopoverContent>
-					</Popover>
-				</TooltipProvider>
+				<Popover v-model:open="popoverOpen">
+					<PopoverTrigger as-child>
+						<Button
+							variant="ghost"
+							size="icon-sm"
+							class="ml-3 size-7 hover:!bg-foreground/10"
+							title="Configure terminal preview"
+						>
+							<IconLucide-settings-2 class="size-3.5" />
+							<span class="sr-only">Configure terminal preview</span>
+						</Button>
+					</PopoverTrigger>
+					<PopoverContent align="end" side="bottom" :side-offset="8" class="w-80 p-0">
+						<PreviewControls />
+					</PopoverContent>
+				</Popover>
 			</div>
 		</div>
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { ColorTheme } from '@owloops/claude-powerline/browser'
+import type { ColorTheme, BoxChars } from '@owloops/claude-powerline/browser'
+import { BOX_PRESETS, BOX_CHARS } from '@owloops/claude-powerline/browser'
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -10,7 +11,7 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
 	NumberField,
@@ -19,9 +20,10 @@ import {
 	NumberFieldIncrement,
 	NumberFieldInput,
 } from '@/components/ui/number-field'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
-import { Separator } from '@/components/ui/separator'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import CustomThemeEditor from '@/components/studio/theme/CustomThemeEditor.vue'
 import ThemeOverrides from '@/components/studio/theme/ThemeOverrides.vue'
 import {
@@ -48,6 +50,76 @@ const segments = [
 	{ label: 'main \u2713', bg: '#22c55e' },
 	{ label: '\u25C6 Sonnet', bg: '#a855f7' },
 ] as const
+
+// --- TUI options ---
+
+const tui = computed(() => configStore.config.display.tui)
+const tuiFitContent = computed(() => tui.value?.fitContent ?? false)
+const tuiPadding = computed(() => tui.value?.padding?.horizontal)
+const tuiSeparator = computed(() => tui.value?.separator)
+const tuiCurrentBox = computed(() => tui.value?.box)
+
+const boxPresets = computed(() => {
+	const entries: { name: string; label: string; chars: BoxChars }[] = []
+	for (const [name, chars] of Object.entries(BOX_PRESETS)) {
+		entries.push({ name, label: name.charAt(0).toUpperCase() + name.slice(1), chars })
+	}
+	return entries
+})
+
+const boxStyleLabel = computed(() => {
+	const box = tuiCurrentBox.value
+	if (box === undefined) return 'Default'
+	if (typeof box === 'string') return box.charAt(0).toUpperCase() + box.slice(1)
+	return 'Custom'
+})
+
+function boxPreview(chars: BoxChars) {
+	return [
+		`${chars.topLeft}${chars.horizontal.repeat(4)}${chars.topRight}`,
+		`${chars.vertical}    ${chars.vertical}`,
+		`${chars.bottomLeft}${chars.horizontal.repeat(4)}${chars.bottomRight}`,
+	]
+}
+
+const boxStyleOpen = shallowRef(false)
+
+function selectBoxPreset(name: string | undefined) {
+	configStore.setTuiBox(name)
+	boxStyleOpen.value = false
+}
+
+function setMinWidth(value: number | undefined) {
+	if (value === undefined || value <= 0) {
+		configStore.setTuiOption('minWidth', undefined)
+		return
+	}
+	const max = tui.value?.maxWidth
+	if (max !== undefined && value > max) {
+		configStore.setTuiOption('maxWidth', value)
+	}
+	configStore.setTuiOption('minWidth', value)
+}
+
+function setMaxWidth(value: number | undefined) {
+	if (value === undefined || value <= 0) {
+		configStore.setTuiOption('maxWidth', undefined)
+		return
+	}
+	const min = tui.value?.minWidth
+	if (min !== undefined && value < min) {
+		configStore.setTuiOption('minWidth', value)
+	}
+	configStore.setTuiOption('maxWidth', value)
+}
+
+const dividerPlaceholder = computed(() => {
+	const box = tui.value?.box
+	if (typeof box === 'string' && BOX_PRESETS[box]) {
+		return BOX_PRESETS[box].horizontal
+	}
+	return BOX_CHARS.horizontal
+})
 
 // --- Theme logic ---
 
@@ -138,9 +210,9 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 			<p class="text-xs text-muted-foreground">Choose display style and color scheme</p>
 		</div>
 
-		<!-- Display Style Select -->
-		<div class="flex flex-col gap-3">
-			<div class="flex flex-col gap-2">
+		<!-- Row 1: Display Style, Theme, Custom Theme button -->
+		<div class="grid grid-cols-[1fr_1fr_auto] gap-3">
+			<div class="flex flex-col gap-1.5">
 				<Label class="text-xs font-medium text-muted-foreground">Display Style</Label>
 				<Select
 					:model-value="configStore.config.display.style"
@@ -151,9 +223,11 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 							<span>{{
 								styles.find((s) => s.value === configStore.config.display.style)?.title
 							}}</span>
-							<!-- Inline mini-preview for current style -->
 							<span
-								class="flex items-center overflow-hidden rounded bg-[#1e1e2e] px-1.5 py-0.5 font-nerd text-[9px] leading-tight"
+								:class="[
+									'flex items-center overflow-hidden rounded bg-[#1e1e2e] px-1 font-nerd text-[10px] leading-tight',
+									configStore.config.display.style !== 'tui' && 'py-1',
+								]"
 							>
 								<template v-if="configStore.config.display.style === 'minimal'">
 									<span
@@ -197,9 +271,9 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 									<pre
 										class="text-[#cdd6f4] leading-none"
 										style="font-family: inherit"
-									>&#x256D;&#x2500;&#x252C;&#x2500;&#x256E;
-&#x2502;<span :style="{ color: '#3b82f6' }">~</span>&#x2502;<span :style="{ color: '#22c55e' }">m</span>&#x2502;
-&#x2570;&#x2500;&#x2534;&#x2500;&#x256F;</pre>
+									>&#x256D;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x256E;
+&#x2502; <span :style="{ color: '#3b82f6' }">~/proj</span> &#x2502; <span :style="{ color: '#22c55e' }">main</span> &#x2502;
+&#x2570;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x256F;</pre>
 								</template>
 							</span>
 						</span>
@@ -208,9 +282,11 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 						<SelectItem v-for="s in styles" :key="s.value" :value="s.value">
 							<div class="flex items-center gap-3">
 								<span>{{ s.title }}</span>
-								<!-- Mini-preview per option -->
 								<span
-									class="flex items-center overflow-hidden rounded bg-[#1e1e2e] px-1.5 py-0.5 font-nerd text-[9px] leading-tight"
+									:class="[
+										'flex items-center overflow-hidden rounded bg-[#1e1e2e] px-1 font-nerd text-[10px] leading-tight',
+										s.value !== 'tui' && 'py-1',
+									]"
 								>
 									<template v-if="s.value === 'minimal'">
 										<span
@@ -254,9 +330,9 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 										<pre
 											class="text-[#cdd6f4] leading-none"
 											style="font-family: inherit"
-										>&#x256D;&#x2500;&#x252C;&#x2500;&#x256E;
-&#x2502;<span :style="{ color: '#3b82f6' }">~</span>&#x2502;<span :style="{ color: '#22c55e' }">m</span>&#x2502;
-&#x2570;&#x2500;&#x2534;&#x2500;&#x256F;</pre>
+										>&#x256D;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x256E;
+&#x2502; <span :style="{ color: '#3b82f6' }">~/proj</span> &#x2502; <span :style="{ color: '#22c55e' }">main</span> &#x2502;
+&#x2570;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x256F;</pre>
 									</template>
 								</span>
 							</div>
@@ -265,165 +341,333 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 				</Select>
 			</div>
 
-			<!-- TUI Info Alert -->
-			<Alert v-if="configStore.isTuiStyle" variant="info">
-				<IconLucide-info class="size-4" />
-				<AlertTitle>TUI Layout</AlertTitle>
-				<AlertDescription>
-					TUI style uses a grid layout. Configure breakpoints, columns, and box styles in the layout
-					editor below.
-				</AlertDescription>
-			</Alert>
+			<div class="flex flex-col gap-1.5">
+				<Label class="text-xs font-medium text-muted-foreground">Theme</Label>
+				<Select :model-value="themeSelectValue" @update:model-value="handleSelectTheme">
+					<SelectTrigger class="w-full" size="sm">
+						<span class="flex items-center gap-2">
+							<span v-if="configStore.themeEditor.mode === 'custom'">Custom Theme</span>
+							<span v-else>{{ CANONICAL_THEME_LABELS[configStore.themeEditor.builtinTheme] }}</span>
+							<span
+								v-if="configStore.themeEditor.mode === 'builtin' && configStore.overrideCount > 0"
+								class="rounded bg-muted px-1 py-0.5 text-[10px] leading-none text-muted-foreground"
+								>modified</span
+							>
+							<span class="flex gap-px overflow-hidden rounded">
+								<span
+									v-for="seg in PREVIEW_SEGMENTS"
+									:key="seg"
+									class="block size-3.5"
+									:style="{ backgroundColor: triggerThemeColors[seg].bg }"
+								/>
+							</span>
+						</span>
+					</SelectTrigger>
+					<SelectContent position="popper" side="bottom">
+						<SelectItem v-for="name in CANONICAL_THEMES" :key="name" :value="name">
+							<div class="flex items-center gap-3">
+								<span>{{ CANONICAL_THEME_LABELS[name] }}</span>
+								<span class="flex gap-px overflow-hidden rounded">
+									<span
+										v-for="seg in PREVIEW_SEGMENTS"
+										:key="seg"
+										class="block size-3.5"
+										:style="{ backgroundColor: getCanonicalThemeColors(name)[seg].bg }"
+									/>
+								</span>
+							</div>
+						</SelectItem>
+					</SelectContent>
+				</Select>
+			</div>
 
-			<!-- Padding & Auto-wrap for non-TUI styles -->
-			<div v-if="!configStore.isTuiStyle" class="grid grid-cols-2 gap-4">
-				<!-- Padding Stepper -->
+			<!-- Custom Theme Button -->
+			<div class="flex flex-col gap-1.5">
+				<Label class="text-xs font-medium text-muted-foreground">&nbsp;</Label>
+				<Button
+					variant="outline"
+					size="sm"
+					class="w-full whitespace-nowrap"
+					:class="
+						configStore.themeEditor.mode === 'custom'
+							? 'border-primary bg-primary/5 text-primary'
+							: ''
+					"
+					:disabled="configStore.themeEditor.mode === 'custom'"
+					@click="handleEnterCustom"
+				>
+					<IconLucide-palette class="size-3.5" />
+					{{ configStore.themeEditor.mode === 'custom' ? 'Editing Custom' : 'Custom Theme' }}
+				</Button>
+			</div>
+		</div>
+
+		<!-- Non-TUI: Padding, Auto-wrap -->
+		<template v-if="!configStore.isTuiStyle">
+			<div class="grid grid-cols-2 items-end gap-3">
 				<div class="flex flex-col gap-1.5">
+					<Label for="padding" class="text-xs font-medium text-muted-foreground">Padding</Label>
 					<NumberField
 						id="padding"
 						:model-value="configStore.config.display.padding"
 						:min="0"
 						:max="3"
 						:step="1"
-						class="max-w-[140px]"
 						@update:model-value="configStore.setPadding($event ?? 0)"
 					>
-						<Label for="padding">Padding</Label>
 						<NumberFieldContent>
 							<NumberFieldDecrement />
 							<NumberFieldInput />
 							<NumberFieldIncrement />
 						</NumberFieldContent>
 					</NumberField>
-					<p class="text-xs text-muted-foreground">Spaces inside each segment</p>
 				</div>
 
-				<!-- Auto-Wrap Toggle -->
-				<div class="flex flex-col gap-3">
-					<Label for="auto-wrap">Auto-wrap</Label>
-					<div class="flex items-center gap-3">
+				<div class="flex flex-col gap-1.5">
+					<Label for="auto-wrap" class="text-xs font-medium text-muted-foreground">Auto-wrap</Label>
+					<div class="flex h-8 items-center gap-2">
 						<Switch
 							id="auto-wrap"
 							:model-value="configStore.config.display.autoWrap ?? true"
 							@update:model-value="configStore.setAutoWrap($event)"
 						/>
-						<p class="text-xs text-muted-foreground">Wrap when exceeding width</p>
+						<span class="text-xs text-muted-foreground">Wrap at width</span>
 					</div>
 				</div>
 			</div>
-		</div>
+		</template>
 
-		<Separator />
+		<!-- TUI: box style + sizing + separators + padding -->
+		<TooltipProvider v-else :delay-duration="300">
+			<!-- TUI: All options in one row -->
+			<div class="grid grid-cols-7 items-end gap-3">
+				<!-- Box Style Popover -->
+				<div class="flex flex-col gap-1.5">
+					<Label class="text-xs font-medium text-muted-foreground">Box Style</Label>
+					<Popover v-model:open="boxStyleOpen">
+						<PopoverTrigger as-child>
+							<Button variant="outline" size="sm" class="w-full justify-between">
+								<span class="text-xs">{{ boxStyleLabel }}</span>
+								<IconLucide-chevron-down class="size-3.5 text-muted-foreground" />
+							</Button>
+						</PopoverTrigger>
+						<PopoverContent class="w-auto p-2" align="start">
+							<div class="grid grid-cols-3 gap-1.5">
+								<button
+									class="flex flex-col items-center gap-1 rounded-md border p-1.5 text-xs transition-colors hover:bg-accent"
+									:class="
+										tuiCurrentBox === undefined
+											? 'ring-2 ring-primary border-primary'
+											: 'border-border'
+									"
+									@click="selectBoxPreset(undefined)"
+								>
+									<span class="text-muted-foreground text-[10px]">Default</span>
+									<span class="font-mono text-[10px] leading-tight text-muted-foreground"
+										>(auto)</span
+									>
+								</button>
+								<button
+									v-for="preset in boxPresets"
+									:key="preset.name"
+									class="flex flex-col items-center gap-0.5 rounded-md border p-1.5 text-xs transition-colors hover:bg-accent"
+									:class="
+										tuiCurrentBox === preset.name
+											? 'ring-2 ring-primary border-primary'
+											: 'border-border'
+									"
+									@click="selectBoxPreset(preset.name)"
+								>
+									<span class="text-muted-foreground text-[10px]">{{ preset.label }}</span>
+									<div class="font-mono text-[10px] leading-tight whitespace-pre">
+										<div v-for="(line, i) in boxPreview(preset.chars)" :key="i">{{ line }}</div>
+									</div>
+								</button>
+							</div>
+						</PopoverContent>
+					</Popover>
+				</div>
 
-		<!-- Theme -->
-		<div class="flex flex-col gap-3">
-			<div>
-				<h3 class="text-sm font-medium">Theme</h3>
-				<p class="text-xs text-muted-foreground">Choose your statusline color scheme</p>
-			</div>
-
-			<!-- Theme Select -->
-			<Select :model-value="themeSelectValue" @update:model-value="handleSelectTheme">
-				<SelectTrigger class="w-full" size="sm">
-					<span class="flex items-center gap-2">
-						<!-- Theme name -->
-						<span v-if="configStore.themeEditor.mode === 'custom'">Custom Theme</span>
-						<span v-else>{{ CANONICAL_THEME_LABELS[configStore.themeEditor.builtinTheme] }}</span>
-						<!-- Override indicator -->
-						<span
-							v-if="configStore.themeEditor.mode === 'builtin' && configStore.overrideCount > 0"
-							class="rounded bg-muted px-1 py-0.5 text-[10px] leading-none text-muted-foreground"
-							>modified</span
+				<!-- Fit Content -->
+				<div class="flex flex-col gap-1.5">
+					<div class="flex items-center gap-1">
+						<Label for="fit-content" class="text-xs font-medium text-muted-foreground"
+							>Fit Content</Label
 						>
-						<!-- Compact 5-color palette strip -->
+						<Tooltip>
+							<TooltipTrigger as-child>
+								<IconLucide-info class="size-3 text-muted-foreground/50" />
+							</TooltipTrigger>
+							<TooltipContent side="top" class="max-w-56 text-xs">
+								Shrink the panel to fit its content width instead of filling available space
+							</TooltipContent>
+						</Tooltip>
+					</div>
+					<div class="flex h-8 items-center">
+						<Switch
+							id="fit-content"
+							:model-value="tuiFitContent"
+							@update:model-value="configStore.setTuiOption('fitContent', $event)"
+						/>
+					</div>
+				</div>
+
+				<!-- Min Width -->
+				<div class="flex flex-col gap-1.5">
+					<div class="flex items-center gap-1">
+						<Label for="tui-min-width" class="text-xs font-medium text-muted-foreground"
+							>Min Width</Label
+						>
+						<Tooltip>
+							<TooltipTrigger as-child>
+								<IconLucide-info class="size-3 text-muted-foreground/50" />
+							</TooltipTrigger>
+							<TooltipContent side="top" class="max-w-56 text-xs">
+								Minimum panel width in columns. The panel won't shrink below this even if content is
+								narrower. Leave empty for no minimum.
+							</TooltipContent>
+						</Tooltip>
+					</div>
+					<NumberField
+						id="tui-min-width"
+						:model-value="tui?.minWidth"
+						:min="0"
+						:step="1"
+						@update:model-value="setMinWidth($event)"
+					>
+						<NumberFieldContent>
+							<NumberFieldDecrement />
+							<NumberFieldInput placeholder="32" />
+							<NumberFieldIncrement />
+						</NumberFieldContent>
+					</NumberField>
+				</div>
+
+				<!-- Max Width -->
+				<div class="flex flex-col gap-1.5">
+					<div class="flex items-center gap-1">
+						<Label for="tui-max-width" class="text-xs font-medium text-muted-foreground"
+							>Max Width</Label
+						>
+						<Tooltip>
+							<TooltipTrigger as-child>
+								<IconLucide-info class="size-3 text-muted-foreground/50" />
+							</TooltipTrigger>
+							<TooltipContent side="top" class="max-w-56 text-xs">
+								Maximum panel width in columns. The panel won't grow beyond this. Leave empty to let
+								it fill the available terminal width.
+							</TooltipContent>
+						</Tooltip>
+					</div>
+					<NumberField
+						id="tui-max-width"
+						:model-value="tui?.maxWidth"
+						:min="0"
+						:step="1"
+						@update:model-value="setMaxWidth($event)"
+					>
+						<NumberFieldContent>
+							<NumberFieldDecrement />
+							<NumberFieldInput />
+							<NumberFieldIncrement />
+						</NumberFieldContent>
+					</NumberField>
+				</div>
+
+				<!-- Column Separator -->
+				<div class="flex flex-col gap-1.5">
+					<Label class="text-xs font-medium text-muted-foreground">Column Sep.</Label>
+					<Input
+						:model-value="tuiSeparator?.column ?? ''"
+						placeholder="  "
+						class="h-8 text-xs font-mono"
+						@update:model-value="configStore.setTuiSeparator({ column: String($event) })"
+					/>
+				</div>
+
+				<!-- Divider -->
+				<div class="flex flex-col gap-1.5">
+					<Label class="text-xs font-medium text-muted-foreground">Divider Sep.</Label>
+					<Input
+						:model-value="tuiSeparator?.divider ?? ''"
+						:placeholder="dividerPlaceholder"
+						maxlength="1"
+						class="h-8 text-xs font-mono"
+						@update:model-value="configStore.setTuiSeparator({ divider: String($event) })"
+					/>
+				</div>
+
+				<!-- TUI Padding -->
+				<div class="flex flex-col gap-1.5">
+					<div class="flex items-center gap-1">
+						<Label class="text-xs font-medium text-muted-foreground">Padding</Label>
+						<Tooltip>
+							<TooltipTrigger as-child>
+								<IconLucide-info class="size-3 text-muted-foreground/50" />
+							</TooltipTrigger>
+							<TooltipContent side="top" class="max-w-56 text-xs">
+								Horizontal padding inside each cell. Only applies when Fit Content is enabled.
+							</TooltipContent>
+						</Tooltip>
+					</div>
+					<NumberField
+						:model-value="tuiPadding"
+						:min="0"
+						:max="10"
+						:step="1"
+						:disabled="!tuiFitContent"
+						@update:model-value="
+							configStore.setTuiPadding(
+								$event === undefined ? undefined : Math.max(0, Math.min(10, $event)),
+							)
+						"
+					>
+						<NumberFieldContent>
+							<NumberFieldDecrement />
+							<NumberFieldInput placeholder="0" />
+							<NumberFieldIncrement />
+						</NumberFieldContent>
+					</NumberField>
+				</div>
+			</div>
+		</TooltipProvider>
+
+		<!-- Saved custom themes -->
+		<template v-if="configStore.savedCustomThemes.length > 0">
+			<div class="flex items-center gap-2">
+				<span class="text-xs font-medium text-muted-foreground">Saved Custom Themes</span>
+				<div class="h-px flex-1 bg-border" />
+			</div>
+			<div class="flex flex-col gap-1">
+				<div
+					v-for="saved in configStore.savedCustomThemes"
+					:key="saved.id"
+					class="group flex items-center gap-2 rounded-md px-2 py-1 hover:bg-accent/50"
+				>
+					<button
+						class="flex flex-1 cursor-pointer items-center gap-2 text-left text-sm"
+						@click="handleLoadSaved(saved)"
+					>
 						<span class="flex gap-px overflow-hidden rounded">
 							<span
 								v-for="seg in PREVIEW_SEGMENTS"
 								:key="seg"
-								class="block size-3.5"
-								:style="{ backgroundColor: triggerThemeColors[seg].bg }"
+								class="block size-3"
+								:style="{ backgroundColor: saved.colors[seg].bg }"
 							/>
 						</span>
-					</span>
-				</SelectTrigger>
-				<SelectContent position="popper" side="bottom">
-					<SelectItem v-for="name in CANONICAL_THEMES" :key="name" :value="name">
-						<div class="flex items-center gap-3">
-							<span>{{ CANONICAL_THEME_LABELS[name] }}</span>
-							<span class="flex gap-px overflow-hidden rounded">
-								<span
-									v-for="seg in PREVIEW_SEGMENTS"
-									:key="seg"
-									class="block size-3.5"
-									:style="{ backgroundColor: getCanonicalThemeColors(name)[seg].bg }"
-								/>
-							</span>
-						</div>
-					</SelectItem>
-				</SelectContent>
-			</Select>
-
-			<!-- Saved custom themes -->
-			<template v-if="configStore.savedCustomThemes.length > 0">
-				<div class="flex items-center gap-2">
-					<span class="text-xs font-medium text-muted-foreground">Saved Custom Themes</span>
-					<div class="h-px flex-1 bg-border" />
-				</div>
-				<div class="flex flex-col gap-1">
-					<div
-						v-for="saved in configStore.savedCustomThemes"
-						:key="saved.id"
-						class="group flex items-center gap-2 rounded-md px-2 py-1 hover:bg-accent/50"
+						<span>{{ saved.name }}</span>
+					</button>
+					<button
+						class="flex size-5 cursor-pointer items-center justify-center rounded-full text-muted-foreground opacity-0 transition-opacity hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100"
+						:aria-label="`Delete ${saved.name}`"
+						@click.stop="handleDeleteSaved(saved.id)"
 					>
-						<button
-							class="flex flex-1 cursor-pointer items-center gap-2 text-left text-sm"
-							@click="handleLoadSaved(saved)"
-						>
-							<span class="flex gap-px overflow-hidden rounded">
-								<span
-									v-for="seg in PREVIEW_SEGMENTS"
-									:key="seg"
-									class="block size-3"
-									:style="{ backgroundColor: saved.colors[seg].bg }"
-								/>
-							</span>
-							<span>{{ saved.name }}</span>
-						</button>
-						<button
-							class="flex size-5 cursor-pointer items-center justify-center rounded-full text-muted-foreground opacity-0 transition-opacity hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100"
-							:aria-label="`Delete ${saved.name}`"
-							@click.stop="handleDeleteSaved(saved.id)"
-						>
-							<IconLucide-x class="size-3" />
-						</button>
-					</div>
+						<IconLucide-x class="size-3" />
+					</button>
 				</div>
-			</template>
-
-			<!-- Theme editor buttons -->
-			<div class="flex gap-2">
-				<Button
-					v-if="configStore.themeEditor.mode === 'builtin'"
-					variant="outline"
-					size="sm"
-					class="flex-1"
-					@click="handleEnterCustom"
-				>
-					<IconLucide-palette class="size-3.5" />
-					Create Custom Theme
-				</Button>
-				<Button
-					v-if="configStore.themeEditor.mode === 'custom'"
-					variant="outline"
-					size="sm"
-					class="flex-1 border-primary bg-primary/5 text-primary"
-					disabled
-				>
-					<IconLucide-palette class="size-3.5" />
-					Editing Custom Theme
-				</Button>
 			</div>
-		</div>
+		</template>
 
 		<!-- Custom Theme Editor -->
 		<CustomThemeEditor

@@ -7,8 +7,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import TuiGridVisual from './TuiGridVisual.vue'
 import ColumnSettings from '@/components/studio/tui/ColumnSettings.vue'
 import TemplateEditor from '@/components/studio/tui/TemplateEditor.vue'
-import TuiGlobalOptions from '@/components/studio/tui/TuiGlobalOptions.vue'
-import TuiStylingSection from '@/components/studio/tui/TuiStylingSection.vue'
 import { useTuiValidation } from '@/composables/useTuiValidation'
 
 const configStore = useConfigStore()
@@ -132,10 +130,6 @@ const footerPreview = computed(() => {
 	return { left: left || '(empty)', right: right || '(empty)' }
 })
 
-// --- TUI Options ---
-
-const optionsOpen = shallowRef(false)
-
 // --- Highlighted segment from preview click ---
 
 const highlightedSegment = ref<string | null>(null)
@@ -199,7 +193,21 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 <template>
 	<section class="flex flex-col gap-4">
 		<div>
-			<h2 class="text-sm font-semibold">TUI Layout Editor</h2>
+			<h2 class="flex items-center gap-1.5 text-sm font-semibold">
+				TUI Layout Editor
+				<TooltipProvider :delay-duration="200">
+					<Tooltip>
+						<TooltipTrigger as-child>
+							<IconLucide-info class="size-3.5 shrink-0 text-muted-foreground/50" />
+						</TooltipTrigger>
+						<TooltipContent side="right" class="max-w-xs text-xs font-normal">
+							TUI style renders a box-drawn grid in the terminal. Use breakpoints to define
+							different layouts at different terminal widths. Each breakpoint has columns with
+							segment rows, and you can customize box-drawing characters, title bar, and footer.
+						</TooltipContent>
+					</Tooltip>
+				</TooltipProvider>
+			</h2>
 			<p class="text-xs text-muted-foreground">
 				Configure your TUI grid layout, title, footer, and breakpoints
 			</p>
@@ -417,29 +425,6 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 						:columns="selectedBreakpoint.columns"
 						:align="selectedBreakpoint.align"
 					/>
-				</div>
-			</CollapsibleContent>
-		</Collapsible>
-
-		<Separator />
-
-		<!-- TUI Options (collapsible) -->
-		<Collapsible v-model:open="optionsOpen">
-			<CollapsibleTrigger class="flex w-full items-center justify-between py-1 text-left">
-				<div class="flex items-center gap-1.5">
-					<IconLucide-settings class="size-3.5 text-muted-foreground" />
-					<span class="text-xs font-medium">TUI Options</span>
-				</div>
-				<IconLucide-chevron-right
-					class="size-3.5 text-muted-foreground transition-transform duration-200"
-					:class="{ 'rotate-90': optionsOpen }"
-				/>
-			</CollapsibleTrigger>
-			<CollapsibleContent>
-				<div class="flex flex-col gap-4 pt-3 pb-1">
-					<TuiGlobalOptions />
-					<Separator />
-					<TuiStylingSection />
 				</div>
 			</CollapsibleContent>
 		</Collapsible>

@@ -119,6 +119,7 @@ declare module 'vue' {
     IconLucideChevronDown: typeof import('~icons/lucide/chevron-down')['default']
     IconLucideChevronRight: typeof import('~icons/lucide/chevron-right')['default']
     IconLucideChevronUp: typeof import('~icons/lucide/chevron-up')['default']
+    IconLucideCircleHelp: typeof import('~icons/lucide/circle-help')['default']
     IconLucideClipboard: typeof import('~icons/lucide/clipboard')['default']
     IconLucideCoins: typeof import('~icons/lucide/coins')['default']
     IconLucideColumns3: typeof import('~icons/lucide/columns3')['default']

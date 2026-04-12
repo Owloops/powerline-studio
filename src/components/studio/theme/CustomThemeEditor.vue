@@ -44,17 +44,18 @@ function handleSave() {
 			<p class="text-xs text-muted-foreground">Edit all segment colors</p>
 		</div>
 
-		<div class="flex items-center gap-2">
+		<div class="grid grid-cols-[120px_1fr_1fr_auto] items-center gap-2">
 			<input
 				v-model="themeName"
-				class="h-8 flex-1 rounded-md border border-border bg-background px-2.5 text-sm outline-none focus:border-ring focus:ring-1 focus:ring-ring"
+				class="col-span-2 h-8 rounded-md border border-border bg-background px-2.5 text-sm outline-none focus:border-ring focus:ring-1 focus:ring-ring"
 				placeholder="Theme name..."
 				@keydown.enter="handleSave"
 			/>
-			<Button size="sm" :disabled="!themeName.trim()" @click="handleSave">
+			<Button size="sm" class="w-full" :disabled="!themeName.trim()" @click="handleSave">
 				<IconLucide-save class="mr-1.5 size-3.5" />
 				Save
 			</Button>
+			<div class="size-6" />
 		</div>
 
 		<div class="flex flex-col gap-2">
