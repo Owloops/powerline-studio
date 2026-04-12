@@ -5,6 +5,10 @@ import TerminalPreview from '@/components/studio/TerminalPreview.vue'
 import PreviewControls from '@/components/studio/PreviewControls.vue'
 import PresetSection from '@/components/studio/sections/PresetSection.vue'
 import StyleThemeSection from '@/components/studio/sections/StyleThemeSection.vue'
+import FlatLayoutEditor from '@/components/studio/editor/FlatLayoutEditor.vue'
+import TuiLayoutEditor from '@/components/studio/editor/TuiLayoutEditor.vue'
+import ExportSection from '@/components/studio/sections/ExportSection.vue'
+import MockDataSettingsSection from '@/components/studio/sections/MockDataSettingsSection.vue'
 
 useHead({ title: 'Powerline Studio' })
 
@@ -12,6 +16,7 @@ useHead({ title: 'Powerline Studio' })
 // writes htmlOutput to previewStore reactively.
 useRenderer()
 
+const configStore = useConfigStore()
 const editorStore = useEditorStore()
 </script>
 
@@ -40,35 +45,13 @@ const editorStore = useEditorStore()
 				<PresetSection />
 				<StyleThemeSection />
 
-				<!-- Layout Editor Slot (task-023b/023c) -->
-				<section class="flex flex-col gap-4">
-					<div>
-						<h2 class="text-sm font-semibold">Layout Editor</h2>
-						<p class="text-xs text-muted-foreground">
-							Configure segments and layout (coming in next update)
-						</p>
-					</div>
-					<div
-						class="flex min-h-32 items-center justify-center rounded-lg border border-dashed border-border bg-muted/30 text-sm text-muted-foreground"
-					>
-						Layout editor placeholder
-					</div>
-				</section>
+				<!-- Layout Editor -->
+				<FlatLayoutEditor v-if="!configStore.isTuiStyle" />
+				<TuiLayoutEditor v-else />
 
-				<!-- Export & Mock Data Slot (task-023e) -->
-				<section class="flex flex-col gap-4">
-					<div>
-						<h2 class="text-sm font-semibold">Export & Mock Data</h2>
-						<p class="text-xs text-muted-foreground">
-							Export config and adjust mock data (coming in next update)
-						</p>
-					</div>
-					<div
-						class="flex min-h-32 items-center justify-center rounded-lg border border-dashed border-border bg-muted/30 text-sm text-muted-foreground"
-					>
-						Export & mock data placeholder
-					</div>
-				</section>
+				<!-- Export & Mock Data -->
+				<ExportSection />
+				<MockDataSettingsSection />
 			</div>
 		</div>
 	</div>

@@ -136,19 +136,75 @@ const footerPreview = computed(() => {
 
 const optionsOpen = shallowRef(false)
 
-// --- Highlighted segment from preview ---
+// --- Highlighted segment from preview click ---
 
-const highlightedSegment = computed(() => {
-	const area = editorStore.selectedTuiArea
-	if (area?.kind === 'segment') {
-		return area.cellSegment ?? area.name
-	}
-	return null
-})
+const highlightedSegment = ref<string | null>(null)
+let highlightTimer: ReturnType<typeof setTimeout> | undefined
+
+// Watch focusedSegment from preview clicks — scroll to cell, open popover, highlight
+watch(
+	() => editorStore.focusedSegment,
+	async (focused) => {
+		if (!focused || focused.source !== 'preview') return
+		const key = focused.cellSegment ?? focused.name
+
+		// Apply highlight animation
+		clearTimeout(highlightTimer)
+		highlightedSegment.value = key
+		highlightTimer = setTimeout(() => {
+			highlightedSegment.value = null
+		}, 2000)
+
+		// Delegate popover opening to TuiGridVisual via selectedTuiArea
+		editorStore.selectTuiArea({
+			kind: 'segment',
+			name: focused.name,
+			cellSegment: focused.cellSegment,
+		})
+
+		await nextTick()
+		// Scroll the grid section into view
+		const gridEl = gridRef.value
+		if (gridEl) {
+			gridEl.scrollIntoView({
+				behavior: 'smooth',
+				block: 'nearest',
+			})
+		}
+	},
+)
+
+// Watch focusedTuiArea from preview clicks — open title/footer popover and scroll
+watch(
+	() => editorStore.focusedTuiArea,
+	async (area) => {
+		if (!area) return
+		if (area === 'title') {
+			titlePopoverOpen.value = true
+			await nextTick()
+			titleTriggerRef.value?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+		} else if (area === 'footer') {
+			footerPopoverOpen.value = true
+			await nextTick()
+			footerTriggerRef.value?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+		}
+	},
+)
+
+const gridRef = ref<HTMLElement | null>(null)
+const titleTriggerRef = ref<HTMLElement | null>(null)
+const footerTriggerRef = ref<HTMLElement | null>(null)
 </script>
 
 <template>
-	<div class="flex flex-col gap-4">
+	<section class="flex flex-col gap-4">
+		<div>
+			<h2 class="text-sm font-semibold">TUI Layout Editor</h2>
+			<p class="text-xs text-muted-foreground">
+				Configure your TUI grid layout, title, footer, and breakpoints
+			</p>
+		</div>
+
 		<!-- Breakpoint Switcher -->
 		<div class="flex flex-col gap-2">
 			<div class="flex items-center justify-between">
@@ -227,6 +283,7 @@ const highlightedSegment = computed(() => {
 		<Popover v-model:open="titlePopoverOpen">
 			<PopoverTrigger as-child>
 				<button
+					ref="titleTriggerRef"
 					class="flex items-center gap-2 rounded-t-lg border border-b-0 border-border bg-muted/30 px-3 py-2 text-left text-xs transition-colors hover:bg-muted/50"
 					:class="titlePopoverOpen ? 'ring-1 ring-primary/30 border-primary/40' : ''"
 				>
@@ -256,7 +313,11 @@ const highlightedSegment = computed(() => {
 		</Popover>
 
 		<!-- Grid Visual -->
-		<div v-if="selectedBreakpoint" class="rounded-lg border border-border bg-background p-3">
+		<div
+			v-if="selectedBreakpoint"
+			ref="gridRef"
+			class="rounded-lg border border-border bg-background p-3"
+		>
 			<TuiGridVisual
 				:breakpoint-index="selectedBpIndex"
 				:areas="selectedBreakpoint.areas"
@@ -269,6 +330,7 @@ const highlightedSegment = computed(() => {
 		<Popover v-model:open="footerPopoverOpen">
 			<PopoverTrigger as-child>
 				<button
+					ref="footerTriggerRef"
 					class="flex items-center gap-2 rounded-b-lg border border-t-0 border-border bg-muted/30 px-3 py-2 text-left text-xs transition-colors hover:bg-muted/50"
 					:class="footerPopoverOpen ? 'ring-1 ring-primary/30 border-primary/40' : ''"
 				>
@@ -344,5 +406,5 @@ const highlightedSegment = computed(() => {
 				</div>
 			</CollapsibleContent>
 		</Collapsible>
-	</div>
+	</section>
 </template>

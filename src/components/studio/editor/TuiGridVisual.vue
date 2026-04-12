@@ -386,7 +386,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 									class="group/cell relative flex items-center gap-1.5 rounded-md border px-3 py-3 text-left text-xs transition-all duration-150"
 									:class="[
 										isCellHighlighted(cell.segment)
-											? 'border-primary bg-primary/10 ring-2 ring-primary/40'
+											? 'border-primary bg-primary/10 ring-2 ring-primary/40 tui-cell-highlight-pulse'
 											: 'border-border bg-card hover:border-primary/40 hover:ring-1 hover:ring-primary/20',
 										openPopover === getCellPopoverKey(cell)
 											? 'border-primary ring-2 ring-primary/40'
@@ -597,3 +597,27 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 		</div>
 	</div>
 </template>
+
+<style scoped>
+.tui-cell-highlight-pulse {
+	animation: tui-cell-pulse 2s ease-out;
+}
+
+@keyframes tui-cell-pulse {
+	0% {
+		box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4);
+	}
+	20% {
+		box-shadow: 0 0 0 4px hsl(var(--primary) / 0.3);
+	}
+	100% {
+		box-shadow: 0 0 0 0 hsl(var(--primary) / 0);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.tui-cell-highlight-pulse {
+		animation: none;
+	}
+}
+</style>

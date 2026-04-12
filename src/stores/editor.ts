@@ -17,14 +17,19 @@ export interface FocusedSegment {
 	source: 'preview' | 'editor'
 }
 
+export type FocusedTuiArea = 'title' | 'footer'
+
 export const useEditorStore = defineStore('editor', () => {
 	const selectedSegment = ref<string | null>(null)
 	const expandedSections = reactive(new Set<string>())
 	const activeLineIndex = ref(0)
 	const selectedTuiArea = ref<TuiAreaTarget | null>(null)
 	const focusedSegment = ref<FocusedSegment | null>(null)
+	const focusedTuiArea = ref<FocusedTuiArea | null>(null)
 	const showPreviewControls = ref(false)
 	let skipSelectionClear = false
+	let focusedSegmentTimer: ReturnType<typeof setTimeout> | undefined
+	let focusedTuiAreaTimer: ReturnType<typeof setTimeout> | undefined
 
 	// --- Computed ---
 
@@ -93,11 +98,25 @@ export const useEditorStore = defineStore('editor', () => {
 	}
 
 	function scrollToSegment(name: string, cellSegment?: string) {
+		clearTimeout(focusedSegmentTimer)
 		focusedSegment.value = { name, cellSegment, source: 'preview' }
+		focusedSegmentTimer = setTimeout(clearFocusedSegment, 2000)
 	}
 
 	function clearFocusedSegment() {
+		clearTimeout(focusedSegmentTimer)
 		focusedSegment.value = null
+	}
+
+	function setFocusedTuiArea(area: FocusedTuiArea) {
+		clearTimeout(focusedTuiAreaTimer)
+		focusedTuiArea.value = area
+		focusedTuiAreaTimer = setTimeout(clearFocusedTuiArea, 2000)
+	}
+
+	function clearFocusedTuiArea() {
+		clearTimeout(focusedTuiAreaTimer)
+		focusedTuiArea.value = null
 	}
 
 	function togglePreviewControls() {
@@ -110,6 +129,7 @@ export const useEditorStore = defineStore('editor', () => {
 		activeLineIndex,
 		selectedTuiArea,
 		focusedSegment,
+		focusedTuiArea,
 		showPreviewControls,
 		// Computed
 		hasSelection,
@@ -122,6 +142,8 @@ export const useEditorStore = defineStore('editor', () => {
 		setActiveLineIndex,
 		scrollToSegment,
 		clearFocusedSegment,
+		setFocusedTuiArea,
+		clearFocusedTuiArea,
 		togglePreviewControls,
 	}
 })

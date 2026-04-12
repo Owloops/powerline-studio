@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const previewStore = usePreviewStore()
+const configStore = useConfigStore()
 const editorStore = useEditorStore()
 
 const HITBOX_TITLES: Record<string, string> = {
@@ -16,14 +17,20 @@ function hitboxTitle(segmentType: string): string {
 function handleClick(segmentType: string, sourceLineIndex: number, cellSegment?: string) {
 	// Handle special TUI title/footer hitbox types
 	if (segmentType === '__title_left' || segmentType === '__title_right') {
-		editorStore.selectTuiArea({ kind: 'title' })
+		editorStore.setFocusedTuiArea('title')
 		return
 	}
 	if (segmentType === '__footer_left' || segmentType === '__footer_right') {
-		editorStore.selectTuiArea({ kind: 'footer' })
+		editorStore.setFocusedTuiArea('footer')
 		return
 	}
-	editorStore.selectSegment(segmentType, sourceLineIndex, cellSegment)
+
+	// For flat mode, switch line if needed
+	if (!configStore.isTuiStyle && sourceLineIndex !== editorStore.activeLineIndex) {
+		editorStore.setActiveLineIndex(sourceLineIndex)
+	}
+
+	editorStore.scrollToSegment(segmentType, cellSegment)
 }
 </script>
 

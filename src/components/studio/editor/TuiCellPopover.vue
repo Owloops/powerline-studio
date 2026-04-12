@@ -121,7 +121,7 @@ function resetTemplate() {
 			<!-- Header -->
 			<div class="flex items-center gap-3 px-4 pt-3 pb-2">
 				<component v-if="meta.icon" :is="meta.icon" class="size-4 shrink-0 text-muted-foreground" />
-				<IconLucide-grid-2x2 v-else class="size-4 shrink-0 text-muted-foreground" />
+				<IconLucide-layout-grid v-else class="size-4 shrink-0 text-muted-foreground" />
 				<div class="flex flex-col">
 					<span class="text-sm font-semibold leading-tight">{{ meta.name }}</span>
 					<span

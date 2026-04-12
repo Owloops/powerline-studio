@@ -96,6 +96,9 @@ function handleRemoveSegment(key: string) {
 
 // --- Selection sync: external focusedSegment -> scroll + highlight ---
 
+const highlightedChip = ref<string | null>(null)
+let highlightTimer: ReturnType<typeof setTimeout> | undefined
+
 watch(
 	() => editorStore.focusedSegment,
 	async (focused) => {
@@ -103,6 +106,13 @@ watch(
 		if (focused.source !== 'preview') return
 
 		openPopover.value = focused.name
+
+		// Apply highlight animation
+		clearTimeout(highlightTimer)
+		highlightedChip.value = focused.name
+		highlightTimer = setTimeout(() => {
+			highlightedChip.value = null
+		}, 2000)
 
 		await nextTick()
 		const el = chipEls.value[focused.name]
@@ -112,8 +122,6 @@ watch(
 				block: 'nearest',
 			})
 		}
-
-		editorStore.clearFocusedSegment()
 	},
 )
 </script>
@@ -163,6 +171,7 @@ watch(
 								:segment-key="key as SegmentKey"
 								:display-style="displayStyle"
 								:selected="openPopover === key"
+								:highlighted="highlightedChip === key"
 								:is-first="index === 0"
 								:is-last="index === segmentOrder.length - 1"
 								@click="togglePopover(key)"

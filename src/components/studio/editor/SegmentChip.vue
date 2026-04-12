@@ -6,6 +6,7 @@ const props = defineProps<{
 	segmentKey: SegmentKey
 	displayStyle: 'minimal' | 'powerline' | 'capsule'
 	selected?: boolean
+	highlighted?: boolean
 	isFirst?: boolean
 	isLast?: boolean
 }>()
@@ -44,6 +45,8 @@ const meta = computed(() => SEGMENT_META[props.segmentKey])
 				displayStyle === 'capsule' &&
 					selected &&
 					'border-primary bg-primary/5 ring-2 ring-primary/20',
+				// Highlight pulse from preview click
+				highlighted && 'segment-highlight-pulse',
 			)
 		"
 		@click="$emit('click')"
@@ -60,3 +63,28 @@ const meta = computed(() => SEGMENT_META[props.segmentKey])
 		>
 	</button>
 </template>
+
+<style scoped>
+.segment-highlight-pulse {
+	animation: segment-pulse 2s ease-out;
+}
+
+@keyframes segment-pulse {
+	0% {
+		box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4);
+	}
+	20% {
+		box-shadow: 0 0 0 4px hsl(var(--primary) / 0.3);
+	}
+	100% {
+		box-shadow: 0 0 0 0 hsl(var(--primary) / 0);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.segment-highlight-pulse {
+		animation: none;
+		box-shadow: 0 0 0 3px hsl(var(--primary) / 0.3);
+	}
+}
+</style>
