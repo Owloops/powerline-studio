@@ -174,7 +174,6 @@ watch(
 								:highlighted="highlightedChip === key"
 								:is-first="index === 0"
 								:is-last="index === segmentOrder.length - 1"
-								@click="togglePopover(key)"
 							/>
 						</SegmentConfigPopover>
 					</Reorder.Item>
