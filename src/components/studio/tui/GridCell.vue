@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Input } from '@/components/ui/input'
-import { SEGMENT_NAME_LIST, SEGMENT_PART_REFS } from '@/types/tui'
+import TuiSegmentPickerContent from './TuiSegmentPickerContent.vue'
 
 const props = defineProps<{
 	value: string
@@ -19,20 +17,8 @@ const emit = defineEmits<{
 }>()
 
 const open = shallowRef(false)
-const search = shallowRef('')
 const perColumnMode = shallowRef(false)
 const focusedColOffset = shallowRef(0)
-
-const segmentGroups = computed(() => {
-	const q = search.value.toLowerCase()
-	const filter = (items: string[]) => items.filter((s) => s.toLowerCase().includes(q))
-
-	return [
-		{ label: 'Special', items: filter(['.']) },
-		{ label: 'Segments', items: filter(SEGMENT_NAME_LIST as unknown as string[]) },
-		{ label: 'Segment Parts', items: filter(SEGMENT_PART_REFS) },
-	].filter((g) => g.items.length > 0)
-})
 
 function selectSegment(seg: string) {
 	if (perColumnMode.value) {
@@ -42,7 +28,6 @@ function selectSegment(seg: string) {
 	}
 	open.value = false
 	perColumnMode.value = false
-	search.value = ''
 }
 
 function handleKeydown(e: KeyboardEvent) {
@@ -121,51 +106,19 @@ const cellClasses = computed(() => {
 			</button>
 		</PopoverTrigger>
 		<PopoverContent class="w-56 p-0" @keydown="handlePerColumnNav" @open-auto-focus.prevent>
-			<div class="p-2">
-				<Input
-					v-model="search"
-					placeholder="Search segments..."
-					class="h-8 text-xs"
-					autofocus
-					@keydown.escape="open = false"
-				/>
-			</div>
-			<div
-				v-if="perColumnMode && span > 1"
-				class="flex items-center gap-1 px-2 pb-1 text-xs text-muted-foreground"
+			<TuiSegmentPickerContent
+				:current-segment="value"
+				:used-segments="usedSegments"
+				@select="selectSegment"
 			>
-				<span>Column {{ focusedColOffset + 1 }} of {{ span }}</span>
-				<span class="text-muted-foreground/50">(Arrow keys to navigate)</span>
-			</div>
-			<ScrollArea class="max-h-48">
-				<div class="px-1 py-0.5">
-					<div v-for="group in segmentGroups" :key="group.label" class="py-0.5">
-						<div
-							class="px-2 py-1 text-[0.625rem] font-medium text-muted-foreground uppercase tracking-wider"
-						>
-							{{ group.label }}
-						</div>
-						<button
-							v-for="seg in group.items"
-							:key="seg"
-							class="flex w-full items-center rounded-md px-2 py-1.5 text-xs hover:bg-accent hover:text-accent-foreground disabled:opacity-40 disabled:cursor-not-allowed"
-							:disabled="usedSegments?.has(seg) && seg !== '.' && seg !== value"
-							@click="selectSegment(seg)"
-						>
-							<span class="font-mono">{{ seg === '.' ? '\u00B7 (empty)' : seg }}</span>
-							<span
-								v-if="usedSegments?.has(seg) && seg !== '.' && seg !== value"
-								class="ml-auto text-[0.625rem] text-muted-foreground"
-							>
-								(used)
-							</span>
-							<span v-else-if="seg === value" class="ml-auto text-[0.625rem] text-primary">
-								current
-							</span>
-						</button>
-					</div>
+				<div
+					v-if="perColumnMode && span > 1"
+					class="flex items-center gap-1 px-2 pb-1 text-xs text-muted-foreground"
+				>
+					<span>Column {{ focusedColOffset + 1 }} of {{ span }}</span>
+					<span class="text-muted-foreground/50">(Arrow keys to navigate)</span>
 				</div>
-			</ScrollArea>
+			</TuiSegmentPickerContent>
 		</PopoverContent>
 	</Popover>
 </template>

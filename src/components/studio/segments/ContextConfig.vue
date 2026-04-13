@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useForm } from '@formwerk/core'
 import FormSelectField from '@/components/FormSelectField.vue'
 import FormSwitchField from '@/components/FormSwitchField.vue'
 import FormNumberField from '@/components/FormNumberField.vue'
@@ -7,11 +6,8 @@ import { contextConfigSchema } from './schemas'
 import { BAR_DISPLAY_STYLE_OPTIONS, PERCENTAGE_MODE_OPTIONS } from './options'
 import { SEGMENT_DEFAULTS } from '@/stores/config'
 
-const configStore = useConfigStore()
-const editorStore = useEditorStore()
-
-const segmentConfig = computed(() => {
-	const seg = configStore.currentLineSegments.context
+const { values } = useSegmentForm('context', contextConfigSchema, () => {
+	const seg = useConfigStore().currentLineSegments.context
 	const displayStyle = seg?.displayStyle ?? SEGMENT_DEFAULTS.context.displayStyle
 	return {
 		displayStyle,
@@ -20,19 +16,6 @@ const segmentConfig = computed(() => {
 		autocompactBuffer: seg?.autocompactBuffer ?? SEGMENT_DEFAULTS.context.autocompactBuffer,
 	}
 })
-
-const { values } = useForm({
-	schema: contextConfigSchema,
-	initialValues: segmentConfig.value,
-})
-
-watch(
-	values,
-	(newValues) => {
-		configStore.updateSegmentConfig(editorStore.activeLineIndex, 'context', newValues)
-	},
-	{ deep: true },
-)
 </script>
 
 <template>

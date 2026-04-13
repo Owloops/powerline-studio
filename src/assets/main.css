@@ -458,3 +458,46 @@
 		transition-duration: 0.01ms !important;
 	}
 }
+
+/* Compact form layout for popover config panels */
+.compact-fields > .flex.flex-col {
+	gap: 0.5rem;
+}
+
+.compact-fields .flex.flex-col.gap-1\.5 {
+	flex-direction: row;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.375rem;
+}
+
+.compact-fields .flex.flex-col.gap-1\.5 > label {
+	flex-shrink: 0;
+	width: 5.5rem;
+	font-size: 0.75rem;
+}
+
+.compact-fields .flex.flex-col.gap-1\.5 > input,
+.compact-fields .flex.flex-col.gap-1\.5 > button[role='combobox'] {
+	flex: 1;
+	min-width: 0;
+}
+
+.compact-fields .flex.flex-col.gap-1\.5 > p {
+	width: 100%;
+	font-size: 0.75rem;
+}
+
+.compact-fields input {
+	height: 2rem;
+	font-size: 0.75rem;
+}
+
+.compact-fields button[role='combobox'] {
+	height: 2rem;
+	font-size: 0.75rem;
+}
+
+.compact-fields .flex.flex-col.gap-1 > .flex.items-center.gap-3 > label {
+	font-size: 0.75rem;
+}

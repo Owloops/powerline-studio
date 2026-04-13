@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import { useForm } from '@formwerk/core'
 import FormSwitchField from '@/components/FormSwitchField.vue'
 import { metricsConfigSchema } from './schemas'
 
-const configStore = useConfigStore()
-const editorStore = useEditorStore()
-
-const segmentConfig = computed(() => {
-	const seg = configStore.currentLineSegments.metrics
+const { values } = useSegmentForm('metrics', metricsConfigSchema, () => {
+	const seg = useConfigStore().currentLineSegments.metrics
 	return {
 		showResponseTime: seg?.showResponseTime !== false,
 		showLastResponseTime: seg?.showLastResponseTime ?? false,
@@ -17,19 +13,6 @@ const segmentConfig = computed(() => {
 		showLinesRemoved: seg?.showLinesRemoved !== false,
 	}
 })
-
-const { values } = useForm({
-	schema: metricsConfigSchema,
-	initialValues: segmentConfig.value,
-})
-
-watch(
-	values,
-	(newValues) => {
-		configStore.updateSegmentConfig(editorStore.activeLineIndex, 'metrics', newValues)
-	},
-	{ deep: true },
-)
 </script>
 
 <template>

@@ -34,7 +34,7 @@ import {
 } from '@/lib/themes'
 import type { CanonicalTheme, SavedCustomTheme } from '@/lib/themes'
 
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible'
 
 type StyleValue = 'minimal' | 'powerline' | 'capsule' | 'tui'
 
@@ -224,23 +224,12 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 <template>
 	<section class="flex flex-col gap-4">
 		<Collapsible v-model:open="isOpen">
-			<CollapsibleTrigger
-				class="relative flex cursor-pointer items-center rounded-md px-1 py-0.5 -ml-1 text-left transition-colors hover:bg-accent/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-			>
-				<span
-					v-if="step"
-					class="absolute -left-18 top-0.5 flex size-8 items-center justify-center rounded-full border border-muted-foreground/15 text-xs font-semibold tabular-nums text-muted-foreground/25"
-					>{{ step }}</span
-				>
-				<IconLucide-chevron-right
-					class="absolute -left-7 top-2 size-4 text-muted-foreground transition-transform duration-200"
-					:class="isOpen && 'rotate-90'"
-				/>
-				<div>
-					<h2 class="text-sm font-semibold">Style & Theme</h2>
-					<p class="text-xs text-muted-foreground">Choose display style and color scheme</p>
-				</div>
-			</CollapsibleTrigger>
+			<SectionTrigger
+				title="Style & Theme"
+				description="Choose display style and color scheme"
+				:step="step"
+				:is-open="isOpen"
+			/>
 
 			<CollapsibleContent>
 				<div class="flex flex-col gap-6 pt-4">

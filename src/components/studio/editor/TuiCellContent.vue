@@ -2,7 +2,6 @@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Input } from '@/components/ui/input'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import {
 	NumberField,
@@ -19,7 +18,7 @@ import {
 } from '@/components/studio/segments/segmentMeta'
 import ColorPairRow from '@/components/studio/theme/ColorPairRow.vue'
 import SegmentTemplateItem from '@/components/studio/tui/SegmentTemplateItem.vue'
-import { SEGMENT_NAME_LIST, SEGMENT_PART_REFS } from '@/types/tui'
+import TuiSegmentPickerContent from '@/components/studio/tui/TuiSegmentPickerContent.vue'
 import { SEGMENT_PARTS } from '@owloops/claude-powerline/browser'
 import type { SegmentName, SegmentTemplate } from '@owloops/claude-powerline/browser'
 
@@ -41,23 +40,6 @@ provide('formCompact', true)
 // --- Segment picker ---
 
 const pickerOpen = shallowRef(false)
-const pickerSearch = shallowRef('')
-
-const pickerGroups = computed(() => {
-	const q = pickerSearch.value.toLowerCase()
-	const filter = (items: string[]) => items.filter((s) => s.toLowerCase().includes(q))
-	return [
-		{ label: 'Special', items: filter(['.']) },
-		{ label: 'Segments', items: filter(SEGMENT_NAME_LIST as unknown as string[]) },
-		{ label: 'Segment Parts', items: filter(SEGMENT_PART_REFS) },
-	].filter((g) => g.items.length > 0)
-})
-
-function selectSegment(seg: string) {
-	pickerOpen.value = false
-	pickerSearch.value = ''
-	emit('swap', seg)
-}
 
 // Parse the cell segment reference into base segment name and optional part
 const baseSegment = computed(() => {
@@ -176,6 +158,13 @@ function resetTemplate() {
 				{{ cellSegment }}
 			</span>
 		</div>
+		<button
+			class="flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+			title="Clear cell"
+			@click="emit('swap', '.')"
+		>
+			<IconLucide-trash-2 class="size-3.5" />
+		</button>
 		<Popover v-model:open="pickerOpen">
 			<PopoverTrigger as-child>
 				<button
@@ -186,37 +175,15 @@ function resetTemplate() {
 				</button>
 			</PopoverTrigger>
 			<PopoverContent class="w-56 p-0" align="end" @open-auto-focus.prevent>
-				<div class="p-2">
-					<Input
-						v-model="pickerSearch"
-						placeholder="Search segments..."
-						class="h-8 text-xs"
-						autofocus
-						@keydown.escape="pickerOpen = false"
-					/>
-				</div>
-				<div class="max-h-48 overflow-y-auto">
-					<div class="px-1 py-0.5">
-						<div v-for="group in pickerGroups" :key="group.label" class="py-0.5">
-							<div
-								class="px-2 py-1 text-xs font-medium text-muted-foreground uppercase tracking-wider"
-							>
-								{{ group.label }}
-							</div>
-							<button
-								v-for="seg in group.items"
-								:key="seg"
-								class="flex w-full items-center rounded-md px-2 py-1.5 text-xs hover:bg-accent hover:text-accent-foreground"
-								@click="selectSegment(seg)"
-							>
-								<span class="font-mono">{{ seg === '.' ? '\u00B7 (empty)' : seg }}</span>
-								<span v-if="seg === cellSegment" class="ml-auto text-[0.625rem] text-primary">
-									current
-								</span>
-							</button>
-						</div>
-					</div>
-				</div>
+				<TuiSegmentPickerContent
+					:current-segment="cellSegment"
+					@select="
+						($event) => {
+							pickerOpen = false
+							emit('swap', $event)
+						}
+					"
+				/>
 			</PopoverContent>
 		</Popover>
 	</div>
@@ -252,7 +219,7 @@ function resetTemplate() {
 	<ScrollArea class="max-h-[420px]">
 		<div class="flex flex-col">
 			<!-- Segment config form -->
-			<div v-if="hasConfigForm" class="compact-config-form px-3 py-2">
+			<div v-if="hasConfigForm" class="compact-fields px-3 py-2">
 				<component :is="segmentConfigMap[baseSegment]" :key="cellSegment" />
 			</div>
 			<div v-else class="px-3 py-2 text-xs text-muted-foreground">
@@ -359,47 +326,3 @@ function resetTemplate() {
 		</div>
 	</ScrollArea>
 </template>
-
-<style scoped>
-.compact-config-form :deep(> .flex.flex-col) {
-	gap: 0.5rem;
-}
-
-.compact-config-form :deep(.flex.flex-col.gap-1\.5) {
-	flex-direction: row;
-	align-items: center;
-	flex-wrap: wrap;
-	gap: 0.375rem;
-}
-
-.compact-config-form :deep(.flex.flex-col.gap-1\.5 > label) {
-	flex-shrink: 0;
-	width: 5.5rem;
-	font-size: 0.75rem;
-}
-
-.compact-config-form :deep(.flex.flex-col.gap-1\.5 > input),
-.compact-config-form :deep(.flex.flex-col.gap-1\.5 > button[role='combobox']) {
-	flex: 1;
-	min-width: 0;
-}
-
-.compact-config-form :deep(.flex.flex-col.gap-1\.5 > p) {
-	width: 100%;
-	font-size: 0.75rem;
-}
-
-.compact-config-form :deep(input) {
-	height: 2rem;
-	font-size: 0.75rem;
-}
-
-.compact-config-form :deep(button[role='combobox']) {
-	height: 2rem;
-	font-size: 0.75rem;
-}
-
-.compact-config-form :deep(.flex.flex-col.gap-1 > .flex.items-center.gap-3 > label) {
-	font-size: 0.75rem;
-}
-</style>

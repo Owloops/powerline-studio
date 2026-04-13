@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import { useForm } from '@formwerk/core'
 import FormSwitchField from '@/components/FormSwitchField.vue'
 import { gitConfigSchema } from './schemas'
 
-const configStore = useConfigStore()
-const editorStore = useEditorStore()
-
-const segmentConfig = computed(() => {
-	const seg = configStore.currentLineSegments.git
+const { values } = useSegmentForm('git', gitConfigSchema, () => {
+	const seg = useConfigStore().currentLineSegments.git
 	return {
 		showSha: seg?.showSha ?? false,
 		showAheadBehind: seg?.showAheadBehind !== false,
@@ -20,19 +16,6 @@ const segmentConfig = computed(() => {
 		showRepoName: seg?.showRepoName ?? false,
 	}
 })
-
-const { values } = useForm({
-	schema: gitConfigSchema,
-	initialValues: segmentConfig.value,
-})
-
-watch(
-	values,
-	(newValues) => {
-		configStore.updateSegmentConfig(editorStore.activeLineIndex, 'git', newValues)
-	},
-	{ deep: true },
-)
 </script>
 
 <template>

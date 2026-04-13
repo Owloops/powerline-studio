@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { AlignValue, ParsedCell } from '@/types/tui'
-import { SEGMENT_NAME_LIST, SEGMENT_PART_REFS } from '@/types/tui'
+import { SEGMENT_NAME_LIST, SEGMENT_PART_REFS, parseGridAreas } from '@/types/tui'
 import {
 	SEGMENT_META,
 	isSegmentKey,
@@ -111,26 +111,7 @@ watch(
 
 // Parse grid areas into merged cells per row
 const parsedGrid = computed(() => {
-	return props.areas.map((row) => {
-		const trimmed = row.trim()
-		if (trimmed === '---') {
-			return [{ segment: '---', span: props.columns.length, startCol: 0 }] as ParsedCell[]
-		}
-		const cells = trimmed.split(/\s+/)
-		const merged: ParsedCell[] = []
-		let i = 0
-		while (i < cells.length) {
-			const name = cells[i]!
-			let span = 1
-			// Only merge consecutive identical filled cells, never empty '.' cells
-			if (name !== '.') {
-				while (i + span < cells.length && cells[i + span] === name) span++
-			}
-			merged.push({ segment: name, span, startCol: i })
-			i += span
-		}
-		return merged
-	})
+	return parseGridAreas(props.areas, props.columns.length, false)
 })
 
 // Translate breakpoint column defs into a visual CSS grid-template-columns

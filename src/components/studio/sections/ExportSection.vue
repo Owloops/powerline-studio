@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { toast } from 'vue-sonner'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible'
 import { Button, CopyButton } from '@/components/ui/button'
 import { useShikiHighlighter } from '@/composables/useShikiHighlighter'
 
@@ -56,25 +56,12 @@ function downloadJson() {
 		<Collapsible v-model:open="isOpen">
 			<!-- Section Header -->
 			<div class="flex items-center justify-between">
-				<CollapsibleTrigger
-					class="relative flex cursor-pointer items-center rounded-md px-1 py-0.5 -ml-1 text-left transition-colors hover:bg-accent/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-				>
-					<span
-						v-if="step"
-						class="absolute -left-18 top-0.5 flex size-8 items-center justify-center rounded-full border border-muted-foreground/15 text-xs font-semibold tabular-nums text-muted-foreground/25"
-						>{{ step }}</span
-					>
-					<IconLucide-chevron-right
-						class="absolute -left-7 top-2 size-4 text-muted-foreground transition-transform duration-200"
-						:class="isOpen && 'rotate-90'"
-					/>
-					<div>
-						<h2 class="text-sm font-semibold">Export</h2>
-						<p class="text-xs text-muted-foreground">
-							Copy your config JSON and installation instructions
-						</p>
-					</div>
-				</CollapsibleTrigger>
+				<SectionTrigger
+					title="Export"
+					description="Copy your config JSON and installation instructions"
+					:step="step"
+					:is-open="isOpen"
+				/>
 				<div class="flex items-center gap-2">
 					<CopyButton
 						variant="outline"

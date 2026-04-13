@@ -35,3 +35,33 @@ export interface TuiValidationError {
 	path: string
 	message: string
 }
+
+/**
+ * Parse TUI grid area strings into merged cell arrays.
+ * When mergeEmpty is false, '.' cells are kept individual (for interactive editors).
+ */
+export function parseGridAreas(
+	areas: string[],
+	columnCount: number,
+	mergeEmpty = true,
+): ParsedCell[][] {
+	return areas.map((row) => {
+		const trimmed = row.trim()
+		if (trimmed === '---') {
+			return [{ segment: '---', span: columnCount, startCol: 0 }]
+		}
+		const cells = trimmed.split(/\s+/)
+		const merged: ParsedCell[] = []
+		let i = 0
+		while (i < cells.length) {
+			const name = cells[i]!
+			let span = 1
+			if (mergeEmpty || name !== '.') {
+				while (i + span < cells.length && cells[i + span] === name) span++
+			}
+			merged.push({ segment: name, span, startCol: i })
+			i += span
+		}
+		return merged
+	})
+}

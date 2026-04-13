@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ParsedCell } from '@/types/tui'
+import { parseGridAreas } from '@/types/tui'
 import GridCell from './GridCell.vue'
 import { Button } from '@/components/ui/button'
 
@@ -14,23 +15,7 @@ const props = defineProps<{
 const configStore = useConfigStore()
 
 const parsedGrid = computed(() => {
-	return props.areas.map((row, rowIndex) => {
-		const trimmed = row.trim()
-		if (trimmed === '---') {
-			return [{ segment: '---', span: props.columns.length, startCol: 0 }] as ParsedCell[]
-		}
-		const cells = trimmed.split(/\s+/)
-		const merged: ParsedCell[] = []
-		let i = 0
-		while (i < cells.length) {
-			const name = cells[i]!
-			let span = 1
-			while (i + span < cells.length && cells[i + span] === name) span++
-			merged.push({ segment: name, span, startCol: i })
-			i += span
-		}
-		return merged
-	})
+	return parseGridAreas(props.areas, props.columns.length)
 })
 
 const gridTemplateColumns = computed(() => {
