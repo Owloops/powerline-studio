@@ -562,7 +562,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 											<IconLucide-info class="size-3 text-muted-foreground/50" />
 										</TooltipTrigger>
 										<TooltipContent side="top" class="max-w-56 text-xs">
-											Shrink the panel to fit its content width instead of filling available space
+											Shrink the panel to fit its content width instead of filling available space.
 										</TooltipContent>
 									</Tooltip>
 								</div>

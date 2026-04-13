@@ -39,7 +39,7 @@ const fitContent = computed(() => tui.value?.fitContent ?? false)
 								<IconLucide-info class="size-3 text-muted-foreground/50" />
 							</TooltipTrigger>
 							<TooltipContent side="right" class="max-w-56 text-xs">
-								Shrink the panel to fit its content width instead of filling available space
+								Shrink the panel to fit its content width instead of filling available space.
 							</TooltipContent>
 						</Tooltip>
 					</div>
@@ -59,7 +59,7 @@ const fitContent = computed(() => tui.value?.fitContent ?? false)
 								<IconLucide-info class="size-3 text-muted-foreground/50" />
 							</TooltipTrigger>
 							<TooltipContent side="right" class="max-w-56 text-xs">
-								Minimum panel width in characters
+								Minimum panel width in characters.
 							</TooltipContent>
 						</Tooltip>
 					</div>
@@ -87,7 +87,7 @@ const fitContent = computed(() => tui.value?.fitContent ?? false)
 								<IconLucide-info class="size-3 text-muted-foreground/50" />
 							</TooltipTrigger>
 							<TooltipContent side="right" class="max-w-56 text-xs">
-								Maximum panel width in characters
+								Maximum panel width in characters.
 							</TooltipContent>
 						</Tooltip>
 					</div>

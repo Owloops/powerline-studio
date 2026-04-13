@@ -339,7 +339,7 @@ watch(
 									</Button>
 								</div>
 							</TooltipTrigger>
-							<TooltipContent v-if="!canAddLine"> Maximum of 5 lines reached </TooltipContent>
+							<TooltipContent v-if="!canAddLine"> Maximum of 5 lines reached. </TooltipContent>
 						</Tooltip>
 					</TooltipProvider>
 				</div>

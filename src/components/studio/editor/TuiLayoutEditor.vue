@@ -282,7 +282,7 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 										</Button>
 									</TooltipTrigger>
 									<TooltipContent side="left" class="text-xs">
-										Add a new breakpoint for wider terminals
+										Add a new breakpoint for wider terminals.
 									</TooltipContent>
 								</Tooltip>
 							</TooltipProvider>
