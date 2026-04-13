@@ -41,8 +41,8 @@ jobs:
 
       - uses: voidzero-dev/setup-vp@v1
         with:
+          working-directory: powerline-studio
           cache: true
-          cwd: powerline-studio
 
       - name: Build powerline-studio
         working-directory: powerline-studio
