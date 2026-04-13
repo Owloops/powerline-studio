@@ -23,24 +23,28 @@ function onCheckedChange(checked: boolean) {
 </script>
 
 <template>
-	<div class="flex flex-col gap-1.5">
-		<div class="flex items-center" :class="compact ? 'justify-between gap-2' : 'gap-3'">
-			<label
-				v-if="compact"
-				v-bind="labelProps"
-				:class="compact ? 'text-xs text-muted-foreground' : 'text-sm font-medium text-foreground'"
-			>
-				{{ label }}
-			</label>
-			<Switch
-				v-bind="controlProps"
-				:model-value="fieldValue ?? false"
-				@update:model-value="onCheckedChange"
-			/>
-			<label v-if="!compact" v-bind="labelProps" class="text-sm font-medium text-foreground">
-				{{ label }}
-			</label>
-		</div>
+	<div :class="compact ? 'flex items-center gap-2' : 'flex flex-col gap-1.5'">
+		<label v-if="compact" v-bind="labelProps" class="w-32 shrink-0 text-xs text-muted-foreground">
+			{{ label }}
+		</label>
+		<template v-if="!compact">
+			<div class="flex items-center gap-3">
+				<Switch
+					v-bind="controlProps"
+					:model-value="fieldValue ?? false"
+					@update:model-value="onCheckedChange"
+				/>
+				<label v-bind="labelProps" class="text-sm font-medium text-foreground">
+					{{ label }}
+				</label>
+			</div>
+		</template>
+		<Switch
+			v-if="compact"
+			v-bind="controlProps"
+			:model-value="fieldValue ?? false"
+			@update:model-value="onCheckedChange"
+		/>
 		<p v-if="isTouched && errorMessage" v-bind="errorMessageProps" class="text-sm text-destructive">
 			{{ errorMessage }}
 		</p>

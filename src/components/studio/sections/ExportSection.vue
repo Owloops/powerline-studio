@@ -8,7 +8,7 @@ defineProps<{ step?: number }>()
 
 const configStore = useConfigStore()
 
-const isOpen = ref(true)
+const isOpen = ref(false)
 
 const { html, isLoading } = useShikiHighlighter(() => configStore.configJson)
 

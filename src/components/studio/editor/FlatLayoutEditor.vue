@@ -19,7 +19,7 @@ defineProps<{ step?: number }>()
 const configStore = useConfigStore()
 const editorStore = useEditorStore()
 
-const isOpen = ref(true)
+const isOpen = ref(false)
 
 const prefersReducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
 

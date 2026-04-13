@@ -18,7 +18,7 @@ const hasError = computed(() => isTouched.value && !!errorMessage.value)
 			v-bind="labelProps"
 			:class="
 				compact
-					? 'text-xs text-muted-foreground shrink-0 min-w-0 flex-[0_0_auto]'
+					? 'w-32 shrink-0 text-xs text-muted-foreground'
 					: 'text-sm font-medium text-foreground'
 			"
 		>

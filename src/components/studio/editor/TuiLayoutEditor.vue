@@ -20,7 +20,7 @@ const configStore = useConfigStore()
 const previewStore = usePreviewStore()
 const editorStore = useEditorStore()
 
-const isOpen = ref(true)
+const isOpen = ref(false)
 
 const tui = computed(() => configStore.config.display.tui)
 const breakpoints = computed(() => tui.value?.breakpoints ?? [])

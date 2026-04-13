@@ -33,7 +33,7 @@ function onValueChange(value: string) {
 			v-bind="labelProps"
 			:class="
 				compact
-					? 'text-xs text-muted-foreground shrink-0 min-w-0 flex-[0_0_auto]'
+					? 'w-32 shrink-0 text-xs text-muted-foreground'
 					: 'text-sm font-medium text-foreground'
 			"
 		>
@@ -47,7 +47,12 @@ function onValueChange(value: string) {
 				<SelectValue :placeholder="placeholder ?? 'Select an option'" />
 			</SelectTrigger>
 			<SelectContent>
-				<SelectItem v-for="opt in options" :key="opt.value" :value="opt.value">
+				<SelectItem
+					v-for="opt in options"
+					:key="opt.value"
+					:value="opt.value"
+					:class="compact ? 'text-xs' : ''"
+				>
 					{{ opt.label }}
 				</SelectItem>
 			</SelectContent>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useForm } from '@formwerk/core'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import FormNumberField from '@/components/FormNumberField.vue'
 import FormSelectField from '@/components/FormSelectField.vue'
 import { budgetItemSchema } from './schemas'
@@ -23,6 +24,16 @@ const budgetConfig = computed(() => {
 	}
 })
 
+const hasBudget = computed(() => {
+	const budget = configStore.config.budget as
+		| Record<string, Record<string, unknown> | undefined>
+		| undefined
+	const item = budget?.[props.budgetKey]
+	return item && (item.amount as number) > 0
+})
+
+const isOpen = ref(false)
+
 const { values } = useForm({
 	schema: budgetItemSchema,
 	initialValues: budgetConfig.value,
@@ -35,7 +46,6 @@ watch(
 	(newValues) => {
 		configStore.setBudget(`${props.budgetKey}.amount`, newValues.amount)
 		configStore.setBudget(`${props.budgetKey}.warningThreshold`, newValues.warningThreshold)
-		// setBudget only sets numbers; for 'type' we need to write directly
 		if (!configStore.config.budget) {
 			configStore.config.budget = {} as Record<string, unknown>
 		}
@@ -50,17 +60,29 @@ watch(
 </script>
 
 <template>
-	<div class="space-y-2 border-t border-border pt-2">
-		<h4 class="text-xs font-medium uppercase tracking-wide text-muted-foreground">Budget</h4>
-		<FormSelectField name="type" label="Budget Type" :options="BUDGET_TYPE_OPTIONS" />
-		<FormNumberField name="amount" label="Amount" :min="0" :step="amountStep" />
-		<FormNumberField
-			name="warningThreshold"
-			label="Warning Threshold"
-			description="Percentage (0-100) at which to show a warning"
-			:min="0"
-			:max="100"
-			:step="1"
-		/>
-	</div>
+	<Collapsible v-model:open="isOpen" class="border-t border-border pt-2">
+		<CollapsibleTrigger
+			class="flex w-full items-center justify-between rounded-md px-1 py-0.5 text-xs font-medium uppercase tracking-wide text-muted-foreground hover:bg-accent/50"
+		>
+			<span>Budget Alert</span>
+			<IconLucide-chevron-down
+				class="size-3.5 transition-transform duration-200"
+				:class="isOpen ? 'rotate-180' : ''"
+			/>
+		</CollapsibleTrigger>
+		<CollapsibleContent>
+			<div class="space-y-2 pt-2">
+				<FormSelectField name="type" label="Budget Type" :options="BUDGET_TYPE_OPTIONS" />
+				<FormNumberField name="amount" label="Amount" :min="0" :step="amountStep" />
+				<FormNumberField
+					name="warningThreshold"
+					label="Warning Threshold"
+					description="Percentage (0-100) at which to show a warning"
+					:min="0"
+					:max="100"
+					:step="1"
+				/>
+			</div>
+		</CollapsibleContent>
+	</Collapsible>
 </template>

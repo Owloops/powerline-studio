@@ -91,11 +91,17 @@ function createDefaultPreset(): MockDataPreset {
 		gitInfo: {
 			branch: 'feat/my-feature',
 			status: 'dirty',
-			ahead: 0,
-			behind: 0,
-			staged: 1,
-			unstaged: 0,
+			ahead: 3,
+			behind: 1,
+			staged: 2,
+			unstaged: 3,
 			untracked: 1,
+			sha: 'a1b2c3d',
+			tag: 'v1.2.0',
+			timeSinceCommit: 300,
+			stashCount: 2,
+			upstream: 'origin/feat/my-feature',
+			repoName: 'my-project',
 		},
 		usageInfo: {
 			session: {

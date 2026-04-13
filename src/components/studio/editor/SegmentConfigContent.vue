@@ -23,6 +23,8 @@ const emit = defineEmits<{
 
 const configStore = useConfigStore()
 
+provide('formCompact', true)
+
 const meta = computed(() => SEGMENT_META[props.segmentKey])
 
 const hasConfigOptions = computed(() => {
@@ -55,7 +57,7 @@ function handleRemove() {
 	<!-- Config form (only for segments with real options) -->
 	<template v-if="hasConfigOptions">
 		<Separator class="mt-2" />
-		<ScrollArea class="max-h-72">
+		<ScrollArea class="min-h-0 flex-1">
 			<div class="compact-fields px-4 py-2.5">
 				<component :is="segmentConfigMap[segmentKey]" :key="`${segmentKey}-${lineIndex}`" />
 			</div>

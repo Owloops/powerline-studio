@@ -14,7 +14,7 @@ const emit = defineEmits<{
 	'update:enabled': [value: boolean]
 }>()
 
-const isOpen = ref(true)
+const isOpen = ref(false)
 
 const toggleEnabled = (v: boolean) => {
 	emit('update:enabled', v)

@@ -34,7 +34,7 @@ import {
 } from '@/lib/themes'
 import type { CanonicalTheme, SavedCustomTheme } from '@/lib/themes'
 
-import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 
 type StyleValue = 'minimal' | 'powerline' | 'capsule' | 'tui'
 
@@ -89,6 +89,7 @@ function boxPreview(chars: BoxChars) {
 }
 
 const boxStyleOpen = shallowRef(false)
+const tuiExtraOpen = shallowRef(false)
 
 function selectBoxPreset(name: string | undefined) {
 	configStore.setTuiBox(name)
@@ -487,8 +488,8 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 
 					<!-- TUI: box style + sizing + separators + padding -->
 					<TooltipProvider v-else :delay-duration="300">
-						<!-- TUI: All options in one row -->
-						<div class="grid grid-cols-7 items-end gap-3">
+						<!-- TUI: Primary settings -->
+						<div class="grid grid-cols-2 items-end gap-3">
 							<!-- Box Style Popover -->
 							<div class="flex flex-col gap-1.5">
 								<Label class="text-xs font-medium text-muted-foreground">Box Style</Label>
@@ -563,125 +564,142 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 									/>
 								</div>
 							</div>
-
-							<!-- Min Width -->
-							<div class="flex flex-col gap-1.5">
-								<div class="flex items-center gap-1">
-									<Label for="tui-min-width" class="text-xs font-medium text-muted-foreground"
-										>Min Width</Label
-									>
-									<Tooltip>
-										<TooltipTrigger as-child>
-											<IconLucide-info class="size-3 text-muted-foreground/50" />
-										</TooltipTrigger>
-										<TooltipContent side="top" class="max-w-56 text-xs">
-											Minimum panel width in columns. The panel won't shrink below this even if
-											content is narrower. Leave empty for no minimum.
-										</TooltipContent>
-									</Tooltip>
-								</div>
-								<NumberField
-									id="tui-min-width"
-									:model-value="tui?.minWidth"
-									:min="0"
-									:step="1"
-									@update:model-value="setMinWidth($event)"
-								>
-									<NumberFieldContent>
-										<NumberFieldDecrement />
-										<NumberFieldInput placeholder="32" />
-										<NumberFieldIncrement />
-									</NumberFieldContent>
-								</NumberField>
-							</div>
-
-							<!-- Max Width -->
-							<div class="flex flex-col gap-1.5">
-								<div class="flex items-center gap-1">
-									<Label for="tui-max-width" class="text-xs font-medium text-muted-foreground"
-										>Max Width</Label
-									>
-									<Tooltip>
-										<TooltipTrigger as-child>
-											<IconLucide-info class="size-3 text-muted-foreground/50" />
-										</TooltipTrigger>
-										<TooltipContent side="top" class="max-w-56 text-xs">
-											Maximum panel width in columns. The panel won't grow beyond this. Leave empty
-											to let it fill the available terminal width.
-										</TooltipContent>
-									</Tooltip>
-								</div>
-								<NumberField
-									id="tui-max-width"
-									:model-value="tui?.maxWidth"
-									:min="0"
-									:step="1"
-									@update:model-value="setMaxWidth($event)"
-								>
-									<NumberFieldContent>
-										<NumberFieldDecrement />
-										<NumberFieldInput />
-										<NumberFieldIncrement />
-									</NumberFieldContent>
-								</NumberField>
-							</div>
-
-							<!-- Column Separator -->
-							<div class="flex flex-col gap-1.5">
-								<Label class="text-xs font-medium text-muted-foreground">Column Sep.</Label>
-								<Input
-									:model-value="tuiSeparator?.column ?? ''"
-									placeholder="  "
-									class="h-8 text-xs font-mono"
-									@update:model-value="configStore.setTuiSeparator({ column: String($event) })"
-								/>
-							</div>
-
-							<!-- Divider -->
-							<div class="flex flex-col gap-1.5">
-								<Label class="text-xs font-medium text-muted-foreground">Divider Sep.</Label>
-								<Input
-									:model-value="tuiSeparator?.divider ?? ''"
-									:placeholder="dividerPlaceholder"
-									maxlength="1"
-									class="h-8 text-xs font-mono"
-									@update:model-value="configStore.setTuiSeparator({ divider: String($event) })"
-								/>
-							</div>
-
-							<!-- TUI Padding -->
-							<div class="flex flex-col gap-1.5">
-								<div class="flex items-center gap-1">
-									<Label class="text-xs font-medium text-muted-foreground">Padding</Label>
-									<Tooltip>
-										<TooltipTrigger as-child>
-											<IconLucide-info class="size-3 text-muted-foreground/50" />
-										</TooltipTrigger>
-										<TooltipContent side="top" class="max-w-56 text-xs">
-											Horizontal padding inside each cell. Only applies when Fit Content is enabled.
-										</TooltipContent>
-									</Tooltip>
-								</div>
-								<NumberField
-									:model-value="tuiPadding"
-									:min="0"
-									:max="10"
-									:step="1"
-									:disabled="!tuiFitContent"
-									@update:model-value="
-										configStore.setTuiPadding(
-											$event === undefined ? undefined : Math.max(0, Math.min(10, $event)),
-										)
-									"
-								>
-									<NumberFieldContent>
-										<NumberFieldDecrement />
-										<NumberFieldInput placeholder="0" />
-										<NumberFieldIncrement />
-									</NumberFieldContent>
-								</NumberField>
-							</div>
 						</div>
+
+						<!-- TUI: Extra settings (collapsible) -->
+						<Collapsible v-model:open="tuiExtraOpen">
+							<CollapsibleTrigger
+								class="flex w-full items-center justify-between rounded-md px-1 py-1 text-sm font-medium hover:bg-accent/50"
+							>
+								<span class="text-xs text-muted-foreground">Extra TUI Settings</span>
+								<IconLucide-chevron-down
+									class="size-4 text-muted-foreground transition-transform duration-200"
+									:class="tuiExtraOpen ? 'rotate-180' : ''"
+								/>
+							</CollapsibleTrigger>
+							<CollapsibleContent>
+								<div class="grid grid-cols-5 items-end gap-3 pt-2">
+									<!-- Min Width -->
+									<div class="flex flex-col gap-1.5">
+										<div class="flex items-center gap-1">
+											<Label for="tui-min-width" class="text-xs font-medium text-muted-foreground"
+												>Min Width</Label
+											>
+											<Tooltip>
+												<TooltipTrigger as-child>
+													<IconLucide-info class="size-3 text-muted-foreground/50" />
+												</TooltipTrigger>
+												<TooltipContent side="top" class="max-w-56 text-xs">
+													Minimum panel width in columns. The panel won't shrink below this even if
+													content is narrower. Leave empty for no minimum.
+												</TooltipContent>
+											</Tooltip>
+										</div>
+										<NumberField
+											id="tui-min-width"
+											:model-value="tui?.minWidth"
+											:min="0"
+											:step="1"
+											@update:model-value="setMinWidth($event)"
+										>
+											<NumberFieldContent>
+												<NumberFieldDecrement />
+												<NumberFieldInput placeholder="32" />
+												<NumberFieldIncrement />
+											</NumberFieldContent>
+										</NumberField>
+									</div>
+
+									<!-- Max Width -->
+									<div class="flex flex-col gap-1.5">
+										<div class="flex items-center gap-1">
+											<Label for="tui-max-width" class="text-xs font-medium text-muted-foreground"
+												>Max Width</Label
+											>
+											<Tooltip>
+												<TooltipTrigger as-child>
+													<IconLucide-info class="size-3 text-muted-foreground/50" />
+												</TooltipTrigger>
+												<TooltipContent side="top" class="max-w-56 text-xs">
+													Maximum panel width in columns. The panel won't grow beyond this. Leave
+													empty to let it fill the available terminal width.
+												</TooltipContent>
+											</Tooltip>
+										</div>
+										<NumberField
+											id="tui-max-width"
+											:model-value="tui?.maxWidth"
+											:min="0"
+											:step="1"
+											@update:model-value="setMaxWidth($event)"
+										>
+											<NumberFieldContent>
+												<NumberFieldDecrement />
+												<NumberFieldInput />
+												<NumberFieldIncrement />
+											</NumberFieldContent>
+										</NumberField>
+									</div>
+
+									<!-- Column Separator -->
+									<div class="flex flex-col gap-1.5">
+										<Label class="text-xs font-medium text-muted-foreground">Column Sep.</Label>
+										<Input
+											:model-value="tuiSeparator?.column ?? ''"
+											placeholder="  "
+											class="h-8 text-xs font-mono"
+											@update:model-value="configStore.setTuiSeparator({ column: String($event) })"
+										/>
+									</div>
+
+									<!-- Divider -->
+									<div class="flex flex-col gap-1.5">
+										<Label class="text-xs font-medium text-muted-foreground">Divider Sep.</Label>
+										<Input
+											:model-value="tuiSeparator?.divider ?? ''"
+											:placeholder="dividerPlaceholder"
+											maxlength="1"
+											class="h-8 text-xs font-mono"
+											@update:model-value="configStore.setTuiSeparator({ divider: String($event) })"
+										/>
+									</div>
+
+									<!-- TUI Padding -->
+									<div class="flex flex-col gap-1.5">
+										<div class="flex items-center gap-1">
+											<Label class="text-xs font-medium text-muted-foreground">Padding</Label>
+											<Tooltip>
+												<TooltipTrigger as-child>
+													<IconLucide-info class="size-3 text-muted-foreground/50" />
+												</TooltipTrigger>
+												<TooltipContent side="top" class="max-w-56 text-xs">
+													Horizontal padding inside each cell. Only applies when Fit Content is
+													enabled.
+												</TooltipContent>
+											</Tooltip>
+										</div>
+										<NumberField
+											:model-value="tuiPadding"
+											:min="0"
+											:max="10"
+											:step="1"
+											:disabled="!tuiFitContent"
+											@update:model-value="
+												configStore.setTuiPadding(
+													$event === undefined ? undefined : Math.max(0, Math.min(10, $event)),
+												)
+											"
+										>
+											<NumberFieldContent>
+												<NumberFieldDecrement />
+												<NumberFieldInput placeholder="0" />
+												<NumberFieldIncrement />
+											</NumberFieldContent>
+										</NumberField>
+									</div>
+								</div>
+							</CollapsibleContent>
+						</Collapsible>
 					</TooltipProvider>
 
 					<!-- Saved custom themes -->

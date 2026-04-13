@@ -8,7 +8,10 @@ const { isDark, toggleDark } = useDarkMode()
 <template>
 	<header class="border-b border-border bg-background px-4">
 		<div class="mx-auto flex h-12 max-w-4xl items-center justify-between">
-			<span class="text-sm font-semibold tracking-tight">Powerline Studio</span>
+			<span class="flex items-center gap-1.5 text-sm font-semibold tracking-tight">
+				<img src="/favicon.svg" alt="" class="size-5" />
+				Powerline Studio
+			</span>
 
 			<div class="flex items-center gap-1">
 				<Popover>
@@ -29,8 +32,15 @@ const { isDark, toggleDark } = useDarkMode()
 								class="font-medium text-foreground underline underline-offset-4 hover:text-primary"
 								>Claude Powerline</a
 							>
-							&mdash; a vim-style powerline statusline for Claude Code with real-time usage
-							tracking, git integration, and custom themes.
+							&mdash; a vim-style powerline statusline for
+							<a
+								href="https://code.claude.com/docs/en/overview"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="font-medium text-foreground underline underline-offset-4 hover:text-primary"
+								>Claude Code</a
+							>
+							with real-time usage tracking, git integration, and custom themes.
 						</p>
 					</PopoverContent>
 				</Popover>

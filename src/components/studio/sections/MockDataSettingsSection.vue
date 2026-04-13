@@ -39,7 +39,7 @@ const presetLabel = computed(() => {
 
 				<!-- Preset Selector -->
 				<Select v-model="presetValue">
-					<SelectTrigger class="h-8 w-36 text-xs">
+					<SelectTrigger class="h-8 w-36">
 						<SelectValue :placeholder="presetLabel" />
 					</SelectTrigger>
 					<SelectContent>
