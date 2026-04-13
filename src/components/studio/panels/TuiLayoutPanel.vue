@@ -146,7 +146,7 @@ function requestPreset(preset: TuiPreset) {
 
 function confirmPreset() {
 	if (pendingPreset.value) {
-		configStore.selectTuiPreset(pendingPreset.value.id)
+		configStore.selectPreset(pendingPreset.value.id)
 	}
 	pendingPreset.value = null
 	presetDialogOpen.value = false

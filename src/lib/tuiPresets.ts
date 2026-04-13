@@ -10,7 +10,7 @@ export interface TuiPreset {
 
 export const TUI_PRESETS: TuiPreset[] = [
 	{
-		id: 'compact',
+		id: 'tui:compact',
 		name: 'Compact',
 		description: 'Git + context window only. Minimal footprint.',
 		tui: {
@@ -43,7 +43,7 @@ export const TUI_PRESETS: TuiPreset[] = [
 		},
 	},
 	{
-		id: 'standard',
+		id: 'tui:standard',
 		name: 'Standard',
 		description: 'Git + context + block usage with progress bars.',
 		tui: {
@@ -84,7 +84,7 @@ export const TUI_PRESETS: TuiPreset[] = [
 		},
 	},
 	{
-		id: 'full',
+		id: 'tui:full',
 		name: 'Full',
 		description: 'All segments with responsive breakpoints and footer.',
 		tui: {

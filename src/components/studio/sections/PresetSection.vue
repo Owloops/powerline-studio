@@ -10,7 +10,14 @@ import {
 	DialogTrigger,
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select'
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectLabel,
+	SelectTrigger,
+} from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { TUI_PRESETS } from '@/lib/tuiPresets'
@@ -91,40 +98,25 @@ function handleFileInput(e: Event) {
 	input.value = ''
 }
 
-const selectedStatuslineName = computed(() => {
-	const preset = FLAT_PRESETS.find((p) => p.id === configStore.activeStatuslinePresetId)
-	return preset?.name
+const selectedPresetName = computed(() => {
+	const entry = configStore.activePreset
+	if (!entry) return undefined
+	return entry.preset.name
 })
 
-const selectedTuiName = computed(() => {
-	const preset = TUI_PRESETS.find((p) => p.id === configStore.activeTuiPresetId)
-	return preset?.name
-})
-
-function handleStatuslineSelect(value: string) {
-	const preset = FLAT_PRESETS.find((p) => p.id === value)
-	if (preset) {
-		configStore.selectStatuslinePreset(value)
-		toast.success(`Applied "${preset.name}" statusline preset`)
+function handlePresetSelect(value: string) {
+	const flat = FLAT_PRESETS.find((p) => p.id === value)
+	const tui = TUI_PRESETS.find((p) => p.id === value)
+	const name = flat?.name ?? tui?.name
+	if (name) {
+		configStore.selectPreset(value)
+		toast.success(`Applied "${name}" preset`)
 	}
 }
 
-function handleTuiSelect(value: string) {
-	const preset = TUI_PRESETS.find((p) => p.id === value)
-	if (preset) {
-		configStore.selectTuiPreset(value)
-		toast.success(`Applied "${preset.name}" TUI preset`)
-	}
-}
-
-function handleResetStatusline() {
-	configStore.resetStatuslinePreset()
-	toast.success(`Reset to "${selectedStatuslineName.value}" statusline preset`)
-}
-
-function handleResetTui() {
-	configStore.resetTuiPreset()
-	toast.success(`Reset to "${selectedTuiName.value}" TUI preset`)
+function handleReset() {
+	configStore.resetPreset()
+	toast.success(`Reset to "${selectedPresetName.value}" preset`)
 }
 
 function validateConfig(value: unknown): value is Record<string, unknown> {
@@ -202,17 +194,17 @@ function loadImportedConfig() {
 			<CollapsibleContent>
 				<TooltipProvider :delay-duration="300">
 					<div class="flex items-end gap-3 pt-3">
-						<!-- Statusline Preset -->
+						<!-- Preset -->
 						<div class="flex flex-col gap-1.5">
 							<div class="flex items-center gap-1.5">
-								<Label class="text-xs font-medium text-muted-foreground">Statusline</Label>
+								<Label class="text-xs font-medium text-muted-foreground">Preset</Label>
 								<Transition
 									enter-active-class="transition-all duration-150 ease-out"
 									leave-active-class="transition-all duration-100 ease-in"
 									enter-from-class="opacity-0 scale-95"
 									leave-to-class="opacity-0 scale-95"
 								>
-									<span v-if="configStore.isStatuslineModified" class="flex items-center gap-0.5">
+									<span v-if="configStore.isPresetModified" class="flex items-center gap-0.5">
 										<span
 											class="rounded bg-muted px-1 py-0.5 text-[0.5625rem] leading-none text-muted-foreground"
 											>modified</span
@@ -221,7 +213,7 @@ function loadImportedConfig() {
 											<TooltipTrigger as-child>
 												<button
 													class="flex size-4 cursor-pointer items-center justify-center rounded text-muted-foreground transition-colors hover:text-foreground"
-													@click="handleResetStatusline"
+													@click="handleReset"
 												>
 													<IconLucide-rotate-ccw class="size-2.5" />
 												</button>
@@ -232,78 +224,37 @@ function loadImportedConfig() {
 								</Transition>
 							</div>
 							<Select
-								:model-value="configStore.activeStatuslinePresetId ?? undefined"
-								@update:model-value="handleStatuslineSelect"
+								:model-value="configStore.activePresetId ?? undefined"
+								@update:model-value="handlePresetSelect"
 							>
-								<SelectTrigger class="h-8 w-auto min-w-[160px]" size="sm">
+								<SelectTrigger class="h-8 w-auto min-w-[200px]" size="sm">
 									<span
 										class="flex items-center gap-1.5"
-										:class="selectedStatuslineName ? 'text-foreground' : 'text-muted-foreground'"
+										:class="selectedPresetName ? 'text-foreground' : 'text-muted-foreground'"
 									>
-										<IconLucide-rows-3 class="size-3.5 shrink-0 text-muted-foreground" />
-										{{ selectedStatuslineName || 'Choose Preset' }}
+										<IconLucide-layers class="size-3.5 shrink-0 text-muted-foreground" />
+										{{ selectedPresetName || 'Choose Preset' }}
 									</span>
 								</SelectTrigger>
-								<SelectContent position="popper" side="bottom" class="min-w-[220px]">
-									<SelectItem v-for="preset in FLAT_PRESETS" :key="preset.id" :value="preset.id">
-										<div class="flex flex-col">
-											<span>{{ preset.name }}</span>
-											<span class="text-xs text-muted-foreground">{{ preset.description }}</span>
-										</div>
-									</SelectItem>
-								</SelectContent>
-							</Select>
-						</div>
-
-						<!-- TUI Preset -->
-						<div class="flex flex-col gap-1.5">
-							<div class="flex items-center gap-1.5">
-								<Label class="text-xs font-medium text-muted-foreground">TUI Layout</Label>
-								<Transition
-									enter-active-class="transition-all duration-150 ease-out"
-									leave-active-class="transition-all duration-100 ease-in"
-									enter-from-class="opacity-0 scale-95"
-									leave-to-class="opacity-0 scale-95"
-								>
-									<span v-if="configStore.isTuiModified" class="flex items-center gap-0.5">
-										<span
-											class="rounded bg-muted px-1 py-0.5 text-[0.5625rem] leading-none text-muted-foreground"
-											>modified</span
-										>
-										<Tooltip>
-											<TooltipTrigger as-child>
-												<button
-													class="flex size-4 cursor-pointer items-center justify-center rounded text-muted-foreground transition-colors hover:text-foreground"
-													@click="handleResetTui"
-												>
-													<IconLucide-rotate-ccw class="size-2.5" />
-												</button>
-											</TooltipTrigger>
-											<TooltipContent side="top" class="text-xs">Reset to preset</TooltipContent>
-										</Tooltip>
-									</span>
-								</Transition>
-							</div>
-							<Select
-								:model-value="configStore.activeTuiPresetId ?? undefined"
-								@update:model-value="handleTuiSelect"
-							>
-								<SelectTrigger class="h-8 w-auto min-w-[140px]" size="sm">
-									<span
-										class="flex items-center gap-1.5"
-										:class="selectedTuiName ? 'text-foreground' : 'text-muted-foreground'"
-									>
-										<IconLucide-panel-top class="size-3.5 shrink-0 text-muted-foreground" />
-										{{ selectedTuiName || 'Choose Preset' }}
-									</span>
-								</SelectTrigger>
-								<SelectContent position="popper" side="bottom" class="min-w-[220px]">
-									<SelectItem v-for="preset in TUI_PRESETS" :key="preset.id" :value="preset.id">
-										<div class="flex flex-col">
-											<span>{{ preset.name }}</span>
-											<span class="text-xs text-muted-foreground">{{ preset.description }}</span>
-										</div>
-									</SelectItem>
+								<SelectContent position="popper" side="bottom" class="min-w-[240px]">
+									<SelectGroup>
+										<SelectLabel>Statusline</SelectLabel>
+										<SelectItem v-for="preset in FLAT_PRESETS" :key="preset.id" :value="preset.id">
+											<div class="flex flex-col">
+												<span>{{ preset.name }}</span>
+												<span class="text-xs text-muted-foreground">{{ preset.description }}</span>
+											</div>
+										</SelectItem>
+									</SelectGroup>
+									<SelectGroup>
+										<SelectLabel>TUI Layout</SelectLabel>
+										<SelectItem v-for="preset in TUI_PRESETS" :key="preset.id" :value="preset.id">
+											<div class="flex flex-col">
+												<span>{{ preset.name }}</span>
+												<span class="text-xs text-muted-foreground">{{ preset.description }}</span>
+											</div>
+										</SelectItem>
+									</SelectGroup>
 								</SelectContent>
 							</Select>
 						</div>

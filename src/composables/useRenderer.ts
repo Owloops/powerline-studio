@@ -693,7 +693,7 @@ export function useRenderer() {
 
 		try {
 			// JSON round-trip instead of structuredClone(toRaw(...)) because
-			// store mutations (e.g. applyTuiPreset) can leave nested reactive
+			// store mutations (e.g. selectPreset) can leave nested reactive
 			// proxies inside the raw object tree, which structuredClone cannot
 			// handle.  JSON serialization strips all proxies reliably.
 			const config: PowerlineConfig = JSON.parse(JSON.stringify(configStore.config))
