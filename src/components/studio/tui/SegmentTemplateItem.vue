@@ -143,14 +143,15 @@ function wrapToken(token: string) {
 					>
 						<IconLucide-chevron-down class="size-3" />
 					</Button>
-					<Button
-						variant="ghost"
-						size="sm"
-						class="h-6 w-6 p-0 text-destructive hover:text-destructive"
-						@click="removeItem(i)"
-					>
-						<IconLucide-trash-2 class="size-3" />
-					</Button>
+					<ConfirmPopover @confirm="removeItem(i)">
+						<Button
+							variant="ghost"
+							size="sm"
+							class="h-6 w-6 p-0 text-destructive hover:text-destructive"
+						>
+							<IconLucide-trash-2 class="size-3" />
+						</Button>
+					</ConfirmPopover>
 				</div>
 			</div>
 		</div>
@@ -236,14 +237,11 @@ function wrapToken(token: string) {
 		</div>
 
 		<!-- Reset button -->
-		<Button
-			variant="ghost"
-			size="sm"
-			class="h-7 text-xs text-muted-foreground self-start gap-1"
-			@click="emit('reset')"
-		>
-			<IconLucide-rotate-ccw class="size-3" />
-			Reset to default
-		</Button>
+		<ConfirmPopover action="Reset" @confirm="emit('reset')">
+			<Button variant="ghost" size="sm" class="h-7 text-xs text-muted-foreground self-start gap-1">
+				<IconLucide-rotate-ccw class="size-3" />
+				Reset to default
+			</Button>
+		</ConfirmPopover>
 	</div>
 </template>

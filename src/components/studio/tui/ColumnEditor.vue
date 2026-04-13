@@ -55,13 +55,14 @@ function handleValueChange(colIndex: number, type: 'fr' | 'fixed', rawValue: str
 			>
 				<div class="flex items-center gap-1">
 					<span class="text-[0.625rem] text-muted-foreground">Col {{ colIndex + 1 }}</span>
-					<button
+					<ConfirmPopover
 						v-if="columns.length > 1"
-						class="ml-auto rounded p-0.5 text-muted-foreground hover:text-destructive"
-						@click="configStore.removeColumn(breakpointIndex, colIndex)"
+						@confirm="configStore.removeColumn(breakpointIndex, colIndex)"
 					>
-						<IconLucide-trash-2 class="size-3" />
-					</button>
+						<button class="ml-auto rounded p-0.5 text-muted-foreground hover:text-destructive">
+							<IconLucide-trash-2 class="size-3" />
+						</button>
+					</ConfirmPopover>
 				</div>
 				<Select
 					:model-value="parseColumnDef(col).type"

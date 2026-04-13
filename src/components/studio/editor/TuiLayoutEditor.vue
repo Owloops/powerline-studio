@@ -357,19 +357,17 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 								</TooltipProvider>
 
 								<!-- Remove button -->
-								<TooltipProvider v-if="breakpoints.length > 1" :delay-duration="400">
-									<Tooltip>
-										<TooltipTrigger as-child>
-											<button
-												class="rounded p-0.5 text-muted-foreground/50 opacity-0 transition-opacity hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100 group-focus-within:opacity-100"
-												@click.stop="removeBreakpoint(item.index)"
-											>
-												<IconLucide-trash-2 class="size-3" />
-											</button>
-										</TooltipTrigger>
-										<TooltipContent side="top" class="text-xs">Remove breakpoint</TooltipContent>
-									</Tooltip>
-								</TooltipProvider>
+								<ConfirmPopover
+									v-if="breakpoints.length > 1"
+									@confirm="removeBreakpoint(item.index)"
+								>
+									<button
+										class="rounded p-0.5 text-muted-foreground/50 opacity-0 transition-opacity hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100 group-focus-within:opacity-100"
+										@click.stop
+									>
+										<IconLucide-trash-2 class="size-3" />
+									</button>
+								</ConfirmPopover>
 							</button>
 						</div>
 					</div>

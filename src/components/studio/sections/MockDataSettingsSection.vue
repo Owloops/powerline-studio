@@ -222,10 +222,12 @@ function toggleRateLimits(enabled: boolean) {
 
 		<!-- Reset to Defaults -->
 		<div class="flex justify-end border-t border-border pt-4">
-			<Button variant="destructive" size="sm" @click="resetToDefaults">
-				<IconLucide-rotate-ccw class="size-3.5" />
-				Reset to Defaults
-			</Button>
+			<ConfirmPopover action="Reset" @confirm="resetToDefaults">
+				<Button variant="destructive" size="sm">
+					<IconLucide-rotate-ccw class="size-3.5" />
+					Reset to Defaults
+				</Button>
+			</ConfirmPopover>
 		</div>
 	</section>
 </template>

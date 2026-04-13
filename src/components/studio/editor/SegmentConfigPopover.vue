@@ -53,15 +53,16 @@ function handleOpenChange(value: boolean) {
 			<div class="flex items-center gap-3 px-4 pt-3" :class="hasConfigOptions ? 'pb-0' : 'pb-3'">
 				<component :is="meta.icon" class="size-4 shrink-0 text-muted-foreground" />
 				<span class="min-w-0 flex-1 text-sm font-semibold">{{ meta.name }}</span>
-				<Button
-					variant="ghost"
-					size="icon-sm"
-					class="size-7 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-					@click="handleRemove"
-				>
-					<Trash2 class="size-3.5" />
-					<span class="sr-only">Remove segment</span>
-				</Button>
+				<ConfirmPopover action="Remove" @confirm="handleRemove">
+					<Button
+						variant="ghost"
+						size="icon-sm"
+						class="size-7 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+					>
+						<Trash2 class="size-3.5" />
+						<span class="sr-only">Remove segment</span>
+					</Button>
+				</ConfirmPopover>
 			</div>
 
 			<!-- Config form (only for segments with real options) -->

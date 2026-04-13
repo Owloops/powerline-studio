@@ -228,16 +228,16 @@ watch(
 								<span class="text-xs font-medium text-muted-foreground"
 									>Line {{ lineIndex + 1 }}</span
 								>
-								<Button
-									v-if="lineIndex > 0"
-									variant="ghost"
-									size="icon-sm"
-									class="!size-6 text-muted-foreground hover:text-destructive"
-									@click="handleRemoveLine(lineIndex)"
-								>
-									<Trash2 class="size-3.5" />
-									<span class="sr-only">Remove Line {{ lineIndex + 1 }}</span>
-								</Button>
+								<ConfirmPopover v-if="lineIndex > 0" @confirm="handleRemoveLine(lineIndex)">
+									<Button
+										variant="ghost"
+										size="icon-sm"
+										class="!size-6 text-muted-foreground hover:text-destructive"
+									>
+										<Trash2 class="size-3.5" />
+										<span class="sr-only">Remove Line {{ lineIndex + 1 }}</span>
+									</Button>
+								</ConfirmPopover>
 							</div>
 
 							<!-- Segment chips -->

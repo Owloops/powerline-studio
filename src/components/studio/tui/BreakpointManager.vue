@@ -141,17 +141,14 @@ function cancelEdit() {
 							<TooltipContent side="left" class="text-xs">Edit min-width</TooltipContent>
 						</Tooltip>
 
-						<Tooltip v-if="breakpoints.length > 1">
-							<TooltipTrigger as-child>
-								<button
-									class="rounded p-1 text-muted-foreground/50 opacity-0 transition-opacity hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100 group-focus-within:opacity-100"
-									@click.stop="$emit('remove', item.id)"
-								>
-									<IconLucide-trash-2 class="size-3" />
-								</button>
-							</TooltipTrigger>
-							<TooltipContent side="left" class="text-xs">Remove breakpoint</TooltipContent>
-						</Tooltip>
+						<ConfirmPopover v-if="breakpoints.length > 1" @confirm="$emit('remove', item.id)">
+							<button
+								class="rounded p-1 text-muted-foreground/50 opacity-0 transition-opacity hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100 group-focus-within:opacity-100"
+								@click.stop
+							>
+								<IconLucide-trash-2 class="size-3" />
+							</button>
+						</ConfirmPopover>
 					</div>
 				</button>
 			</div>

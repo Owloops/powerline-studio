@@ -156,13 +156,16 @@ function handleAlignChange(colIndex: number, value: string) {
 				</Select>
 
 				<!-- Delete button -->
-				<button
+				<ConfirmPopover
 					v-if="columns.length > 1"
-					class="flex items-center justify-center rounded p-1 text-muted-foreground hover:text-destructive"
-					@click="configStore.removeColumn(breakpointIndex, colIndex)"
+					@confirm="configStore.removeColumn(breakpointIndex, colIndex)"
 				>
-					<IconLucide-trash-2 class="size-3" />
-				</button>
+					<button
+						class="flex items-center justify-center rounded p-1 text-muted-foreground hover:text-destructive"
+					>
+						<IconLucide-trash-2 class="size-3" />
+					</button>
+				</ConfirmPopover>
 				<span v-else class="w-6" />
 			</div>
 		</div>

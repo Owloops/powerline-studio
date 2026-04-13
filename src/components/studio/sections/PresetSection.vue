@@ -185,7 +185,7 @@ function loadImportedConfig() {
 								<Textarea
 									v-model="importText"
 									placeholder='{ "theme": "dark", "display": { ... } }'
-									class="min-h-48 font-mono text-xs"
+									class="min-h-24 font-mono text-xs"
 								/>
 								<p v-if="importError" class="text-sm text-destructive">
 									{{ importError }}

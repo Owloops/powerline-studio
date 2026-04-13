@@ -289,8 +289,8 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 											</template>
 											<template v-else-if="configStore.config.display.style === 'tui'">
 												<pre
-													class="text-[#cdd6f4] leading-none"
-													style="font-family: inherit"
+													class="leading-none"
+													style="font-family: inherit; color: #cdd6f4"
 												>&#x256D;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x256E;
 &#x2502; <span :style="{ color: '#3b82f6' }">~/project</span> &#x2502; <span :style="{ color: '#22c55e' }">main</span> &#x2502; <span :style="{ color: '#a855f7' }">Sonnet</span> &#x2502;
 &#x2570;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x256F;</pre>
@@ -709,13 +709,15 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 									</span>
 									<span>{{ saved.name }}</span>
 								</button>
-								<button
-									class="flex size-5 cursor-pointer items-center justify-center rounded-full text-muted-foreground opacity-0 transition-opacity hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100"
-									:aria-label="`Delete ${saved.name}`"
-									@click.stop="handleDeleteSaved(saved.id)"
-								>
-									<IconLucide-trash-2 class="size-3" />
-								</button>
+								<ConfirmPopover @confirm="handleDeleteSaved(saved.id)">
+									<button
+										class="flex size-5 cursor-pointer items-center justify-center rounded-full text-muted-foreground opacity-0 transition-opacity hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100"
+										:aria-label="`Delete ${saved.name}`"
+										@click.stop
+									>
+										<IconLucide-trash-2 class="size-3" />
+									</button>
+								</ConfirmPopover>
 							</div>
 						</div>
 					</template>

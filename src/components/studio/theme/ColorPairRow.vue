@@ -35,17 +35,22 @@ const emit = defineEmits<{
 			:label="`${label} foreground`"
 			@update:color="emit('update:fg', $event)"
 		/>
-		<Button
+		<ConfirmPopover
 			v-if="showReset"
-			variant="ghost"
-			size="icon"
-			class="size-6"
+			action="Reset"
 			:disabled="!isOverridden"
-			:aria-label="`Reset ${label} to theme default`"
-			@click="emit('reset')"
+			@confirm="emit('reset')"
 		>
-			<IconLucide-undo-2 class="size-3.5" />
-		</Button>
+			<Button
+				variant="ghost"
+				size="icon"
+				class="size-6"
+				:disabled="!isOverridden"
+				:aria-label="`Reset ${label} to theme default`"
+			>
+				<IconLucide-undo-2 class="size-3.5" />
+			</Button>
+		</ConfirmPopover>
 		<div v-else class="size-6" />
 	</div>
 </template>

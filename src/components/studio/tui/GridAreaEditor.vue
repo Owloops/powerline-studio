@@ -119,14 +119,17 @@ function handleSingleCellUpdate(
 					>
 						<IconLucide-chevron-down class="size-3" />
 					</button>
-					<button
+					<ConfirmPopover
 						v-if="areas.length > 1"
-						class="flex size-5 items-center justify-center rounded text-destructive/70 hover:bg-destructive/10 hover:text-destructive"
-						title="Remove row"
-						@click="configStore.removeAreaRow(breakpointIndex, rowIndex)"
+						@confirm="configStore.removeAreaRow(breakpointIndex, rowIndex)"
 					>
-						<IconLucide-trash-2 class="size-3" />
-					</button>
+						<button
+							class="flex size-5 items-center justify-center rounded text-destructive/70 hover:bg-destructive/10 hover:text-destructive"
+							title="Remove row"
+						>
+							<IconLucide-trash-2 class="size-3" />
+						</button>
+					</ConfirmPopover>
 				</div>
 			</div>
 		</div>

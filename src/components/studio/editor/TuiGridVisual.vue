@@ -376,14 +376,14 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 									</SelectItem>
 								</SelectContent>
 							</Select>
-							<button
-								v-if="columns.length > 1"
-								class="flex items-center gap-1 rounded px-2 py-1 text-xs text-destructive hover:bg-destructive/10"
-								@click="handleRemoveColumn(colIdx)"
-							>
-								<IconLucide-trash-2 class="size-3" />
-								Remove column
-							</button>
+							<ConfirmPopover v-if="columns.length > 1" @confirm="handleRemoveColumn(colIdx)">
+								<button
+									class="flex items-center gap-1 rounded px-2 py-1 text-xs text-destructive hover:bg-destructive/10"
+								>
+									<IconLucide-trash-2 class="size-3" />
+									Remove column
+								</button>
+							</ConfirmPopover>
 						</div>
 					</PopoverContent>
 				</Popover>
@@ -708,17 +708,16 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 							<div v-else class="size-5" />
 
 							<!-- Bottom-right: remove row -->
-							<Tooltip v-if="areas.length > 1">
-								<TooltipTrigger as-child>
-									<button
-										class="flex size-5 items-center justify-center rounded text-destructive/70 hover:bg-destructive/10 hover:text-destructive"
-										@click="configStore.removeAreaRow(breakpointIndex, rowIndex)"
-									>
-										<IconLucide-trash-2 class="size-3" />
-									</button>
-								</TooltipTrigger>
-								<TooltipContent side="right" class="text-xs">Remove row</TooltipContent>
-							</Tooltip>
+							<ConfirmPopover
+								v-if="areas.length > 1"
+								@confirm="configStore.removeAreaRow(breakpointIndex, rowIndex)"
+							>
+								<button
+									class="flex size-5 items-center justify-center rounded text-destructive/70 hover:bg-destructive/10 hover:text-destructive"
+								>
+									<IconLucide-trash-2 class="size-3" />
+								</button>
+							</ConfirmPopover>
 							<div v-else class="size-5" />
 						</div>
 					</TooltipProvider>
