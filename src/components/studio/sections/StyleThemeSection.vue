@@ -234,9 +234,9 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 
 			<CollapsibleContent>
 				<div class="flex flex-col gap-6 pt-4">
-					<!-- Row 1: Display Style, Theme, Custom Theme button -->
-					<div class="grid grid-cols-[1fr_1fr_auto] gap-3">
-						<div class="flex flex-col gap-1.5">
+					<!-- Style, Theme, and TUI options grid -->
+					<div class="grid grid-cols-5 gap-x-3 gap-y-4">
+						<div class="col-span-2 flex flex-col gap-1.5">
 							<Label class="text-xs font-medium text-muted-foreground">Display Style</Label>
 							<Select
 								:model-value="configStore.config.display.style"
@@ -367,7 +367,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 							</Select>
 						</div>
 
-						<div class="flex flex-col gap-1.5">
+						<div class="col-span-2 flex flex-col gap-1.5">
 							<Label class="text-xs font-medium text-muted-foreground">Theme</Label>
 							<Select :model-value="themeSelectValue" @update:model-value="handleSelectTheme">
 								<SelectTrigger class="w-full" size="sm">
@@ -445,140 +445,141 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 								{{ configStore.themeEditor.mode === 'custom' ? 'Cancel Custom' : 'Custom Theme' }}
 							</Button>
 						</div>
-					</div>
 
-					<!-- Non-TUI: Padding, Auto-wrap -->
-					<template v-if="!configStore.isTuiStyle">
-						<div class="flex items-end gap-3">
-							<div class="flex w-28 shrink-0 flex-col gap-1.5">
-								<Label for="padding" class="text-xs font-medium text-muted-foreground"
-									>Padding</Label
-								>
-								<NumberField
-									id="padding"
-									:model-value="configStore.config.display.padding"
-									:min="0"
-									:max="3"
-									:step="1"
-									@update:model-value="configStore.setPadding($event ?? 0)"
-								>
-									<NumberFieldContent>
-										<NumberFieldDecrement />
-										<NumberFieldInput />
-										<NumberFieldIncrement />
-									</NumberFieldContent>
-								</NumberField>
-							</div>
-
-							<div class="flex flex-col gap-1.5">
-								<Label for="auto-wrap" class="text-xs font-medium text-muted-foreground"
-									>Auto-wrap</Label
-								>
-								<div class="flex h-8 items-center gap-2">
-									<Switch
-										id="auto-wrap"
-										:model-value="configStore.config.display.autoWrap ?? true"
-										@update:model-value="configStore.setAutoWrap($event)"
-									/>
-									<span class="text-xs text-muted-foreground">Wrap at width</span>
-								</div>
-							</div>
-						</div>
-					</template>
-
-					<!-- TUI: box style + sizing + separators + padding -->
-					<TooltipProvider v-else :delay-duration="300">
-						<!-- TUI: Primary settings -->
-						<div class="grid grid-cols-2 items-end gap-3">
-							<!-- Box Style Popover -->
-							<div class="flex flex-col gap-1.5">
-								<Label class="text-xs font-medium text-muted-foreground">Box Style</Label>
-								<Popover v-model:open="boxStyleOpen">
-									<PopoverTrigger as-child>
-										<Button variant="outline" size="sm" class="w-full justify-between">
-											<span class="text-xs">{{ boxStyleLabel }}</span>
-											<IconLucide-chevron-down class="size-3.5 text-muted-foreground" />
-										</Button>
-									</PopoverTrigger>
-									<PopoverContent class="w-auto p-2" align="start">
-										<div class="grid grid-cols-3 gap-1.5">
-											<button
-												class="flex flex-col items-center gap-1 rounded-md border p-1.5 text-xs hover:bg-accent"
-												:class="
-													tuiCurrentBox === undefined
-														? 'ring-2 ring-primary border-primary'
-														: 'border-border'
-												"
-												@click="selectBoxPreset(undefined)"
-											>
-												<span class="text-muted-foreground text-[0.625rem]">Default</span>
-												<span class="font-mono text-[0.625rem] leading-tight text-muted-foreground"
-													>(auto)</span
-												>
-											</button>
-											<button
-												v-for="preset in boxPresets"
-												:key="preset.name"
-												class="flex flex-col items-center gap-0.5 rounded-md border p-1.5 text-xs hover:bg-accent"
-												:class="
-													tuiCurrentBox === preset.name
-														? 'ring-2 ring-primary border-primary'
-														: 'border-border'
-												"
-												@click="selectBoxPreset(preset.name)"
-											>
-												<span class="text-muted-foreground text-[0.625rem]">{{
-													preset.label
-												}}</span>
-												<div class="font-mono text-[0.625rem] leading-tight whitespace-pre">
-													<div v-for="(line, i) in boxPreview(preset.chars)" :key="i">
-														{{ line }}
-													</div>
-												</div>
-											</button>
-										</div>
-									</PopoverContent>
-								</Popover>
-							</div>
-
-							<!-- Fit Content -->
-							<div class="flex flex-col gap-1.5">
-								<div class="flex items-center gap-1">
-									<Label for="fit-content" class="text-xs font-medium text-muted-foreground"
-										>Fit Content</Label
+						<!-- Non-TUI: Padding, Auto-wrap -->
+						<template v-if="!configStore.isTuiStyle">
+							<div class="col-span-5 flex items-end gap-3">
+								<div class="flex w-28 shrink-0 flex-col gap-1.5">
+									<Label for="padding" class="text-xs font-medium text-muted-foreground"
+										>Padding</Label
 									>
-									<Tooltip>
-										<TooltipTrigger as-child>
-											<IconLucide-info class="size-3 text-muted-foreground/50" />
-										</TooltipTrigger>
-										<TooltipContent side="top" class="max-w-56 text-xs">
-											Shrink the panel to fit its content width instead of filling available space.
-										</TooltipContent>
-									</Tooltip>
+									<NumberField
+										id="padding"
+										:model-value="configStore.config.display.padding"
+										:min="0"
+										:max="3"
+										:step="1"
+										@update:model-value="configStore.setPadding($event ?? 0)"
+									>
+										<NumberFieldContent>
+											<NumberFieldDecrement />
+											<NumberFieldInput />
+											<NumberFieldIncrement />
+										</NumberFieldContent>
+									</NumberField>
 								</div>
-								<div class="flex h-8 items-center">
-									<Switch
-										id="fit-content"
-										:model-value="tuiFitContent"
-										@update:model-value="configStore.setTuiOption('fitContent', $event)"
-									/>
+
+								<div class="flex flex-col gap-1.5">
+									<Label for="auto-wrap" class="text-xs font-medium text-muted-foreground"
+										>Auto-wrap</Label
+									>
+									<div class="flex h-8 items-center gap-2">
+										<Switch
+											id="auto-wrap"
+											:model-value="configStore.config.display.autoWrap ?? true"
+											@update:model-value="configStore.setAutoWrap($event)"
+										/>
+										<span class="text-xs text-muted-foreground">Wrap at width</span>
+									</div>
 								</div>
 							</div>
-						</div>
+						</template>
 
-						<!-- TUI: Extra settings (collapsible) -->
-						<Collapsible v-model:open="tuiExtraOpen">
-							<CollapsibleTrigger
-								class="flex w-full items-center justify-between rounded-md px-1 py-1 text-sm font-medium hover:bg-accent/50"
+						<!-- TUI: Row 2 — Box Style, Fit Content, More (subgrid) -->
+						<TooltipProvider v-else :delay-duration="300">
+							<Collapsible
+								v-model:open="tuiExtraOpen"
+								class="col-span-5 grid grid-cols-subgrid items-end gap-y-4"
 							>
-								<span class="text-xs text-muted-foreground">Extra TUI Settings</span>
-								<IconLucide-chevron-down
-									class="size-4 text-muted-foreground transition-transform duration-200"
-									:class="tuiExtraOpen ? 'rotate-180' : ''"
-								/>
-							</CollapsibleTrigger>
-							<CollapsibleContent>
-								<div class="grid grid-cols-5 items-end gap-3 pt-2">
+								<!-- Box Style Popover -->
+								<div class="col-span-2 flex flex-col gap-1.5">
+									<Label class="text-xs font-medium text-muted-foreground">Box Style</Label>
+									<Popover v-model:open="boxStyleOpen">
+										<PopoverTrigger as-child>
+											<Button variant="outline" size="sm" class="w-full justify-between">
+												<span class="text-xs">{{ boxStyleLabel }}</span>
+												<IconLucide-chevron-down class="size-3.5 text-muted-foreground" />
+											</Button>
+										</PopoverTrigger>
+										<PopoverContent class="w-auto p-2" align="start">
+											<div class="grid grid-cols-3 gap-1.5">
+												<button
+													class="flex flex-col items-center gap-1 rounded-md border p-1.5 text-xs hover:bg-accent"
+													:class="
+														tuiCurrentBox === undefined
+															? 'ring-2 ring-primary border-primary'
+															: 'border-border'
+													"
+													@click="selectBoxPreset(undefined)"
+												>
+													<span class="text-muted-foreground text-[0.625rem]">Default</span>
+													<span
+														class="font-mono text-[0.625rem] leading-tight text-muted-foreground"
+														>(auto)</span
+													>
+												</button>
+												<button
+													v-for="preset in boxPresets"
+													:key="preset.name"
+													class="flex flex-col items-center gap-0.5 rounded-md border p-1.5 text-xs hover:bg-accent"
+													:class="
+														tuiCurrentBox === preset.name
+															? 'ring-2 ring-primary border-primary'
+															: 'border-border'
+													"
+													@click="selectBoxPreset(preset.name)"
+												>
+													<span class="text-muted-foreground text-[0.625rem]">{{
+														preset.label
+													}}</span>
+													<div class="font-mono text-[0.625rem] leading-tight whitespace-pre">
+														<div v-for="(line, i) in boxPreview(preset.chars)" :key="i">
+															{{ line }}
+														</div>
+													</div>
+												</button>
+											</div>
+										</PopoverContent>
+									</Popover>
+								</div>
+
+								<!-- Fit Content -->
+								<div class="col-span-2 flex flex-col gap-1.5">
+									<div class="flex items-center gap-1">
+										<Label for="fit-content" class="text-xs font-medium text-muted-foreground"
+											>Fit Content</Label
+										>
+										<Tooltip>
+											<TooltipTrigger as-child>
+												<IconLucide-info class="size-3 text-muted-foreground/50" />
+											</TooltipTrigger>
+											<TooltipContent side="top" class="max-w-56 text-xs">
+												Shrink the panel to fit its content width instead of filling available
+												space.
+											</TooltipContent>
+										</Tooltip>
+									</div>
+									<div class="flex h-8 items-center">
+										<Switch
+											id="fit-content"
+											:model-value="tuiFitContent"
+											@update:model-value="configStore.setTuiOption('fitContent', $event)"
+										/>
+									</div>
+								</div>
+
+								<!-- Extra settings trigger -->
+								<CollapsibleTrigger
+									class="flex h-8 items-center justify-end gap-1 self-end rounded-md px-2 text-xs text-muted-foreground hover:bg-accent/50"
+								>
+									<span class="flex-1 text-center">Show more options</span>
+									<IconLucide-chevron-down
+										class="size-3.5 transition-transform duration-200"
+										:class="tuiExtraOpen ? 'rotate-180' : ''"
+									/>
+								</CollapsibleTrigger>
+
+								<CollapsibleContent class="col-span-5 grid grid-cols-subgrid gap-y-3 pt-2">
 									<!-- Min Width -->
 									<div class="flex flex-col gap-1.5">
 										<div class="flex items-center gap-1">
@@ -697,10 +698,10 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 											</NumberFieldContent>
 										</NumberField>
 									</div>
-								</div>
-							</CollapsibleContent>
-						</Collapsible>
-					</TooltipProvider>
+								</CollapsibleContent>
+							</Collapsible>
+						</TooltipProvider>
+					</div>
 
 					<!-- Saved custom themes -->
 					<template v-if="configStore.savedCustomThemes.length > 0">

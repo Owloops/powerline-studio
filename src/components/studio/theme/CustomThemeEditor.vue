@@ -46,21 +46,20 @@ function handleSave() {
 			<p class="text-xs text-muted-foreground">Edit all segment colors</p>
 		</div>
 
-		<div class="grid grid-cols-[120px_1fr_1fr_1fr_auto] items-center gap-2">
+		<div class="flex items-center gap-2">
 			<input
 				v-model="themeName"
-				class="col-span-2 h-8 rounded-md border border-border bg-background px-2.5 text-sm outline-none focus:border-ring focus:ring-1 focus:ring-ring"
+				class="h-8 min-w-0 flex-1 rounded-md border border-border bg-background px-2.5 text-sm outline-none focus:border-ring focus:ring-1 focus:ring-ring"
 				placeholder="Theme name..."
 				@keydown.enter="handleSave"
 			/>
-			<div class="flex gap-1.5">
-				<Button size="sm" class="flex-1 gap-1.5" :disabled="!themeName.trim()" @click="handleSave">
-					<IconLucide-save class="size-3.5" />
-					Save
-				</Button>
-				<Button variant="outline" size="sm" @click="$emit('cancel')"> Cancel </Button>
-			</div>
-			<div class="size-6" />
+			<Button size="sm" class="shrink-0 gap-1.5" :disabled="!themeName.trim()" @click="handleSave">
+				<IconLucide-save class="size-3.5" />
+				Save
+			</Button>
+			<Button variant="outline" size="sm" class="mr-8 shrink-0" @click="$emit('cancel')">
+				Cancel
+			</Button>
 		</div>
 
 		<div class="flex flex-col gap-2 pt-1">
