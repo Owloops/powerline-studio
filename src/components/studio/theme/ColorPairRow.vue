@@ -2,13 +2,33 @@
 import { Button } from '@/components/ui/button'
 import ColorInput from './ColorInput.vue'
 
-defineProps<{
+const PREVIEW_WORDS = [
+	'Sphinx',
+	'of black',
+	'quartz',
+	'judge',
+	'my vow',
+	'The quick',
+	'brown fox',
+	'jumps',
+	'over the',
+	'lazy dog',
+	'Amazingly few',
+	'discotheques',
+	'provide',
+	'jukeboxes',
+]
+
+const props = defineProps<{
 	label: string
 	bg: string
 	fg: string
+	index?: number
 	showReset?: boolean
 	isOverridden?: boolean
 }>()
+
+const previewWord = computed(() => PREVIEW_WORDS[(props.index ?? 0) % PREVIEW_WORDS.length])
 
 const emit = defineEmits<{
 	'update:bg': [color: string]
@@ -18,7 +38,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-	<div class="grid grid-cols-[120px_1fr_1fr_auto] items-center gap-2">
+	<div class="grid grid-cols-[120px_1fr_1fr_1fr_auto] items-center gap-2">
 		<span
 			class="truncate text-xs"
 			:class="isOverridden ? 'font-medium text-foreground' : 'text-muted-foreground'"
@@ -35,6 +55,12 @@ const emit = defineEmits<{
 			:label="`${label} foreground`"
 			@update:color="emit('update:fg', $event)"
 		/>
+		<span
+			class="flex h-7 items-center justify-center truncate rounded-md border border-border px-1 text-[0.625rem] font-bold"
+			:style="{ backgroundColor: bg, color: fg }"
+		>
+			{{ previewWord }}
+		</span>
 		<ConfirmPopover
 			v-if="showReset"
 			action="Reset"

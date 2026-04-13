@@ -3,6 +3,7 @@
 @import 'tw-animate-css';
 @import 'vue-sonner/style.css';
 
+/* FiraCode Nerd Font Mono — 300 400 500 600 700 */
 @font-face {
 	font-family: 'FiraCode Nerd Font Mono';
 	src: url('./fonts/FiraCodeNerdFontMono-Regular.woff2') format('woff2');
@@ -10,7 +11,64 @@
 	font-style: normal;
 	font-display: swap;
 }
+@font-face {
+	font-family: 'FiraCode Nerd Font Mono';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/FiraCodeNerdFontMono-Light.woff2')
+		format('woff2');
+	font-weight: 300;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'FiraCode Nerd Font Mono';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/FiraCodeNerdFontMono-Medium.woff2')
+		format('woff2');
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'FiraCode Nerd Font Mono';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/FiraCodeNerdFontMono-SemiBold.woff2')
+		format('woff2');
+	font-weight: 600;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'FiraCode Nerd Font Mono';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/FiraCodeNerdFontMono-Bold.woff2')
+		format('woff2');
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+}
 
+/* JetBrainsMono NFM — 100 200 300 400 500 600 700 800 */
+@font-face {
+	font-family: 'JetBrainsMono NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/JetBrainsMonoNerdFontMono-Thin.woff2')
+		format('woff2');
+	font-weight: 100;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'JetBrainsMono NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/JetBrainsMonoNerdFontMono-ExtraLight.woff2')
+		format('woff2');
+	font-weight: 200;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'JetBrainsMono NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/JetBrainsMonoNerdFontMono-Light.woff2')
+		format('woff2');
+	font-weight: 300;
+	font-style: normal;
+	font-display: swap;
+}
 @font-face {
 	font-family: 'JetBrainsMono NFM';
 	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/JetBrainsMonoNerdFontMono-Regular.woff2')
@@ -19,7 +77,56 @@
 	font-style: normal;
 	font-display: swap;
 }
+@font-face {
+	font-family: 'JetBrainsMono NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/JetBrainsMonoNerdFontMono-Medium.woff2')
+		format('woff2');
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'JetBrainsMono NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/JetBrainsMonoNerdFontMono-SemiBold.woff2')
+		format('woff2');
+	font-weight: 600;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'JetBrainsMono NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/JetBrainsMonoNerdFontMono-Bold.woff2')
+		format('woff2');
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'JetBrainsMono NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/JetBrainsMonoNerdFontMono-ExtraBold.woff2')
+		format('woff2');
+	font-weight: 800;
+	font-style: normal;
+	font-display: swap;
+}
 
+/* CaskaydiaCove NFM — 200 300 400 600 700 */
+@font-face {
+	font-family: 'CaskaydiaCove NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/CaskaydiaCoveNerdFontMono-ExtraLight.woff2')
+		format('woff2');
+	font-weight: 200;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'CaskaydiaCove NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/CaskaydiaCoveNerdFontMono-Light.woff2')
+		format('woff2');
+	font-weight: 300;
+	font-style: normal;
+	font-display: swap;
+}
 @font-face {
 	font-family: 'CaskaydiaCove NFM';
 	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/CaskaydiaCoveNerdFontMono-Regular.woff2')
@@ -28,7 +135,48 @@
 	font-style: normal;
 	font-display: swap;
 }
+@font-face {
+	font-family: 'CaskaydiaCove NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/CaskaydiaCoveNerdFontMono-SemiBold.woff2')
+		format('woff2');
+	font-weight: 600;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'CaskaydiaCove NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/CaskaydiaCoveNerdFontMono-Bold.woff2')
+		format('woff2');
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+}
 
+/* Iosevka NFM — 100 200 300 400 500 600 700 800 900 */
+@font-face {
+	font-family: 'Iosevka NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/IosevkaNerdFontMono-Thin.woff2')
+		format('woff2');
+	font-weight: 100;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'Iosevka NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/IosevkaNerdFontMono-ExtraLight.woff2')
+		format('woff2');
+	font-weight: 200;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'Iosevka NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/IosevkaNerdFontMono-Light.woff2')
+		format('woff2');
+	font-weight: 300;
+	font-style: normal;
+	font-display: swap;
+}
 @font-face {
 	font-family: 'Iosevka NFM';
 	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/IosevkaNerdFontMono-Regular.woff2')
@@ -37,7 +185,48 @@
 	font-style: normal;
 	font-display: swap;
 }
+@font-face {
+	font-family: 'Iosevka NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/IosevkaNerdFontMono-Medium.woff2')
+		format('woff2');
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'Iosevka NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/IosevkaNerdFontMono-SemiBold.woff2')
+		format('woff2');
+	font-weight: 600;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'Iosevka NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/IosevkaNerdFontMono-Bold.woff2')
+		format('woff2');
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'Iosevka NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/IosevkaNerdFontMono-ExtraBold.woff2')
+		format('woff2');
+	font-weight: 800;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'Iosevka NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/IosevkaNerdFontMono-Heavy.woff2')
+		format('woff2');
+	font-weight: 900;
+	font-style: normal;
+	font-display: swap;
+}
 
+/* UbuntuMono Nerd Font Mono — 400 700 */
 @font-face {
 	font-family: 'UbuntuMono Nerd Font Mono';
 	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/UbuntuMonoNerdFontMono-Regular.woff2')
@@ -46,12 +235,61 @@
 	font-style: normal;
 	font-display: swap;
 }
+@font-face {
+	font-family: 'UbuntuMono Nerd Font Mono';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/UbuntuMonoNerdFontMono-Bold.woff2')
+		format('woff2');
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+}
 
+/* ZedMono NFM — 300 400 500 600 700 800 */
+@font-face {
+	font-family: 'ZedMono NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/ZedMonoNerdFontMono-Light.woff2')
+		format('woff2');
+	font-weight: 300;
+	font-style: normal;
+	font-display: swap;
+}
 @font-face {
 	font-family: 'ZedMono NFM';
 	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/ZedMonoNerdFontMono-Regular.woff2')
 		format('woff2');
 	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'ZedMono NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/ZedMonoNerdFontMono-Medium.woff2')
+		format('woff2');
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'ZedMono NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/ZedMonoNerdFontMono-SemiBold.woff2')
+		format('woff2');
+	font-weight: 600;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'ZedMono NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/ZedMonoNerdFontMono-Bold.woff2')
+		format('woff2');
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'ZedMono NFM';
+	src: url('https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/ZedMonoNerdFontMono-ExtraBold.woff2')
+		format('woff2');
+	font-weight: 800;
 	font-style: normal;
 	font-display: swap;
 }

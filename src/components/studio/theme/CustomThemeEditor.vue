@@ -45,7 +45,7 @@ function handleSave() {
 			<p class="text-xs text-muted-foreground">Edit all segment colors</p>
 		</div>
 
-		<div class="grid grid-cols-[120px_1fr_1fr_auto] items-center gap-2">
+		<div class="grid grid-cols-[120px_1fr_1fr_1fr_auto] items-center gap-2">
 			<input
 				v-model="themeName"
 				class="col-span-2 h-8 rounded-md border border-border bg-background px-2.5 text-sm outline-none focus:border-ring focus:ring-1 focus:ring-ring"
@@ -63,22 +63,26 @@ function handleSave() {
 		</div>
 
 		<div class="flex flex-col gap-2 pt-1">
-			<div class="grid grid-cols-[120px_1fr_1fr_auto] items-end gap-x-2">
+			<div class="grid grid-cols-[120px_1fr_1fr_1fr_auto] items-end gap-x-2">
 				<span />
-				<span class="text-xs font-medium uppercase tracking-wider text-muted-foreground"
+				<span class="text-[0.625rem] font-medium uppercase tracking-wider text-muted-foreground"
 					>Background</span
 				>
-				<span class="text-xs font-medium uppercase tracking-wider text-muted-foreground"
+				<span class="text-[0.625rem] font-medium uppercase tracking-wider text-muted-foreground"
 					>Foreground</span
+				>
+				<span class="text-[0.625rem] font-medium uppercase tracking-wider text-muted-foreground"
+					>Preview</span
 				>
 				<span class="size-6" />
 			</div>
 			<ColorPairRow
-				v-for="key in SEGMENT_KEYS"
+				v-for="(key, i) in SEGMENT_KEYS"
 				:key="key"
 				:label="SEGMENT_LABELS[key]"
 				:bg="colors[key].bg"
 				:fg="colors[key].fg"
+				:index="i"
 				@update:bg="updateBg(key, $event)"
 				@update:fg="updateFg(key, $event)"
 			/>

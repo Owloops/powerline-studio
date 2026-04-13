@@ -221,7 +221,7 @@ function resetTemplate() {
 							</CollapsibleTrigger>
 							<CollapsibleContent>
 								<div
-									class="grid grid-cols-[120px_1fr_1fr_auto] items-end gap-x-2 gap-y-1 px-3 pb-2"
+									class="grid grid-cols-[120px_1fr_1fr_1fr_auto] items-end gap-x-2 gap-y-1 px-3 pb-2"
 								>
 									<span />
 									<span class="text-[0.625rem] uppercase tracking-wider text-muted-foreground/50"
@@ -229,6 +229,9 @@ function resetTemplate() {
 									>
 									<span class="text-[0.625rem] uppercase tracking-wider text-muted-foreground/50"
 										>Foreground</span
+									>
+									<span class="text-[0.625rem] uppercase tracking-wider text-muted-foreground/50"
+										>Preview</span
 									>
 									<span />
 									<ColorPairRow

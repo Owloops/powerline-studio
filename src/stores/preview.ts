@@ -14,6 +14,7 @@ export const usePreviewStore = defineStore('preview', () => {
 	const colorMode = ref<'truecolor' | 'ansi256' | 'ansi' | 'none'>('truecolor')
 	const terminalTheme = ref('catppuccin-mocha')
 	const terminalFont = ref('firacode')
+	const fontWeight = ref(400)
 	const fontSize = ref(14)
 	const lineHeight = ref(1)
 	const reservedWidth = ref(45)
@@ -80,6 +81,7 @@ export const usePreviewStore = defineStore('preview', () => {
 		terminalTheme,
 		terminalFont,
 		terminalFontFamily,
+		fontWeight,
 		fontSize,
 		lineHeight,
 		reservedWidth,

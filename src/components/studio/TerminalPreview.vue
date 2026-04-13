@@ -9,6 +9,215 @@ import SegmentOverlay from './SegmentOverlay.vue'
 
 const previewStore = usePreviewStore()
 
+const EMOJIS_RED = [
+	'🔥',
+	'❤️',
+	'🌹',
+	'🍎',
+	'🍒',
+	'🍓',
+	'🎸',
+	'🫀',
+	'💋',
+	'🌶️',
+	'🦞',
+	'🦀',
+	'🐙',
+	'🏎️',
+	'🎯',
+	'🧧',
+	'♥️',
+	'❣️',
+	'🔴',
+	'♦️',
+	'🥀',
+	'🍷',
+	'🦑',
+	'👺',
+	'🎈',
+	'🫁',
+	'🩸',
+	'🥊',
+	'🧲',
+	'🪸',
+	'🐞',
+	'🦩',
+	'🍄',
+	'🏮',
+	'🚗',
+	'📍',
+	'💄',
+	'🧣',
+	'🎒',
+	'🪭',
+]
+
+const EMOJIS_YELLOW = [
+	'☀️',
+	'🌻',
+	'🍋',
+	'⭐',
+	'💛',
+	'🌼',
+	'🍌',
+	'🌕',
+	'👑',
+	'🏆',
+	'🔔',
+	'🧈',
+	'🍯',
+	'✨',
+	'💫',
+	'🌤️',
+	'🐝',
+	'🌽',
+	'🧀',
+	'🪙',
+	'🐥',
+	'🐤',
+	'🌟',
+	'💰',
+	'🔆',
+	'🌾',
+	'🍋‍🟩',
+	'🎗️',
+	'📒',
+	'🌙',
+	'🍺',
+	'🧽',
+	'🐠',
+	'🦁',
+	'🔑',
+	'🪅',
+	'🎺',
+	'🌝',
+	'💡',
+	'🥐',
+]
+
+const EMOJIS_GREEN = [
+	'🍀',
+	'🌿',
+	'🌱',
+	'🐸',
+	'🍃',
+	'💚',
+	'🌲',
+	'🥝',
+	'🥒',
+	'🥦',
+	'🐊',
+	'🦎',
+	'🪲',
+	'🌴',
+	'🍏',
+	'🥑',
+	'🫑',
+	'🐢',
+	'🦜',
+	'🧩',
+	'🌵',
+	'🪴',
+	'🫛',
+	'🥬',
+	'🥗',
+	'🐍',
+	'🦚',
+	'🪀',
+	'🧃',
+	'🎍',
+	'🫒',
+	'🥎',
+	'🐛',
+	'🦗',
+	'🌳',
+	'🎋',
+	'🔫',
+	'🪖',
+	'🐲',
+	'🧪',
+]
+
+const GRAVITY = 380
+const FADE_IN_SPEED = 8
+
+interface Particle {
+	id: number
+	emoji: string
+	x: number
+	y: number
+	vx: number
+	vy: number
+	rotation: number
+	rotationSpeed: number
+	scale: number
+	opacity: number
+}
+
+let nextId = 0
+const particles = shallowRef<Particle[]>([])
+let rafId: number | null = null
+let lastTime = 0
+
+function tick(time: number) {
+	const dt = Math.min((time - lastTime) / 1000, 0.05)
+	lastTime = time
+
+	const maxY = window.innerHeight + 100
+	const maxX = window.innerWidth + 100
+
+	const updated: Particle[] = []
+	for (const p of particles.value) {
+		const vy = p.vy + GRAVITY * dt
+		const x = p.x + p.vx * dt
+		const y = p.y + vy * dt
+		const rotation = p.rotation + p.rotationSpeed * dt
+		const opacity = Math.min(1, p.opacity + dt * FADE_IN_SPEED)
+		const scale = Math.min(1, p.scale + dt * FADE_IN_SPEED)
+
+		if (y < maxY && x > -100 && x < maxX) {
+			updated.push({ ...p, x, y, vx: p.vx, vy, rotation, opacity, scale })
+		}
+	}
+
+	particles.value = updated
+
+	if (updated.length > 0) {
+		rafId = requestAnimationFrame(tick)
+	} else {
+		rafId = null
+	}
+}
+
+function spawnParticle(pool: string[], event: MouseEvent) {
+	const angle = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 1.2
+	const speed = 120 + Math.random() * 180
+
+	const particle: Particle = {
+		id: nextId++,
+		emoji: pool[Math.floor(Math.random() * pool.length)],
+		x: event.clientX,
+		y: event.clientY,
+		vx: Math.cos(angle) * speed,
+		vy: Math.sin(angle) * speed,
+		rotation: 0,
+		rotationSpeed: (Math.random() - 0.5) * 400,
+		scale: 0,
+		opacity: 0,
+	}
+
+	particles.value = [...particles.value, particle]
+
+	if (rafId === null) {
+		lastTime = performance.now()
+		rafId = requestAnimationFrame(tick)
+	}
+}
+
+onScopeDispose(() => {
+	if (rafId !== null) cancelAnimationFrame(rafId)
+})
+
 const popoverOpen = ref(false)
 const triggerRef = ref<InstanceType<typeof Button> | null>(null)
 const anchorStyle = ref<{
@@ -42,6 +251,7 @@ const terminalStyle = computed(() => ({
 
 const preStyle = computed(() => ({
 	fontFamily: previewStore.terminalFontFamily,
+	fontWeight: previewStore.fontWeight,
 	fontFeatureSettings: "'calt' 0, 'liga' 0",
 	fontSize: `${previewStore.fontSize}px`,
 	lineHeight: previewStore.effectiveLineHeight,
@@ -68,12 +278,38 @@ const effectiveWidth = computed(() =>
 
 <template>
 	<div class="w-fit overflow-hidden rounded-xl border border-border shadow-lg">
+		<!-- Emoji particles (fixed, can drift anywhere) -->
+		<Teleport to="body">
+			<span
+				v-for="p in particles"
+				:key="p.id"
+				class="pointer-events-none fixed z-[9999] text-4xl leading-none"
+				:style="{
+					left: `${p.x}px`,
+					top: `${p.y}px`,
+					transform: `translate(-50%, -50%) scale(${p.scale}) rotate(${p.rotation}deg)`,
+					opacity: p.opacity,
+					willChange: 'transform, opacity',
+				}"
+			>
+				{{ p.emoji }}
+			</span>
+		</Teleport>
 		<!-- Title Bar -->
 		<div class="relative flex h-9 items-center border-b border-border bg-muted px-4">
 			<div class="flex gap-2" aria-hidden="true">
-				<span class="size-3 rounded-full bg-[#FF5F56]" />
-				<span class="size-3 rounded-full bg-[#FFBD2E]" />
-				<span class="size-3 rounded-full bg-[#27C93F]" />
+				<button
+					class="size-3 cursor-pointer rounded-full border-0 bg-[#FF5F56] p-0 transition-transform hover:scale-125 active:scale-90"
+					@click="spawnParticle(EMOJIS_RED, $event)"
+				/>
+				<button
+					class="size-3 cursor-pointer rounded-full border-0 bg-[#FFBD2E] p-0 transition-transform hover:scale-125 active:scale-90"
+					@click="spawnParticle(EMOJIS_YELLOW, $event)"
+				/>
+				<button
+					class="size-3 cursor-pointer rounded-full border-0 bg-[#27C93F] p-0 transition-transform hover:scale-125 active:scale-90"
+					@click="spawnParticle(EMOJIS_GREEN, $event)"
+				/>
 			</div>
 			<span class="flex-1 text-center text-xs text-muted-foreground">
 				powerline-studio — bash
@@ -104,7 +340,7 @@ const effectiveWidth = computed(() =>
 										class="pointer-events-none"
 										:style="anchorStyle"
 									/>
-									<PopoverContent align="end" side="bottom" :side-offset="8" class="w-80 p-0">
+									<PopoverContent align="end" side="bottom" :side-offset="8" class="w-84 p-0">
 										<PreviewControls />
 									</PopoverContent>
 								</Popover>

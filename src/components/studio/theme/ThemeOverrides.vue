@@ -63,7 +63,7 @@ function resetSegment(key: keyof ColorTheme) {
 			</CollapsibleTrigger>
 			<CollapsibleContent>
 				<div class="flex flex-col gap-2 pt-3">
-					<div class="grid grid-cols-[120px_1fr_1fr_auto] items-end gap-x-2">
+					<div class="grid grid-cols-[120px_1fr_1fr_1fr_auto] items-end gap-x-2">
 						<span />
 						<span class="text-[0.625rem] font-medium uppercase tracking-wider text-muted-foreground"
 							>Background</span
@@ -71,14 +71,18 @@ function resetSegment(key: keyof ColorTheme) {
 						<span class="text-[0.625rem] font-medium uppercase tracking-wider text-muted-foreground"
 							>Foreground</span
 						>
+						<span class="text-[0.625rem] font-medium uppercase tracking-wider text-muted-foreground"
+							>Preview</span
+						>
 						<span class="size-6" />
 					</div>
 					<ColorPairRow
-						v-for="key in SEGMENT_KEYS"
+						v-for="(key, i) in SEGMENT_KEYS"
 						:key="key"
 						:label="SEGMENT_LABELS[key]"
 						:bg="effectiveColor(key).bg"
 						:fg="effectiveColor(key).fg"
+						:index="i"
 						:show-reset="true"
 						:is-overridden="isOverridden(key)"
 						@update:bg="updateBg(key, $event)"

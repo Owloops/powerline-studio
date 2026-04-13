@@ -10,7 +10,14 @@ import {
 	SelectValue,
 } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
-import { TERMINAL_FONTS } from '@/lib/terminalFonts'
+import {
+	NumberField,
+	NumberFieldContent,
+	NumberFieldDecrement,
+	NumberFieldIncrement,
+	NumberFieldInput,
+} from '@/components/ui/number-field'
+import { TERMINAL_FONTS, FONT_WEIGHT_NAMES, getTerminalFont } from '@/lib/terminalFonts'
 import { DARK_THEMES, LIGHT_THEMES } from '@/lib/terminalThemes'
 import { storeToRefs } from 'pinia'
 
@@ -21,6 +28,7 @@ const {
 	colorMode,
 	terminalTheme,
 	terminalFont,
+	fontWeight,
 	fontSize,
 	lineHeight,
 	reservedWidth,
@@ -54,6 +62,36 @@ const lineHeightModel = computed({
 	set: (val: number[]) => {
 		lineHeight.value = Math.round(val[0] * 100) / 100
 	},
+})
+
+const resolvedFont = computed(() => getTerminalFont(terminalFont.value))
+const ALL_WEIGHTS = [100, 200, 300, 400, 500, 600, 700, 800, 900] as const
+const allWeightOptions = ALL_WEIGHTS.map((w) => ({
+	value: String(w),
+	label: FONT_WEIGHT_NAMES[w] ?? String(w),
+}))
+
+const isCustomWeight = computed(() => !ALL_WEIGHTS.includes(fontWeight.value as any))
+
+const fontWeightSelect = computed({
+	get: () => (isCustomWeight.value ? 'custom' : String(fontWeight.value)),
+	set: (val: string) => {
+		if (val !== 'custom') fontWeight.value = Number(val)
+	},
+})
+
+function clampWeight(val: number) {
+	fontWeight.value = Math.max(100, Math.min(900, Math.round(val)))
+}
+
+watch(terminalFont, () => {
+	const weights = resolvedFont.value.weights
+	if (!weights.includes(fontWeight.value)) {
+		const closest = weights.reduce((prev, curr) =>
+			Math.abs(curr - fontWeight.value) < Math.abs(prev - fontWeight.value) ? curr : prev,
+		)
+		fontWeight.value = closest
+	}
 })
 
 const COLOR_MODE_OPTIONS = [
@@ -186,6 +224,38 @@ const CHARSET_OPTIONS = [
 					</SelectItem>
 				</SelectContent>
 			</Select>
+		</div>
+
+		<!-- Font weight -->
+		<div class="flex items-center justify-between gap-3">
+			<Label for="preview-font-weight" class="w-20 shrink-0 text-xs">Weight</Label>
+			<div class="flex flex-1 items-center justify-end gap-1.5">
+				<Select v-model="fontWeightSelect">
+					<SelectTrigger id="preview-font-weight" class="h-8 min-w-0 flex-1" size="sm">
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent position="popper" side="bottom">
+						<SelectItem v-for="w in allWeightOptions" :key="w.value" :value="w.value">
+							{{ w.label }}
+						</SelectItem>
+						<SelectItem v-if="isCustomWeight" value="custom"> Custom </SelectItem>
+					</SelectContent>
+				</Select>
+				<NumberField
+					:model-value="fontWeight"
+					:min="100"
+					:max="900"
+					:step="50"
+					class="w-22 shrink-0 gap-0"
+					@update:model-value="clampWeight($event ?? 400)"
+				>
+					<NumberFieldContent>
+						<NumberFieldDecrement />
+						<NumberFieldInput class="h-8 text-xs tabular-nums" />
+						<NumberFieldIncrement />
+					</NumberFieldContent>
+				</NumberField>
+			</div>
 		</div>
 
 		<!-- Terminal theme select -->
