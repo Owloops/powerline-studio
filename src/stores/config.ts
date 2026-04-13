@@ -12,12 +12,12 @@ import type {
 	AlignValue,
 } from '@owloops/claude-powerline/browser'
 import { DEFAULT_CONFIG } from '@owloops/claude-powerline/browser'
-import { deepMerge } from './utils'
+import { deepMerge, deepEqual } from './utils'
 import { useEditorStore } from './editor'
 import { normalizeSegments } from '@/components/studio/segments/segmentMeta'
 import type { CanonicalTheme, ThemeEditorState, SavedCustomTheme } from '@/lib/themes'
-import type { TuiPreset } from '@/lib/tuiPresets'
-import type { FlatPreset } from '@/lib/flatPresets'
+import { TUI_PRESETS, type TuiPreset } from '@/lib/tuiPresets'
+import { FLAT_PRESETS, type FlatPreset } from '@/lib/flatPresets'
 import {
 	CANONICAL_THEMES,
 	getCanonicalThemeColors,
@@ -92,6 +92,197 @@ export const useConfigStore = defineStore('config', () => {
 			initOnMounted: true,
 		},
 	)
+
+	// --- Preset Tracking ---
+
+	const activeStatuslinePresetId = useStorage<string | null>(
+		'powerline-studio-statusline-preset',
+		null,
+	)
+	const activeTuiPresetId = useStorage<string | null>('powerline-studio-tui-preset', null)
+
+	function deriveExpectedSegments(): LineConfig['segments'] | null {
+		const flatPreset = FLAT_PRESETS.find((p) => p.id === activeStatuslinePresetId.value)
+		const tuiPreset = TUI_PRESETS.find((p) => p.id === activeTuiPresetId.value)
+
+		if (!flatPreset && !tuiPreset) return null
+
+		let segments: LineConfig['segments'] = {}
+		if (flatPreset) {
+			segments = structuredClone(flatPreset.lines[0]!.segments) as LineConfig['segments']
+		}
+		if (tuiPreset) {
+			segments = {
+				...segments,
+				...(structuredClone(tuiPreset.segments) as LineConfig['segments']),
+			}
+		}
+		return normalizeSegments(segments, SEGMENT_DEFAULTS)
+	}
+
+	const isStatuslineModified = computed(() => {
+		const presetId = activeStatuslinePresetId.value
+		if (!presetId) return false
+
+		const flatPreset = FLAT_PRESETS.find((p) => p.id === presetId)
+		if (!flatPreset) return false
+
+		if (activeTuiPresetId.value) {
+			const expected = deriveExpectedSegments()
+			if (!expected) return false
+			const current = JSON.parse(JSON.stringify(config.value.display.lines[0]?.segments ?? {}))
+			return !deepEqual(current, expected)
+		} else {
+			if (config.value.display.style !== flatPreset.style) return true
+			if (config.value.display.lines.length !== flatPreset.lines.length) return true
+			for (let i = 0; i < flatPreset.lines.length; i++) {
+				const expectedSegs = normalizeSegments(
+					structuredClone(flatPreset.lines[i]!.segments) as LineConfig['segments'],
+					SEGMENT_DEFAULTS,
+				)
+				const currentSegs = JSON.parse(
+					JSON.stringify(config.value.display.lines[i]?.segments ?? {}),
+				)
+				if (!deepEqual(currentSegs, expectedSegs)) return true
+			}
+			return false
+		}
+	})
+
+	const isTuiModified = computed(() => {
+		const presetId = activeTuiPresetId.value
+		if (!presetId) return false
+
+		const tuiPreset = TUI_PRESETS.find((p) => p.id === presetId)
+		if (!tuiPreset) return false
+
+		const expected = structuredClone(tuiPreset.tui)
+		const current = JSON.parse(JSON.stringify(config.value.display.tui ?? {}))
+		return !deepEqual(current, expected)
+	})
+
+	function selectStatuslinePreset(presetId: string) {
+		activeStatuslinePresetId.value = presetId
+		applyStatuslinePreset()
+	}
+
+	function selectTuiPreset(presetId: string) {
+		activeTuiPresetId.value = presetId
+		applyTuiPresetFromId()
+	}
+
+	function applyStatuslinePreset() {
+		const flatPreset = FLAT_PRESETS.find((p) => p.id === activeStatuslinePresetId.value)
+		if (!flatPreset) return
+
+		const tuiPreset = TUI_PRESETS.find((p) => p.id === activeTuiPresetId.value)
+
+		// Merge segments: flat preset base, TUI preset overrides if active
+		let segments: LineConfig['segments'] = structuredClone(
+			flatPreset.lines[0]!.segments,
+		) as LineConfig['segments']
+		if (tuiPreset) {
+			segments = {
+				...segments,
+				...(structuredClone(tuiPreset.segments) as LineConfig['segments']),
+			}
+		}
+
+		if (tuiPreset) {
+			// TUI mode: only update segments, don't touch style or tui grid
+			if (config.value.display.lines.length === 0) {
+				config.value.display.lines.push({ segments })
+			} else {
+				config.value.display.lines[0]!.segments = segments
+			}
+			config.value.display.lines.length = 1
+		} else {
+			// Flat mode: set style + all lines
+			config.value.display.style = flatPreset.style
+			config.value.display.tui = undefined
+			config.value.display.lines = flatPreset.lines.map((line) => ({
+				segments: normalizeSegments(
+					structuredClone(line.segments) as LineConfig['segments'],
+					SEGMENT_DEFAULTS,
+				),
+			}))
+		}
+
+		for (const line of config.value.display.lines) {
+			line.segments = normalizeSegments(toRaw(line.segments), SEGMENT_DEFAULTS)
+		}
+	}
+
+	function applyTuiPresetFromId() {
+		const tuiPreset = TUI_PRESETS.find((p) => p.id === activeTuiPresetId.value)
+		if (!tuiPreset) return
+
+		// Set TUI-specific config
+		config.value.display.style = 'tui'
+		config.value.display.tui = structuredClone(tuiPreset.tui) as TuiGridConfig
+
+		// Merge segments: existing flat preset base + TUI preset overrides
+		const flatPreset = FLAT_PRESETS.find((p) => p.id === activeStatuslinePresetId.value)
+		let segments: LineConfig['segments'] = {}
+		if (flatPreset) {
+			segments = structuredClone(flatPreset.lines[0]!.segments) as LineConfig['segments']
+		}
+		segments = {
+			...segments,
+			...(structuredClone(tuiPreset.segments) as LineConfig['segments']),
+		}
+
+		if (config.value.display.lines.length === 0) {
+			config.value.display.lines.push({ segments })
+		} else {
+			config.value.display.lines[0]!.segments = segments
+		}
+		config.value.display.lines.length = 1
+
+		for (const line of config.value.display.lines) {
+			line.segments = normalizeSegments(toRaw(line.segments), SEGMENT_DEFAULTS)
+		}
+	}
+
+	function resetStatuslinePreset() {
+		if (!activeStatuslinePresetId.value) return
+
+		const flatPreset = FLAT_PRESETS.find((p) => p.id === activeStatuslinePresetId.value)
+		if (!flatPreset) return
+
+		if (activeTuiPresetId.value) {
+			const tuiPreset = TUI_PRESETS.find((p) => p.id === activeTuiPresetId.value)
+			let segments: LineConfig['segments'] = structuredClone(
+				flatPreset.lines[0]!.segments,
+			) as LineConfig['segments']
+			if (tuiPreset) {
+				segments = {
+					...segments,
+					...(structuredClone(tuiPreset.segments) as LineConfig['segments']),
+				}
+			}
+			config.value.display.lines[0]!.segments = normalizeSegments(segments, SEGMENT_DEFAULTS)
+		} else {
+			config.value.display.style = flatPreset.style
+			config.value.display.tui = undefined
+			config.value.display.lines = flatPreset.lines.map((line) => ({
+				segments: normalizeSegments(
+					structuredClone(line.segments) as LineConfig['segments'],
+					SEGMENT_DEFAULTS,
+				),
+			}))
+		}
+	}
+
+	function resetTuiPreset() {
+		if (!activeTuiPresetId.value) return
+
+		const tuiPreset = TUI_PRESETS.find((p) => p.id === activeTuiPresetId.value)
+		if (!tuiPreset) return
+
+		config.value.display.style = 'tui'
+		config.value.display.tui = structuredClone(tuiPreset.tui) as TuiGridConfig
+	}
 
 	// --- Computed ---
 
@@ -557,16 +748,22 @@ export const useConfigStore = defineStore('config', () => {
 		for (const line of config.value.display.lines) {
 			line.segments = normalizeSegments(toRaw(line.segments), SEGMENT_DEFAULTS)
 		}
+		activeStatuslinePresetId.value = null
+		activeTuiPresetId.value = null
 		rehydrateThemeEditor()
 	}
 
 	function resetToDefaults() {
 		config.value = structuredClone(DEFAULT_CONFIG)
+		activeStatuslinePresetId.value = null
+		activeTuiPresetId.value = null
 		rehydrateThemeEditor()
 	}
 
 	function $reset() {
 		config.value = structuredClone(DEFAULT_CONFIG)
+		activeStatuslinePresetId.value = null
+		activeTuiPresetId.value = null
 		rehydrateThemeEditor()
 	}
 
@@ -726,6 +923,15 @@ export const useConfigStore = defineStore('config', () => {
 
 	return {
 		config,
+		// Preset tracking
+		activeStatuslinePresetId,
+		activeTuiPresetId,
+		isStatuslineModified,
+		isTuiModified,
+		selectStatuslinePreset,
+		selectTuiPreset,
+		resetStatuslinePreset,
+		resetTuiPreset,
 		// Computed
 		configJson,
 		activeStyle,

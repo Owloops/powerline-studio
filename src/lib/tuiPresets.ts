@@ -65,7 +65,7 @@ export const TUI_PRESETS: TuiPreset[] = [
 				{
 					minWidth: 0,
 					areas: [
-						'git.icon     git.info     git.info     .            git.working',
+						'git.icon     git.info     git.info     git.info     git.working',
 						'---',
 						'context.icon  context.bar  context.bar  context.pct  context.tokens',
 						'block.icon    block.bar    block.bar    block.value  block.time',
@@ -110,7 +110,7 @@ export const TUI_PRESETS: TuiPreset[] = [
 				{
 					minWidth: 55,
 					areas: [
-						'git.icon     git.info     git.info     .               git.working',
+						'git.icon     git.info     git.info     git.info        git.working',
 						'---',
 						'context.icon  context.bar  context.bar  context.pct     context.tokens',
 						'block.icon    block.bar    block.bar    block.value     block.time',

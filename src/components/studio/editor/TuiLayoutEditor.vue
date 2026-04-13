@@ -65,7 +65,11 @@ function selectBreakpoint(index: number) {
 
 	if (bp.minWidth > 0) {
 		if (effectiveWidth < bp.minWidth) {
-			previewStore.setTerminalWidth(bp.minWidth + previewStore.reservedWidth)
+			const target =
+				nextMin === Infinity
+					? Math.max(bp.minWidth + previewStore.reservedWidth, 120)
+					: bp.minWidth + previewStore.reservedWidth
+			previewStore.setTerminalWidth(target)
 		} else if (effectiveWidth >= nextMin) {
 			previewStore.setTerminalWidth(Math.max(30, nextMin - 1) + previewStore.reservedWidth)
 		}
@@ -229,7 +233,9 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 <template>
 	<section class="flex flex-col gap-4">
 		<Collapsible v-model:open="isOpen">
-			<CollapsibleTrigger class="relative flex items-center text-left">
+			<CollapsibleTrigger
+				class="relative flex cursor-pointer items-center rounded-md px-1 py-0.5 -ml-1 text-left transition-colors hover:bg-accent/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+			>
 				<span
 					v-if="step"
 					class="absolute -left-18 top-0.5 flex size-8 items-center justify-center rounded-full border border-muted-foreground/15 text-xs font-semibold tabular-nums text-muted-foreground/25"
@@ -286,7 +292,7 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 							<button
 								v-for="(item, sortIdx) in sortedBreakpoints"
 								:key="item.index"
-								class="group relative flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs"
+								class="group relative flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs transition-[border-color,background-color,box-shadow] duration-150"
 								:class="
 									selectedBpIndex === item.index
 										? 'border-primary bg-primary/5 ring-1 ring-primary/30'
@@ -295,7 +301,7 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 								@click="selectBreakpoint(item.index)"
 							>
 								<span
-									class="flex size-5 shrink-0 items-center justify-center rounded text-[0.625rem] font-semibold tabular-nums"
+									class="flex size-5 shrink-0 items-center justify-center rounded text-[0.625rem] font-semibold tabular-nums transition-colors duration-150"
 									:class="
 										selectedBpIndex === item.index
 											? 'bg-primary text-primary-foreground'

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+	<!-- Tokyo Night background -->
+	<rect width="32" height="32" rx="6" fill="#1a1b26"/>
+
+	<!-- Segment 2: Tokyo Night green — drawn first (behind) -->
+	<path d="M8,9.04 H23 L29,16 L23,22.96 H8 Z" fill="#9ece6a" stroke="#9ece6a" stroke-width="2.5" stroke-linejoin="round"/>
+
+	<!-- Segment 1: Tokyo Night dark blue — drawn on top -->
+	<path d="M4,9 H12 L19,16 L12,23 H4 Z" fill="#3d59a1" stroke="#3d59a1" stroke-width="2.5" stroke-linejoin="round"/>
+
+</svg>

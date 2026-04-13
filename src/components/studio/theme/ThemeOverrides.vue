@@ -61,7 +61,7 @@ function resetSegment(key: keyof ColorTheme) {
 					:class="isOpen ? 'rotate-180' : ''"
 				/>
 			</CollapsibleTrigger>
-			<CollapsibleContent class="collapsible-content overflow-hidden">
+			<CollapsibleContent>
 				<div class="flex flex-col gap-2 pt-3">
 					<div class="grid grid-cols-[120px_1fr_1fr_auto] items-end gap-x-2">
 						<span />
@@ -91,42 +91,3 @@ function resetSegment(key: keyof ColorTheme) {
 		<Separator />
 	</div>
 </template>
-
-<style scoped>
-.collapsible-content[data-state='open'] {
-	animation: slideDown 200ms ease-out;
-}
-
-.collapsible-content[data-state='closed'] {
-	animation: slideUp 150ms ease-out;
-}
-
-@keyframes slideDown {
-	from {
-		height: 0;
-		opacity: 0;
-	}
-	to {
-		height: var(--reka-collapsible-content-height);
-		opacity: 1;
-	}
-}
-
-@keyframes slideUp {
-	from {
-		height: var(--reka-collapsible-content-height);
-		opacity: 1;
-	}
-	to {
-		height: 0;
-		opacity: 0;
-	}
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.collapsible-content[data-state='open'],
-	.collapsible-content[data-state='closed'] {
-		animation: none;
-	}
-}
-</style>

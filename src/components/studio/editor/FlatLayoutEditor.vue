@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
-import { Reorder } from 'motion-v'
+import { Reorder, AnimatePresence } from 'motion-v'
 import { useMediaQuery } from '@vueuse/core'
 import { Sparkles, Plus, Trash2 } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
@@ -198,7 +198,9 @@ watch(
 <template>
 	<section class="flex flex-col gap-4">
 		<Collapsible v-model:open="isOpen">
-			<CollapsibleTrigger class="relative flex items-center text-left">
+			<CollapsibleTrigger
+				class="relative flex cursor-pointer items-center rounded-md px-1 py-0.5 -ml-1 text-left transition-colors hover:bg-accent/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+			>
 				<span
 					v-if="step"
 					class="absolute -left-18 top-0.5 flex size-8 items-center justify-center rounded-full border border-muted-foreground/15 text-xs font-semibold tabular-nums text-muted-foreground/25"
@@ -252,41 +254,48 @@ watch(
 									class="flex flex-wrap items-center gap-2"
 									@update:values="handleReorder(lineIndex, $event)"
 								>
-									<Reorder.Item
-										v-for="(key, segIndex) in segmentOrders[lineIndex] ?? []"
-										:key="key"
-										:value="key"
-										as="div"
-										:class="
-											cn(
-												'reorder-chip cursor-grab active:cursor-grabbing',
-												'rounded-md border border-border',
-												openPopover === compositeKey(lineIndex, key) &&
-													'border-r border-primary ring-2 ring-primary/20',
-												highlightedChip === compositeKey(lineIndex, key) &&
-													'segment-highlight-pulse',
-											)
-										"
-										:style="
-											openPopover === compositeKey(lineIndex, key) ? { zIndex: 10 } : undefined
-										"
-										:while-drag="whileDragStyle"
-									>
-										<SegmentConfigPopover
-											:ref="setChipRef(lineIndex, key)"
-											:segment-key="key as SegmentKey"
-											:line-index="lineIndex"
-											:open="openPopover === compositeKey(lineIndex, key)"
-											@update:open="setPopoverOpen(lineIndex, key, $event)"
-											@remove="handleRemoveSegment(lineIndex, key)"
+									<AnimatePresence>
+										<Reorder.Item
+											v-for="(key, segIndex) in segmentOrders[lineIndex] ?? []"
+											:key="key"
+											:value="key"
+											as="div"
+											:initial="{ opacity: 0, scale: 0.9 }"
+											:animate="{ opacity: 1, scale: 1 }"
+											:exit="{ opacity: 0, scale: 0.9 }"
+											:transition="{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }"
+											:class="
+												cn(
+													'reorder-chip cursor-grab active:cursor-grabbing',
+													'rounded-md border border-border',
+													'has-[:focus-visible]:border-ring has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring/50',
+													openPopover === compositeKey(lineIndex, key) &&
+														'border-r border-primary ring-2 ring-primary/20',
+													highlightedChip === compositeKey(lineIndex, key) &&
+														'segment-highlight-pulse',
+												)
+											"
+											:style="
+												openPopover === compositeKey(lineIndex, key) ? { zIndex: 10 } : undefined
+											"
+											:while-drag="whileDragStyle"
 										>
-											<SegmentChip
+											<SegmentConfigPopover
+												:ref="setChipRef(lineIndex, key)"
 												:segment-key="key as SegmentKey"
-												:selected="openPopover === compositeKey(lineIndex, key)"
-												:highlighted="highlightedChip === compositeKey(lineIndex, key)"
-											/>
-										</SegmentConfigPopover>
-									</Reorder.Item>
+												:line-index="lineIndex"
+												:open="openPopover === compositeKey(lineIndex, key)"
+												@update:open="setPopoverOpen(lineIndex, key, $event)"
+												@remove="handleRemoveSegment(lineIndex, key)"
+											>
+												<SegmentChip
+													:segment-key="key as SegmentKey"
+													:selected="openPopover === compositeKey(lineIndex, key)"
+													:highlighted="highlightedChip === compositeKey(lineIndex, key)"
+												/>
+											</SegmentConfigPopover>
+										</Reorder.Item>
+									</AnimatePresence>
 								</Reorder.Group>
 
 								<SegmentPicker

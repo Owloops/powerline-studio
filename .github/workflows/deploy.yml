@@ -20,19 +20,37 @@ jobs:
     environment: github-pages
     steps:
       - uses: actions/checkout@v6
+        with:
+          path: powerline-studio
+
+      - uses: actions/checkout@v6
+        with:
+          repository: Owloops/claude-powerline
+          ref: feat/browser-entry
+          path: claude-powerline
 
       - uses: voidzero-dev/setup-vp@v1
         with:
           cache: true
 
-      - run: vp build --base /powerline-studio/
+      - name: Build claude-powerline
+        working-directory: claude-powerline
+        run: |
+          pnpm install
+          pnpm build
+
+      - name: Build powerline-studio
+        working-directory: powerline-studio
+        run: |
+          pnpm install
+          vp build --base /powerline-studio/
 
       - name: Add 404 fallback for SPA routing
-        run: cp dist/index.html dist/404.html
+        run: cp powerline-studio/dist/index.html powerline-studio/dist/404.html
 
       - uses: actions/upload-pages-artifact@v4
         with:
-          path: dist
+          path: powerline-studio/dist
 
   deploy:
     needs: build

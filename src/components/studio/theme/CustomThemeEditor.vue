@@ -12,6 +12,7 @@ const props = defineProps<{
 const emit = defineEmits<{
 	'update:colors': [colors: ColorTheme]
 	'save:theme': [name: string]
+	cancel: []
 }>()
 
 const themeName = ref('')
@@ -37,7 +38,7 @@ function handleSave() {
 </script>
 
 <template>
-	<div class="custom-editor flex flex-col gap-3">
+	<div class="flex flex-col gap-3">
 		<Separator />
 		<div>
 			<h3 class="text-sm font-medium">Custom Theme</h3>
@@ -51,10 +52,13 @@ function handleSave() {
 				placeholder="Theme name..."
 				@keydown.enter="handleSave"
 			/>
-			<Button size="sm" class="w-full gap-1.5" :disabled="!themeName.trim()" @click="handleSave">
-				<IconLucide-save class="size-3.5" />
-				Save
-			</Button>
+			<div class="flex gap-1.5">
+				<Button size="sm" class="flex-1 gap-1.5" :disabled="!themeName.trim()" @click="handleSave">
+					<IconLucide-save class="size-3.5" />
+					Save
+				</Button>
+				<Button variant="outline" size="sm" @click="$emit('cancel')"> Cancel </Button>
+			</div>
 			<div class="size-6" />
 		</div>
 
@@ -81,26 +85,3 @@ function handleSave() {
 		</div>
 	</div>
 </template>
-
-<style scoped>
-.custom-editor {
-	animation: fadeRise 250ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-@keyframes fadeRise {
-	from {
-		opacity: 0;
-		transform: translateY(8px);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.custom-editor {
-		animation: none;
-	}
-}
-</style>

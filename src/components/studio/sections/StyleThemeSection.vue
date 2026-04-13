@@ -159,8 +159,21 @@ function handleCancelSwitch() {
 	showConfirmDialog.value = false
 }
 
-function handleEnterCustom() {
-	configStore.enterCustomTheme()
+function handleToggleCustom() {
+	if (configStore.themeEditor.mode === 'custom') {
+		handleCancelCustom()
+	} else {
+		configStore.enterCustomTheme()
+	}
+}
+
+function handleCancelCustom() {
+	if (configStore.hasModifiedCustomDraft) {
+		pendingSwitchTheme.value = configStore.themeEditor.builtinTheme
+		showConfirmDialog.value = true
+		return
+	}
+	configStore.confirmSwitchToBuiltIn(configStore.themeEditor.builtinTheme)
 }
 
 function handleUpdateCustomColors(colors: ColorTheme) {
@@ -211,7 +224,9 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 <template>
 	<section class="flex flex-col gap-4">
 		<Collapsible v-model:open="isOpen">
-			<CollapsibleTrigger class="relative flex items-center text-left">
+			<CollapsibleTrigger
+				class="relative flex cursor-pointer items-center rounded-md px-1 py-0.5 -ml-1 text-left transition-colors hover:bg-accent/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+			>
 				<span
 					v-if="step"
 					class="absolute -left-18 top-0.5 flex size-8 items-center justify-center rounded-full border border-muted-foreground/15 text-xs font-semibold tabular-nums text-muted-foreground/25"
@@ -349,8 +364,8 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 												</template>
 												<template v-else-if="s.value === 'tui'">
 													<pre
-														class="text-[#cdd6f4] leading-none"
-														style="font-family: inherit"
+														class="leading-none"
+														style="font-family: inherit; color: #cdd6f4"
 													>&#x256D;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x256E;
 &#x2502; <span :style="{ color: '#3b82f6' }">~/project</span> &#x2502; <span :style="{ color: '#22c55e' }">main</span> &#x2502; <span :style="{ color: '#a855f7' }">Sonnet</span> &#x2502;
 &#x2570;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x256F;</pre>
@@ -430,11 +445,14 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 										? 'border-primary bg-primary/5 text-primary'
 										: ''
 								"
-								:disabled="configStore.themeEditor.mode === 'custom'"
-								@click="handleEnterCustom"
+								@click="handleToggleCustom"
 							>
-								<IconLucide-palette class="size-3.5" />
-								{{ configStore.themeEditor.mode === 'custom' ? 'Editing Custom' : 'Custom Theme' }}
+								<IconLucide-palette
+									v-if="configStore.themeEditor.mode !== 'custom'"
+									class="size-3.5"
+								/>
+								<IconLucide-x v-else class="size-3.5" />
+								{{ configStore.themeEditor.mode === 'custom' ? 'Cancel Custom' : 'Custom Theme' }}
 							</Button>
 						</div>
 					</div>
@@ -723,12 +741,22 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 					</template>
 
 					<!-- Custom Theme Editor -->
-					<CustomThemeEditor
-						v-if="configStore.themeEditor.mode === 'custom' && configStore.themeEditor.customDraft"
-						:colors="configStore.themeEditor.customDraft"
-						@update:colors="handleUpdateCustomColors"
-						@save:theme="handleSaveCustomTheme"
-					/>
+					<Transition
+						enter-active-class="transition-[opacity,transform] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)]"
+						leave-active-class="transition-[opacity,transform] duration-150 ease-in"
+						enter-from-class="opacity-0 translate-y-2"
+						leave-to-class="opacity-0 translate-y-2"
+					>
+						<CustomThemeEditor
+							v-if="
+								configStore.themeEditor.mode === 'custom' && configStore.themeEditor.customDraft
+							"
+							:colors="configStore.themeEditor.customDraft"
+							@update:colors="handleUpdateCustomColors"
+							@save:theme="handleSaveCustomTheme"
+							@cancel="handleCancelCustom"
+						/>
+					</Transition>
 
 					<!-- Theme Overrides for built-in themes -->
 					<ThemeOverrides

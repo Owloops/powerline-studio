@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { toast } from 'vue-sonner'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { Button, CopyButton } from '@/components/ui/button'
 import { useShikiHighlighter } from '@/composables/useShikiHighlighter'
 
 defineProps<{ step?: number }>()
@@ -37,6 +38,17 @@ async function copySnippet(clipboard: typeof jsonClipboard, text: string) {
 		toast.error('Failed to copy to clipboard')
 	}
 }
+
+function downloadJson() {
+	const blob = new Blob([configStore.configJson], { type: 'application/json' })
+	const url = URL.createObjectURL(blob)
+	const a = document.createElement('a')
+	a.href = url
+	a.download = 'claude-powerline.json'
+	a.click()
+	URL.revokeObjectURL(url)
+	toast.success('Downloaded claude-powerline.json')
+}
 </script>
 
 <template>
@@ -44,7 +56,9 @@ async function copySnippet(clipboard: typeof jsonClipboard, text: string) {
 		<Collapsible v-model:open="isOpen">
 			<!-- Section Header -->
 			<div class="flex items-center justify-between">
-				<CollapsibleTrigger class="relative flex items-center text-left">
+				<CollapsibleTrigger
+					class="relative flex cursor-pointer items-center rounded-md px-1 py-0.5 -ml-1 text-left transition-colors hover:bg-accent/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+				>
 					<span
 						v-if="step"
 						class="absolute -left-18 top-0.5 flex size-8 items-center justify-center rounded-full border border-muted-foreground/15 text-xs font-semibold tabular-nums text-muted-foreground/25"
@@ -61,11 +75,21 @@ async function copySnippet(clipboard: typeof jsonClipboard, text: string) {
 						</p>
 					</div>
 				</CollapsibleTrigger>
-				<Button variant="outline" size="sm" @click="copyJson">
-					<IconLucide-clipboard v-if="!jsonClipboard.copied.value" class="size-3.5" />
-					<IconLucide-check v-else class="size-3.5 text-primary" />
-					{{ jsonClipboard.copied.value ? 'Copied!' : 'Copy JSON' }}
-				</Button>
+				<div class="flex items-center gap-2">
+					<CopyButton
+						variant="outline"
+						size="sm"
+						:icon-only="false"
+						:copied="jsonClipboard.copied.value"
+						label="Copy JSON"
+						@click="copyJson"
+					/>
+					<span class="text-xs text-muted-foreground">or</span>
+					<Button variant="outline" size="sm" @click="downloadJson">
+						<IconLucide-download class="size-3.5" />
+						Download
+					</Button>
+				</div>
 			</div>
 
 			<CollapsibleContent>
@@ -97,14 +121,10 @@ async function copySnippet(clipboard: typeof jsonClipboard, text: string) {
 									<code class="flex-1 rounded-md border px-3 py-1.5 text-xs">{{
 										INSTALL_COMMAND
 									}}</code>
-									<Button
-										variant="ghost"
-										size="icon-sm"
+									<CopyButton
+										:copied="installClipboard.copied.value"
 										@click="copySnippet(installClipboard, INSTALL_COMMAND)"
-									>
-										<IconLucide-clipboard v-if="!installClipboard.copied.value" class="size-3.5" />
-										<IconLucide-check v-else class="size-3.5 text-primary" />
-									</Button>
+									/>
 								</div>
 							</li>
 
@@ -116,14 +136,10 @@ async function copySnippet(clipboard: typeof jsonClipboard, text: string) {
 									<code class="flex-1 rounded-md border px-3 py-1.5 text-xs">{{
 										CONFIG_PATH
 									}}</code>
-									<Button
-										variant="ghost"
-										size="icon-sm"
+									<CopyButton
+										:copied="pathClipboard.copied.value"
 										@click="copySnippet(pathClipboard, CONFIG_PATH)"
-									>
-										<IconLucide-clipboard v-if="!pathClipboard.copied.value" class="size-3.5" />
-										<IconLucide-check v-else class="size-3.5 text-primary" />
-									</Button>
+									/>
 								</div>
 							</li>
 
@@ -138,14 +154,10 @@ async function copySnippet(clipboard: typeof jsonClipboard, text: string) {
 									<code class="flex-1 rounded-md border px-3 py-1.5 text-xs">{{
 										SETTINGS_SNIPPET
 									}}</code>
-									<Button
-										variant="ghost"
-										size="icon-sm"
+									<CopyButton
+										:copied="settingsClipboard.copied.value"
 										@click="copySnippet(settingsClipboard, SETTINGS_SNIPPET)"
-									>
-										<IconLucide-clipboard v-if="!settingsClipboard.copied.value" class="size-3.5" />
-										<IconLucide-check v-else class="size-3.5 text-primary" />
-									</Button>
+									/>
 								</div>
 							</li>
 						</ol>

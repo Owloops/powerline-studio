@@ -14,15 +14,9 @@ import RateLimitsForm from '@/components/studio/mockdata/RateLimitsForm.vue'
 
 defineProps<{ step?: number }>()
 
-const configStore = useConfigStore()
 const store = useMockDataStore()
 
 const isOpen = ref(false)
-
-function resetToDefaults() {
-	configStore.resetToDefaults()
-	toast.success('Config reset to defaults')
-}
 
 const presetValue = computed({
 	get: () => store.activePreset,
@@ -71,7 +65,9 @@ function toggleRateLimits(enabled: boolean) {
 		<Collapsible v-model:open="isOpen">
 			<!-- Section Header -->
 			<div class="flex items-center justify-between">
-				<CollapsibleTrigger class="relative flex items-center text-left">
+				<CollapsibleTrigger
+					class="relative flex cursor-pointer items-center rounded-md px-1 py-0.5 -ml-1 text-left transition-colors hover:bg-accent/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+				>
 					<span
 						v-if="step"
 						class="absolute -left-18 top-0.5 flex size-8 items-center justify-center rounded-full border border-muted-foreground/15 text-xs font-semibold tabular-nums text-muted-foreground/25"
@@ -219,15 +215,5 @@ function toggleRateLimits(enabled: boolean) {
 				</div>
 			</CollapsibleContent>
 		</Collapsible>
-
-		<!-- Reset to Defaults -->
-		<div class="flex justify-end border-t border-border pt-4">
-			<ConfirmPopover action="Reset" @confirm="resetToDefaults">
-				<Button variant="destructive" size="sm">
-					<IconLucide-rotate-ccw class="size-3.5" />
-					Reset to Defaults
-				</Button>
-			</ConfirmPopover>
-		</div>
 	</section>
 </template>
