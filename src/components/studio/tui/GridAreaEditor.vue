@@ -123,7 +123,7 @@ function handleSingleCellUpdate(
 						title="Remove row"
 						@click="configStore.removeAreaRow(breakpointIndex, rowIndex)"
 					>
-						<IconLucide-x class="size-3" />
+						<IconLucide-trash-2 class="size-3" />
 					</button>
 				</div>
 			</div>

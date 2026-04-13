@@ -8,6 +8,8 @@ const props = defineProps<
 	}
 >()
 
+const compact = inject('formCompact', false)
+
 const {
 	controlProps,
 	labelProps,
@@ -26,12 +28,22 @@ function onValueChange(value: string) {
 </script>
 
 <template>
-	<div class="flex flex-col gap-1.5">
-		<label v-bind="labelProps" class="text-sm font-medium text-foreground">
+	<div :class="compact ? 'flex items-center gap-2' : 'flex flex-col gap-1.5'">
+		<label
+			v-bind="labelProps"
+			:class="
+				compact
+					? 'text-xs text-muted-foreground shrink-0 min-w-0 flex-[0_0_auto]'
+					: 'text-sm font-medium text-foreground'
+			"
+		>
 			{{ label }}
 		</label>
 		<Select v-bind="controlProps" :model-value="fieldValue" @update:model-value="onValueChange">
-			<SelectTrigger>
+			<SelectTrigger
+				:size="compact ? 'sm' : undefined"
+				:class="compact ? 'h-7 text-xs flex-1 min-w-0' : ''"
+			>
 				<SelectValue :placeholder="placeholder ?? 'Select an option'" />
 			</SelectTrigger>
 			<SelectContent>

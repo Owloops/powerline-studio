@@ -12,6 +12,8 @@ import BlockInfoForm from '@/components/studio/mockdata/BlockInfoForm.vue'
 import TodayInfoForm from '@/components/studio/mockdata/TodayInfoForm.vue'
 import RateLimitsForm from '@/components/studio/mockdata/RateLimitsForm.vue'
 
+defineProps<{ step?: number }>()
+
 const configStore = useConfigStore()
 const store = useMockDataStore()
 
@@ -69,9 +71,14 @@ function toggleRateLimits(enabled: boolean) {
 		<Collapsible v-model:open="isOpen">
 			<!-- Section Header -->
 			<div class="flex items-center justify-between">
-				<CollapsibleTrigger class="flex items-center gap-2 text-left">
+				<CollapsibleTrigger class="relative flex items-center text-left">
+					<span
+						v-if="step"
+						class="absolute -left-18 top-0.5 flex size-8 items-center justify-center rounded-full border border-muted-foreground/15 text-xs font-semibold tabular-nums text-muted-foreground/25"
+						>{{ step }}</span
+					>
 					<IconLucide-chevron-right
-						class="size-4 shrink-0 text-muted-foreground transition-transform duration-200"
+						class="absolute -left-7 top-2 size-4 text-muted-foreground transition-transform duration-200"
 						:class="isOpen && 'rotate-90'"
 					/>
 					<div>
@@ -100,10 +107,11 @@ function toggleRateLimits(enabled: boolean) {
 
 			<CollapsibleContent>
 				<div class="mt-4 flex flex-col gap-2">
-					<!-- Claude Hook Data (always enabled, not toggleable) -->
+					<!-- Claude Hook Data (always enabled, collapsible) -->
 					<MockDataFormSection
 						title="Claude Hook Data"
 						description="Core session info: model, cwd, version"
+						:enabled="true"
 					>
 						<template #icon>
 							<IconLucide-terminal class="size-3.5 shrink-0 text-muted-foreground" />

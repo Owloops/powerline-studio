@@ -161,7 +161,7 @@ function handleAlignChange(colIndex: number, value: string) {
 					class="flex items-center justify-center rounded p-1 text-muted-foreground hover:text-destructive transition-colors"
 					@click="configStore.removeColumn(breakpointIndex, colIndex)"
 				>
-					<IconLucide-x class="size-3" />
+					<IconLucide-trash-2 class="size-3" />
 				</button>
 				<span v-else class="w-6" />
 			</div>

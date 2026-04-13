@@ -57,7 +57,7 @@ function handleOpenChange(value: boolean) {
 				class="h-7 border-dashed px-2 text-xs"
 			>
 				<Plus class="size-3.5" />
-				Add
+				Add Segment
 			</Button>
 		</PopoverTrigger>
 		<PopoverContent align="start" :side-offset="4" class="w-64 p-0">

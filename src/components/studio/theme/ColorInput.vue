@@ -48,7 +48,7 @@ const colorValue = computed({
 			</button>
 		</PopoverTrigger>
 		<PopoverContent class="w-auto p-3" :side-offset="8" align="start">
-			<div class="flex flex-col gap-3">
+			<div class="flex w-[180px] flex-col gap-3">
 				<!-- Color Area (saturation + brightness) -->
 				<ColorAreaRoot
 					v-model="colorValue"

@@ -50,7 +50,7 @@ watch(
 </script>
 
 <template>
-	<div class="space-y-3 border-t border-border pt-3">
+	<div class="space-y-2 border-t border-border pt-2">
 		<h4 class="text-xs font-medium uppercase tracking-wide text-muted-foreground">Budget</h4>
 		<FormSelectField name="type" label="Budget Type" :options="BUDGET_TYPE_OPTIONS" />
 		<FormNumberField name="amount" label="Amount" :min="0" :step="amountStep" />

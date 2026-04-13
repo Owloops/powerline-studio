@@ -62,7 +62,17 @@ function resetSegment(key: keyof ColorTheme) {
 				/>
 			</CollapsibleTrigger>
 			<CollapsibleContent class="collapsible-content overflow-hidden">
-				<div class="flex flex-col gap-2 pt-2">
+				<div class="flex flex-col gap-2 pt-3">
+					<div class="grid grid-cols-[120px_1fr_1fr_auto] items-end gap-x-2">
+						<span />
+						<span class="text-[10px] font-medium uppercase tracking-wider text-muted-foreground"
+							>Background</span
+						>
+						<span class="text-[10px] font-medium uppercase tracking-wider text-muted-foreground"
+							>Foreground</span
+						>
+						<span class="size-6" />
+					</div>
 					<ColorPairRow
 						v-for="key in SEGMENT_KEYS"
 						:key="key"

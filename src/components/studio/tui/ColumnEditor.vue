@@ -60,7 +60,7 @@ function handleValueChange(colIndex: number, type: 'fr' | 'fixed', rawValue: str
 						class="ml-auto rounded p-0.5 text-muted-foreground hover:text-destructive transition-colors"
 						@click="configStore.removeColumn(breakpointIndex, colIndex)"
 					>
-						<IconLucide-x class="size-3" />
+						<IconLucide-trash-2 class="size-3" />
 					</button>
 				</div>
 				<Select

@@ -145,7 +145,7 @@ function wrapToken(token: string) {
 						class="h-6 w-6 p-0 text-destructive hover:text-destructive"
 						@click="removeItem(i)"
 					>
-						<IconLucide-x class="size-3" />
+						<IconLucide-trash-2 class="size-3" />
 					</Button>
 				</div>
 			</div>

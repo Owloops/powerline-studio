@@ -61,7 +61,7 @@ const emit = defineEmits<{
 						:aria-label="`Delete ${saved.name}`"
 						@click.stop="emit('delete:saved', saved.id)"
 					>
-						<IconLucide-x class="size-3" />
+						<IconLucide-trash-2 class="size-3" />
 					</button>
 				</div>
 			</div>

@@ -27,16 +27,16 @@ const configStore = useConfigStore()
 		</div>
 
 		<!-- Section Flow -->
-		<div class="mx-auto flex max-w-4xl flex-col gap-8 px-4 py-6">
-			<PresetSection />
-			<StyleThemeSection />
+		<div class="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 py-6">
+			<PresetSection :step="1" />
+			<StyleThemeSection :step="2" />
 
 			<!-- Layout Editor -->
-			<FlatLayoutEditor v-if="!configStore.isTuiStyle" />
-			<TuiLayoutEditor v-else />
+			<FlatLayoutEditor v-if="!configStore.isTuiStyle" :step="3" />
+			<TuiLayoutEditor v-else :step="3" />
 
 			<!-- Export & Mock Data -->
-			<ExportSection />
+			<ExportSection :step="4" />
 			<MockDataSettingsSection />
 		</div>
 	</div>

@@ -1,15 +1,22 @@
 <script setup lang="ts">
-import type { ParsedCell } from '@/types/tui'
+import type { AlignValue, ParsedCell } from '@/types/tui'
 import { SEGMENT_NAME_LIST, SEGMENT_PART_REFS } from '@/types/tui'
 import {
 	SEGMENT_META,
 	isSegmentKey,
 	type SegmentKey,
 } from '@/components/studio/segments/segmentMeta'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import {
+	NumberField,
+	NumberFieldContent,
+	NumberFieldDecrement,
+	NumberFieldIncrement,
+	NumberFieldInput,
+} from '@/components/ui/number-field'
 import {
 	Select,
 	SelectContent,
@@ -24,6 +31,7 @@ const props = defineProps<{
 	breakpointIndex: number
 	areas: string[]
 	columns: string[]
+	align?: AlignValue[]
 	highlightedSegment?: string | null
 }>()
 
@@ -77,6 +85,19 @@ function handleColValueChange(colIndex: number, col: string, rawValue: string | 
 	}
 }
 
+function getColumnAlign(colIndex: number): AlignValue {
+	return props.align?.[colIndex] ?? 'left'
+}
+
+function handleAlignChange(colIndex: number, value: string) {
+	if (!props.align) {
+		configStore.toggleAlignOverrides(props.breakpointIndex, true)
+	}
+	nextTick(() => {
+		configStore.setColumnAlign(props.breakpointIndex, colIndex, value as AlignValue)
+	})
+}
+
 // Watch for external segment focus (from preview clicks)
 watch(
 	() => editorStore.selectedTuiArea,
@@ -101,7 +122,10 @@ const parsedGrid = computed(() => {
 		while (i < cells.length) {
 			const name = cells[i]!
 			let span = 1
-			while (i + span < cells.length && cells[i + span] === name) span++
+			// Only merge consecutive identical filled cells, never empty '.' cells
+			if (name !== '.') {
+				while (i + span < cells.length && cells[i + span] === name) span++
+			}
 			merged.push({ segment: name, span, startCol: i })
 			i += span
 		}
@@ -139,8 +163,14 @@ function getCellDisplay(segment: string) {
 	if (segment === '.') return { label: '\u00B7', isEmpty: true, isDivider: false }
 	if (segment === '---') return { label: '--- divider ---', isEmpty: false, isDivider: true }
 	const meta = getCellMeta(segment)
+	const dotIdx = segment.indexOf('.')
+	let label = meta?.name ?? segment
+	if (dotIdx > 0 && meta) {
+		const part = segment.slice(dotIdx + 1)
+		label = `${meta.name} ${part}`
+	}
 	return {
-		label: meta?.name ?? segment,
+		label,
 		isEmpty: false,
 		isDivider: false,
 	}
@@ -184,6 +214,42 @@ function handleCellUpdate(rowIndex: number, cell: ParsedCell, newValue: string) 
 	}
 	openPicker.value = null
 	pickerSearch.value = ''
+}
+
+// Colspan helpers
+function getMaxSpan(rowIndex: number, cell: ParsedCell): number {
+	const row = props.areas[rowIndex]
+	if (!row || row.trim() === '---') return 1
+	const cells = row.trim().split(/\s+/)
+	const endCol = cell.startCol + cell.span
+	let extra = 0
+	for (let i = endCol; i < cells.length; i++) {
+		if (cells[i] === '.') extra++
+		else break
+	}
+	return cell.span + extra
+}
+
+function handleSpanChange(rowIndex: number, cell: ParsedCell, newSpan: number) {
+	if (newSpan < 1 || newSpan > props.columns.length) return
+	const row = props.areas[rowIndex]
+	if (!row || row.trim() === '---') return
+	const cells = row.trim().split(/\s+/)
+	const currentEnd = cell.startCol + cell.span
+	if (newSpan > cell.span) {
+		// Grow: fill cells to the right with the segment name
+		for (let i = currentEnd; i < cell.startCol + newSpan; i++) {
+			cells[i] = cell.segment
+		}
+	} else if (newSpan < cell.span) {
+		// Shrink: replace cells from the end with '.'
+		for (let i = cell.startCol + newSpan; i < currentEnd; i++) {
+			cells[i] = '.'
+		}
+	}
+	configStore.ensureTuiConfig()
+	const bp = configStore.config.display.tui!.breakpoints[props.breakpointIndex]
+	if (bp) bp.areas[rowIndex] = cells.join(' ')
 }
 
 // Segment picker groups
@@ -247,15 +313,15 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 							<span class="truncate">Col {{ colIdx + 1 }} · {{ col }}</span>
 						</button>
 					</PopoverTrigger>
-					<PopoverContent class="w-48 p-3" align="center" @open-auto-focus.prevent>
+					<PopoverContent class="w-52 p-3" align="center" @open-auto-focus.prevent>
 						<div class="flex flex-col gap-2">
 							<div class="text-xs font-medium">Column {{ colIdx + 1 }}</div>
-							<div class="flex flex-col gap-1.5">
+							<div class="flex items-center gap-1.5">
 								<Select
 									:model-value="parseColumnDef(col).type"
 									@update:model-value="handleColTypeChange(colIdx, $event)"
 								>
-									<SelectTrigger size="sm" class="h-7 text-xs">
+									<SelectTrigger size="sm" class="h-7 text-xs flex-1 min-w-0">
 										<SelectValue />
 									</SelectTrigger>
 									<SelectContent>
@@ -264,30 +330,72 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 										<SelectItem value="fixed">fixed</SelectItem>
 									</SelectContent>
 								</Select>
-								<Input
+								<NumberField
 									v-if="parseColumnDef(col).type === 'fr' || parseColumnDef(col).type === 'fixed'"
-									type="number"
-									:model-value="String(parseColumnDef(col).value)"
-									class="h-7 text-xs tabular-nums"
+									:model-value="parseColumnDef(col).value"
 									:min="1"
-									:placeholder="parseColumnDef(col).type === 'fixed' ? 'ch' : 'fr'"
-									@update:model-value="handleColValueChange(colIdx, col, $event)"
-								/>
+									class="w-20 gap-0"
+									@update:model-value="handleColValueChange(colIdx, col, $event ?? 1)"
+								>
+									<NumberFieldContent>
+										<NumberFieldDecrement class="p-1">
+											<IconLucide-minus class="size-2.5" />
+										</NumberFieldDecrement>
+										<NumberFieldInput class="h-7 text-xs tabular-nums border-input" />
+										<NumberFieldIncrement class="p-1">
+											<IconLucide-plus class="size-2.5" />
+										</NumberFieldIncrement>
+									</NumberFieldContent>
+								</NumberField>
 							</div>
+							<Select
+								:model-value="getColumnAlign(colIdx)"
+								@update:model-value="handleAlignChange(colIdx, $event)"
+							>
+								<SelectTrigger size="sm" class="h-7 text-xs">
+									<SelectValue />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="left">
+										<span class="flex items-center gap-1.5">
+											<IconLucide-align-left class="size-3" />
+											Left
+										</span>
+									</SelectItem>
+									<SelectItem value="center">
+										<span class="flex items-center gap-1.5">
+											<IconLucide-align-center class="size-3" />
+											Center
+										</span>
+									</SelectItem>
+									<SelectItem value="right">
+										<span class="flex items-center gap-1.5">
+											<IconLucide-align-right class="size-3" />
+											Right
+										</span>
+									</SelectItem>
+								</SelectContent>
+							</Select>
 							<button
 								v-if="columns.length > 1"
 								class="flex items-center gap-1 rounded px-2 py-1 text-xs text-destructive hover:bg-destructive/10 transition-colors"
 								@click="handleRemoveColumn(colIdx)"
 							>
-								<IconLucide-x class="size-3" />
+								<IconLucide-trash-2 class="size-3" />
 								Remove column
 							</button>
 						</div>
 					</PopoverContent>
 				</Popover>
 			</div>
-			<!-- Spacer matching row actions width (2x2 grid: 2*20px + 2px gap = 42px) -->
-			<div class="w-[42px] shrink-0" />
+			<!-- Add column button — matches row-actions width -->
+			<button
+				class="flex w-[42px] shrink-0 items-center justify-center gap-0.5 rounded-md bg-muted/50 py-1 text-[10px] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+				@click="configStore.addColumn(breakpointIndex)"
+			>
+				<IconLucide-plus class="size-3" />
+				Add
+			</button>
 		</div>
 
 		<!-- Grid rows with dashed guideline overlay -->
@@ -360,7 +468,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 													@keydown.escape="openPicker = null"
 												/>
 											</div>
-											<ScrollArea class="max-h-48">
+											<div class="max-h-48 overflow-y-auto">
 												<div class="px-1 py-0.5">
 													<div
 														v-for="group in getPickerGroups(getUsedSegments(rowIndex))"
@@ -391,7 +499,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 														</button>
 													</div>
 												</div>
-											</ScrollArea>
+											</div>
 										</PopoverContent>
 									</Popover>
 								</template>
@@ -400,12 +508,15 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 								<template v-else>
 									<TuiCellPopover
 										:cell-segment="cell.segment"
+										:span="cell.span"
+										:max-span="getMaxSpan(rowIndex, cell)"
 										:open="openPopover === getCellPopoverKey(cell)"
 										@update:open="
 											(val: boolean) => {
 												openPopover = val ? getCellPopoverKey(cell) : null
 											}
 										"
+										@update:span="handleSpanChange(rowIndex, cell, $event)"
 									>
 										<button
 											class="group/cell relative flex items-center gap-1.5 rounded-md border px-3 py-3 text-left text-xs transition-all duration-150"
@@ -434,174 +545,185 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 												{{ cell.span }}col
 											</span>
 
-											<!-- Inline change button -->
-											<div
-												role="button"
-												tabindex="0"
-												class="absolute -right-1 -top-1 flex size-5 cursor-pointer items-center justify-center rounded-full border border-border bg-background text-muted-foreground opacity-0 shadow-sm transition-opacity group-hover/cell:opacity-100 hover:text-foreground"
-												title="Change segment"
-												@click.stop="openSegmentPicker(rowIndex, cell)"
-												@keydown.enter.stop="openSegmentPicker(rowIndex, cell)"
+											<!-- Inline change button with segment picker popover -->
+											<Popover
+												:open="openPicker === getCellKey(rowIndex, cell)"
+												@update:open="
+													(val: boolean) => {
+														if (!val) {
+															openPicker = null
+															pickerSearch = ''
+														}
+													}
+												"
 											>
-												<IconLucide-replace class="size-2.5" />
-											</div>
+												<PopoverAnchor as-child>
+													<div
+														role="button"
+														tabindex="0"
+														class="absolute -right-1 -top-1 flex size-5 cursor-pointer items-center justify-center rounded-full border border-border bg-background text-muted-foreground opacity-0 shadow-sm transition-opacity group-hover/cell:opacity-100 hover:text-foreground"
+														title="Change segment"
+														@click.stop="openSegmentPicker(rowIndex, cell)"
+														@keydown.enter.stop="openSegmentPicker(rowIndex, cell)"
+													>
+														<IconLucide-replace class="size-2.5" />
+													</div>
+												</PopoverAnchor>
+												<PopoverContent class="w-56 p-0" @open-auto-focus.prevent>
+													<div class="p-2">
+														<Input
+															v-model="pickerSearch"
+															placeholder="Search segments..."
+															class="h-8 text-xs"
+															autofocus
+															@keydown.escape="openPicker = null"
+														/>
+													</div>
+													<div class="max-h-48 overflow-y-auto">
+														<div class="px-1 py-0.5">
+															<div
+																v-for="group in getPickerGroups(getUsedSegments(rowIndex))"
+																:key="group.label"
+																class="py-0.5"
+															>
+																<div
+																	class="px-2 py-1 text-[10px] font-medium text-muted-foreground uppercase tracking-wider"
+																>
+																	{{ group.label }}
+																</div>
+																<button
+																	v-for="seg in group.items"
+																	:key="seg"
+																	class="flex w-full items-center rounded-sm px-2 py-1.5 text-xs hover:bg-accent hover:text-accent-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+																	:disabled="
+																		getUsedSegments(rowIndex).has(seg) &&
+																		seg !== '.' &&
+																		seg !== cell.segment
+																	"
+																	@click="selectFromPicker(rowIndex, cell, seg)"
+																>
+																	<span class="font-mono">{{
+																		seg === '.' ? '\u00B7 (empty)' : seg
+																	}}</span>
+																	<span
+																		v-if="seg === cell.segment"
+																		class="ml-auto text-[10px] text-primary"
+																	>
+																		current
+																	</span>
+																	<span
+																		v-else-if="getUsedSegments(rowIndex).has(seg) && seg !== '.'"
+																		class="ml-auto text-[10px] text-muted-foreground"
+																	>
+																		(used)
+																	</span>
+																</button>
+															</div>
+														</div>
+													</div>
+												</PopoverContent>
+											</Popover>
 										</button>
 									</TuiCellPopover>
-
-									<!-- Segment picker for changing existing cell -->
-									<Popover
-										v-if="openPicker === getCellKey(rowIndex, cell)"
-										:open="true"
-										@update:open="
-											(val: boolean) => {
-												if (!val) {
-													openPicker = null
-													pickerSearch = ''
-												}
-											}
-										"
-									>
-										<PopoverTrigger as-child>
-											<span class="hidden" />
-										</PopoverTrigger>
-										<PopoverContent class="w-56 p-0" @open-auto-focus.prevent>
-											<div class="p-2">
-												<Input
-													v-model="pickerSearch"
-													placeholder="Search segments..."
-													class="h-8 text-xs"
-													autofocus
-													@keydown.escape="openPicker = null"
-												/>
-											</div>
-											<ScrollArea class="max-h-48">
-												<div class="px-1 py-0.5">
-													<div
-														v-for="group in getPickerGroups(getUsedSegments(rowIndex))"
-														:key="group.label"
-														class="py-0.5"
-													>
-														<div
-															class="px-2 py-1 text-[10px] font-medium text-muted-foreground uppercase tracking-wider"
-														>
-															{{ group.label }}
-														</div>
-														<button
-															v-for="seg in group.items"
-															:key="seg"
-															class="flex w-full items-center rounded-sm px-2 py-1.5 text-xs hover:bg-accent hover:text-accent-foreground disabled:opacity-40 disabled:cursor-not-allowed"
-															:disabled="
-																getUsedSegments(rowIndex).has(seg) &&
-																seg !== '.' &&
-																seg !== cell.segment
-															"
-															@click="selectFromPicker(rowIndex, cell, seg)"
-														>
-															<span class="font-mono">{{
-																seg === '.' ? '\u00B7 (empty)' : seg
-															}}</span>
-															<span
-																v-if="seg === cell.segment"
-																class="ml-auto text-[10px] text-primary"
-															>
-																current
-															</span>
-															<span
-																v-else-if="getUsedSegments(rowIndex).has(seg) && seg !== '.'"
-																class="ml-auto text-[10px] text-muted-foreground"
-															>
-																(used)
-															</span>
-														</button>
-													</div>
-												</div>
-											</ScrollArea>
-										</PopoverContent>
-									</Popover>
 								</template>
 							</template>
 						</template>
 					</div>
 
 					<!-- Per-row controls: 2x2 grid -->
-					<div
-						class="grid grid-cols-2 grid-rows-2 gap-0.5 opacity-0 transition-opacity group-hover/row:opacity-100"
-					>
-						<!-- Top-left: move up (or invisible placeholder) -->
-						<button
-							v-if="rowIndex > 0"
-							class="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
-							title="Move row up"
-							@click="configStore.moveAreaRow(breakpointIndex, rowIndex, rowIndex - 1)"
+					<TooltipProvider :delay-duration="400">
+						<div
+							class="grid grid-cols-2 grid-rows-2 gap-0.5 opacity-0 transition-opacity group-hover/row:opacity-100"
 						>
-							<IconLucide-chevron-up class="size-3" />
-						</button>
-						<div v-else class="size-5" />
+							<!-- Top-left: move up (or invisible placeholder) -->
+							<Tooltip v-if="rowIndex > 0">
+								<TooltipTrigger as-child>
+									<button
+										class="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
+										@click="configStore.moveAreaRow(breakpointIndex, rowIndex, rowIndex - 1)"
+									>
+										<IconLucide-chevron-up class="size-3" />
+									</button>
+								</TooltipTrigger>
+								<TooltipContent side="right" class="text-xs">Move row up</TooltipContent>
+							</Tooltip>
+							<div v-else class="size-5" />
 
-						<!-- Top-right: insert row -->
-						<Popover>
-							<PopoverTrigger as-child>
-								<button
-									class="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
-									title="Insert row"
-								>
-									<IconLucide-plus class="size-3" />
-								</button>
-							</PopoverTrigger>
-							<PopoverContent class="w-36 p-1" align="start" @open-auto-focus.prevent>
-								<button
-									class="flex w-full items-center gap-1.5 rounded-sm px-2 py-1.5 text-xs hover:bg-accent"
-									@click="insertRowAbove(rowIndex, 'cells')"
-								>
-									<IconLucide-arrow-up class="size-3" />
-									Row above
-								</button>
-								<button
-									class="flex w-full items-center gap-1.5 rounded-sm px-2 py-1.5 text-xs hover:bg-accent"
-									@click="insertRowBelow(rowIndex, 'cells')"
-								>
-									<IconLucide-arrow-down class="size-3" />
-									Row below
-								</button>
-								<button
-									class="flex w-full items-center gap-1.5 rounded-sm px-2 py-1.5 text-xs hover:bg-accent"
-									@click="insertRowAbove(rowIndex, 'divider')"
-								>
-									<IconLucide-minus class="size-3" />
-									Divider above
-								</button>
-								<button
-									class="flex w-full items-center gap-1.5 rounded-sm px-2 py-1.5 text-xs hover:bg-accent"
-									@click="insertRowBelow(rowIndex, 'divider')"
-								>
-									<IconLucide-minus class="size-3" />
-									Divider below
-								</button>
-							</PopoverContent>
-						</Popover>
+							<!-- Top-right: insert row -->
+							<Tooltip>
+								<Popover>
+									<TooltipTrigger as-child>
+										<PopoverTrigger as-child>
+											<button
+												class="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
+											>
+												<IconLucide-plus class="size-3" />
+											</button>
+										</PopoverTrigger>
+									</TooltipTrigger>
+									<PopoverContent class="w-36 p-1" align="start" @open-auto-focus.prevent>
+										<button
+											class="flex w-full items-center gap-1.5 rounded-sm px-2 py-1.5 text-xs hover:bg-accent"
+											@click="insertRowAbove(rowIndex, 'cells')"
+										>
+											<IconLucide-arrow-up class="size-3" />
+											Row above
+										</button>
+										<button
+											class="flex w-full items-center gap-1.5 rounded-sm px-2 py-1.5 text-xs hover:bg-accent"
+											@click="insertRowBelow(rowIndex, 'cells')"
+										>
+											<IconLucide-arrow-down class="size-3" />
+											Row below
+										</button>
+										<button
+											class="flex w-full items-center gap-1.5 rounded-sm px-2 py-1.5 text-xs hover:bg-accent"
+											@click="insertRowAbove(rowIndex, 'divider')"
+										>
+											<IconLucide-minus class="size-3" />
+											Divider above
+										</button>
+										<button
+											class="flex w-full items-center gap-1.5 rounded-sm px-2 py-1.5 text-xs hover:bg-accent"
+											@click="insertRowBelow(rowIndex, 'divider')"
+										>
+											<IconLucide-minus class="size-3" />
+											Divider below
+										</button>
+									</PopoverContent>
+								</Popover>
+								<TooltipContent side="right" class="text-xs">Insert row</TooltipContent>
+							</Tooltip>
 
-						<!-- Bottom-left: move down (or invisible placeholder) -->
-						<button
-							v-if="rowIndex < parsedGrid.length - 1"
-							class="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
-							title="Move row down"
-							@click="configStore.moveAreaRow(breakpointIndex, rowIndex, rowIndex + 1)"
-						>
-							<IconLucide-chevron-down class="size-3" />
-						</button>
-						<div v-else class="size-5" />
+							<!-- Bottom-left: move down (or invisible placeholder) -->
+							<Tooltip v-if="rowIndex < parsedGrid.length - 1">
+								<TooltipTrigger as-child>
+									<button
+										class="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
+										@click="configStore.moveAreaRow(breakpointIndex, rowIndex, rowIndex + 1)"
+									>
+										<IconLucide-chevron-down class="size-3" />
+									</button>
+								</TooltipTrigger>
+								<TooltipContent side="right" class="text-xs">Move row down</TooltipContent>
+							</Tooltip>
+							<div v-else class="size-5" />
 
-						<!-- Bottom-right: remove row -->
-						<button
-							v-if="areas.length > 1"
-							class="flex size-5 items-center justify-center rounded text-destructive/70 hover:bg-destructive/10 hover:text-destructive"
-							title="Remove row"
-							@click="configStore.removeAreaRow(breakpointIndex, rowIndex)"
-						>
-							<IconLucide-x class="size-3" />
-						</button>
-						<div v-else class="size-5" />
-					</div>
+							<!-- Bottom-right: remove row -->
+							<Tooltip v-if="areas.length > 1">
+								<TooltipTrigger as-child>
+									<button
+										class="flex size-5 items-center justify-center rounded text-destructive/70 hover:bg-destructive/10 hover:text-destructive"
+										@click="configStore.removeAreaRow(breakpointIndex, rowIndex)"
+									>
+										<IconLucide-trash-2 class="size-3" />
+									</button>
+								</TooltipTrigger>
+								<TooltipContent side="right" class="text-xs">Remove row</TooltipContent>
+							</Tooltip>
+							<div v-else class="size-5" />
+						</div>
+					</TooltipProvider>
 				</div>
 			</div>
 		</div>

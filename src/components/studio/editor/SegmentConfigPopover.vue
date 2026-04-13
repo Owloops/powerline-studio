@@ -48,7 +48,7 @@ function handleOpenChange(value: boolean) {
 		<PopoverTrigger as-child>
 			<slot />
 		</PopoverTrigger>
-		<PopoverContent :side-offset="8" align="start" class="w-96 gap-0 p-0" @open-auto-focus.prevent>
+		<PopoverContent :side-offset="8" align="start" class="w-96 p-0" @open-auto-focus.prevent>
 			<!-- Header -->
 			<div class="flex items-center gap-3 px-4 pt-3" :class="hasConfigOptions ? 'pb-0' : 'pb-3'">
 				<component :is="meta.icon" class="size-4 shrink-0 text-muted-foreground" />

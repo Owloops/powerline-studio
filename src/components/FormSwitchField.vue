@@ -3,6 +3,8 @@ import { type CustomFieldProps, useCustomField } from '@formwerk/core'
 
 const props = defineProps<CustomFieldProps>()
 
+const compact = inject('formCompact', false)
+
 const {
 	controlProps,
 	labelProps,
@@ -22,13 +24,22 @@ function onCheckedChange(checked: boolean) {
 
 <template>
 	<div class="flex flex-col gap-1">
-		<div class="flex items-center gap-3">
+		<div class="flex items-center" :class="compact ? 'justify-between gap-2' : 'gap-3'">
+			<label
+				v-if="compact"
+				v-bind="labelProps"
+				:class="compact ? 'text-xs text-muted-foreground' : 'text-sm font-medium text-foreground'"
+			>
+				{{ label }}
+			</label>
 			<Switch
 				v-bind="controlProps"
 				:model-value="fieldValue ?? false"
 				@update:model-value="onCheckedChange"
 			/>
-			<label v-bind="labelProps" class="text-sm font-medium text-foreground">{{ label }}</label>
+			<label v-if="!compact" v-bind="labelProps" class="text-sm font-medium text-foreground">
+				{{ label }}
+			</label>
 		</div>
 		<p v-if="isTouched && errorMessage" v-bind="errorMessageProps" class="text-sm text-destructive">
 			{{ errorMessage }}
