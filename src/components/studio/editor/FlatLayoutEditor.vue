@@ -232,80 +232,76 @@ watch(
 								<span class="text-xs font-medium text-muted-foreground"
 									>Line {{ lineIndex + 1 }}</span
 								>
-								<ConfirmPopover v-if="lineIndex > 0" @confirm="handleRemoveLine(lineIndex)">
-									<Button
-										variant="ghost"
-										size="icon-sm"
-										class="!size-6 text-muted-foreground hover:text-destructive"
-									>
-										<Trash2 class="size-3.5" />
-										<span class="sr-only">Remove Line {{ lineIndex + 1 }}</span>
-									</Button>
-								</ConfirmPopover>
+								<div class="flex items-center gap-1">
+									<SegmentPicker
+										:enabled-keys="getLineEnabledKeySet(lineIndex)"
+										@add="handleAddSegment(lineIndex, $event)"
+									/>
+									<ConfirmPopover v-if="lineIndex > 0" @confirm="handleRemoveLine(lineIndex)">
+										<Button
+											variant="ghost"
+											size="icon-sm"
+											class="!size-6 text-muted-foreground hover:text-destructive"
+										>
+											<Trash2 class="size-3.5" />
+											<span class="sr-only">Remove Line {{ lineIndex + 1 }}</span>
+										</Button>
+									</ConfirmPopover>
+								</div>
 							</div>
 
 							<!-- Segment chips -->
-							<div
+							<Reorder.Group
 								v-if="(segmentOrders[lineIndex] ?? []).length > 0"
-								class="flex items-center justify-between gap-2"
+								axis="x"
+								:values="segmentOrders[lineIndex] ?? []"
+								as="div"
+								class="flex min-w-0 items-center gap-2 overflow-x-auto"
+								@update:values="handleReorder(lineIndex, $event)"
 							>
-								<Reorder.Group
-									axis="x"
-									:values="segmentOrders[lineIndex] ?? []"
-									as="div"
-									class="flex flex-wrap items-center gap-2"
-									@update:values="handleReorder(lineIndex, $event)"
-								>
-									<AnimatePresence>
-										<Reorder.Item
-											v-for="(key, segIndex) in segmentOrders[lineIndex] ?? []"
-											:key="key"
-											:value="key"
-											as="div"
-											:initial="{ opacity: 0, scale: 0.9 }"
-											:animate="{ opacity: 1, scale: 1 }"
-											:exit="{ opacity: 0, scale: 0.9 }"
-											:transition="{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }"
-											:class="
-												cn(
-													'reorder-chip cursor-grab active:cursor-grabbing',
-													'rounded-md border border-border',
-													'has-[:focus-visible]:border-ring has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring/50',
-													openPopover === compositeKey(lineIndex, key) &&
-														'border-r border-primary ring-2 ring-primary/20',
-													highlightedChip === compositeKey(lineIndex, key) &&
-														'segment-highlight-pulse',
-												)
-											"
-											:style="
-												openPopover === compositeKey(lineIndex, key) ? { zIndex: 10 } : undefined
-											"
-											:while-drag="whileDragStyle"
+								<AnimatePresence>
+									<Reorder.Item
+										v-for="(key, segIndex) in segmentOrders[lineIndex] ?? []"
+										:key="key"
+										:value="key"
+										as="div"
+										:initial="{ opacity: 0, scale: 0.9 }"
+										:animate="{ opacity: 1, scale: 1 }"
+										:exit="{ opacity: 0, scale: 0.9 }"
+										:transition="{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }"
+										:class="
+											cn(
+												'reorder-chip cursor-grab active:cursor-grabbing',
+												'rounded-md border border-border',
+												'has-[:focus-visible]:border-ring has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring/50',
+												openPopover === compositeKey(lineIndex, key) &&
+													'border-r border-primary ring-2 ring-primary/20',
+												highlightedChip === compositeKey(lineIndex, key) &&
+													'segment-highlight-pulse',
+											)
+										"
+										:style="
+											openPopover === compositeKey(lineIndex, key) ? { zIndex: 10 } : undefined
+										"
+										:while-drag="whileDragStyle"
+									>
+										<SegmentConfigPopover
+											:ref="setChipRef(lineIndex, key)"
+											:segment-key="key as SegmentKey"
+											:line-index="lineIndex"
+											:open="openPopover === compositeKey(lineIndex, key)"
+											@update:open="setPopoverOpen(lineIndex, key, $event)"
+											@remove="handleRemoveSegment(lineIndex, key)"
 										>
-											<SegmentConfigPopover
-												:ref="setChipRef(lineIndex, key)"
+											<SegmentChip
 												:segment-key="key as SegmentKey"
-												:line-index="lineIndex"
-												:open="openPopover === compositeKey(lineIndex, key)"
-												@update:open="setPopoverOpen(lineIndex, key, $event)"
-												@remove="handleRemoveSegment(lineIndex, key)"
-											>
-												<SegmentChip
-													:segment-key="key as SegmentKey"
-													:selected="openPopover === compositeKey(lineIndex, key)"
-													:highlighted="highlightedChip === compositeKey(lineIndex, key)"
-												/>
-											</SegmentConfigPopover>
-										</Reorder.Item>
-									</AnimatePresence>
-								</Reorder.Group>
-
-								<SegmentPicker
-									class="ml-auto shrink-0"
-									:enabled-keys="getLineEnabledKeySet(lineIndex)"
-									@add="handleAddSegment(lineIndex, $event)"
-								/>
-							</div>
+												:selected="openPopover === compositeKey(lineIndex, key)"
+												:highlighted="highlightedChip === compositeKey(lineIndex, key)"
+											/>
+										</SegmentConfigPopover>
+									</Reorder.Item>
+								</AnimatePresence>
+							</Reorder.Group>
 
 							<!-- Empty state per line -->
 							<div v-else class="flex flex-col items-center gap-3 py-6 text-center">
@@ -316,10 +312,6 @@ watch(
 									<p class="text-sm font-medium text-foreground">No segments</p>
 									<p class="text-xs text-muted-foreground">Add segments to this line</p>
 								</div>
-								<SegmentPicker
-									:enabled-keys="getLineEnabledKeySet(lineIndex)"
-									@add="handleAddSegment(lineIndex, $event)"
-								/>
 							</div>
 						</div>
 					</div>

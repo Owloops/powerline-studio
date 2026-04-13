@@ -164,7 +164,6 @@ export const useConfigStore = defineStore('config', () => {
 		} else {
 			const preset = entry.preset
 			config.value.display.style = 'tui'
-			config.value.display.padding = 0
 			config.value.display.tui = structuredClone(preset.tui) as TuiGridConfig
 			const segments = normalizeSegments(
 				structuredClone(preset.segments) as LineConfig['segments'],
