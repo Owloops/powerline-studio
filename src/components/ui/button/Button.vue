@@ -19,7 +19,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const pressState = computed(() => {
 	if (props.disabled) return {}
-	return { scale: 0.97 }
+	return { transform: 'scale(0.97)' }
 })
 
 const transition = { duration: 0.15, ease: [0.22, 1, 0.36, 1] as const }
