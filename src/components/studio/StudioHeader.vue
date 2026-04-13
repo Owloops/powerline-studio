@@ -10,6 +10,17 @@ const { isDark, toggleDark } = useDarkMode()
 			<span class="text-sm font-semibold tracking-tight">Powerline Studio</span>
 
 			<div class="flex items-center gap-1">
+				<Button
+					variant="ghost"
+					size="icon-sm"
+					as="a"
+					href="https://github.com/Owloops/claude-powerline"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					<IconLucide-github class="size-4" />
+					<span class="sr-only">claude-powerline on GitHub</span>
+				</Button>
 				<Button variant="ghost" size="icon-sm" @click="toggleDark()">
 					<IconLucide-sun v-if="isDark" class="size-4" />
 					<IconLucide-moon v-else class="size-4" />

@@ -39,5 +39,23 @@ const configStore = useConfigStore()
 			<ExportSection :step="4" />
 			<MockDataSettingsSection />
 		</div>
+
+		<!-- Footer -->
+		<footer class="border-t border-border py-8">
+			<div
+				class="mx-auto flex max-w-4xl items-center justify-center gap-1 px-4 text-xs text-muted-foreground"
+			>
+				<span>Made with</span>
+				<IconLucide-heart class="size-3 text-red-500" />
+				<span>by</span>
+				<a
+					href="https://github.com/FallDownTheSystem"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="font-medium text-foreground hover:underline"
+					>FallDownTheSystem</a
+				>
+			</div>
+		</footer>
 	</div>
 </template>
