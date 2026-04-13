@@ -74,7 +74,7 @@ const emit = defineEmits<{
 			:class="mode === 'custom' ? 'border-primary bg-primary/5 text-primary' : ''"
 			@click="emit('enter:custom')"
 		>
-			<IconLucide-palette class="mr-2 size-4" />
+			<IconLucide-palette class="size-4" />
 			{{ mode === 'custom' ? 'Editing Custom Theme' : 'Create Custom Theme' }}
 		</Button>
 	</div>

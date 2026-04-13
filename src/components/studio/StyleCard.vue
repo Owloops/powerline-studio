@@ -36,7 +36,7 @@ const segments = [
 
 		<!-- Mini Preview -->
 		<div
-			class="flex min-h-[28px] items-center overflow-hidden rounded-md bg-[#1e1e2e] px-2 py-1.5 font-nerd text-[10px] leading-tight"
+			class="flex min-h-[28px] items-center overflow-hidden rounded-md bg-[#1e1e2e] px-2 py-1.5 font-nerd text-[0.625rem] leading-tight"
 		>
 			<!-- Minimal: colored spans side by side, no separators -->
 			<template v-if="value === 'minimal'">

@@ -30,24 +30,24 @@ function boxPreview(chars: BoxChars) {
 	<div class="grid grid-cols-3 gap-2">
 		<!-- Default (auto) -->
 		<button
-			class="flex flex-col items-center gap-1.5 rounded-md border p-2 text-xs transition-colors hover:bg-accent"
+			class="flex flex-col items-center gap-1.5 rounded-md border p-2 text-xs hover:bg-accent"
 			:class="currentBox === undefined ? 'ring-2 ring-primary border-primary' : 'border-border'"
 			@click="selectPreset(undefined)"
 		>
-			<span class="text-muted-foreground text-[10px]">Default</span>
-			<span class="font-mono text-[10px] leading-tight text-muted-foreground">(auto)</span>
+			<span class="text-muted-foreground text-[0.625rem]">Default</span>
+			<span class="font-mono text-[0.625rem] leading-tight text-muted-foreground">(auto)</span>
 		</button>
 
 		<!-- Preset cards -->
 		<button
 			v-for="preset in presets"
 			:key="preset.name"
-			class="flex flex-col items-center gap-1 rounded-md border p-2 text-xs transition-colors hover:bg-accent"
+			class="flex flex-col items-center gap-1 rounded-md border p-2 text-xs hover:bg-accent"
 			:class="currentBox === preset.name ? 'ring-2 ring-primary border-primary' : 'border-border'"
 			@click="selectPreset(preset.name)"
 		>
-			<span class="text-muted-foreground text-[10px]">{{ preset.label }}</span>
-			<div class="font-mono text-[10px] leading-tight whitespace-pre">
+			<span class="text-muted-foreground text-[0.625rem]">{{ preset.label }}</span>
+			<div class="font-mono text-[0.625rem] leading-tight whitespace-pre">
 				<div v-for="(line, i) in boxPreview(preset.chars)" :key="i">{{ line }}</div>
 			</div>
 		</button>

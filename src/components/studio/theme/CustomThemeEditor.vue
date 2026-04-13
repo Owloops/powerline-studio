@@ -51,8 +51,8 @@ function handleSave() {
 				placeholder="Theme name..."
 				@keydown.enter="handleSave"
 			/>
-			<Button size="sm" class="w-full" :disabled="!themeName.trim()" @click="handleSave">
-				<IconLucide-save class="mr-1.5 size-3.5" />
+			<Button size="sm" class="w-full gap-1.5" :disabled="!themeName.trim()" @click="handleSave">
+				<IconLucide-save class="size-3.5" />
 				Save
 			</Button>
 			<div class="size-6" />
@@ -61,10 +61,10 @@ function handleSave() {
 		<div class="flex flex-col gap-2 pt-1">
 			<div class="grid grid-cols-[120px_1fr_1fr_auto] items-end gap-x-2">
 				<span />
-				<span class="text-[10px] font-medium uppercase tracking-wider text-muted-foreground"
+				<span class="text-xs font-medium uppercase tracking-wider text-muted-foreground"
 					>Background</span
 				>
-				<span class="text-[10px] font-medium uppercase tracking-wider text-muted-foreground"
+				<span class="text-xs font-medium uppercase tracking-wider text-muted-foreground"
 					>Foreground</span
 				>
 				<span class="size-6" />

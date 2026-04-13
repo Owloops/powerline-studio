@@ -76,7 +76,7 @@ function handleAlignChange(colIndex: number, value: string) {
 
 		<!-- Column header row -->
 		<div
-			class="grid items-center gap-x-2 gap-y-0 text-[10px] font-medium text-muted-foreground uppercase tracking-wider"
+			class="grid items-center gap-x-2 gap-y-0 text-xs font-medium text-muted-foreground uppercase tracking-wider"
 			:class="isAlignEnabled ? 'grid-cols-[2rem_1fr_1fr_auto]' : 'grid-cols-[2rem_1fr_auto]'"
 		>
 			<span class="text-center">#</span>
@@ -158,7 +158,7 @@ function handleAlignChange(colIndex: number, value: string) {
 				<!-- Delete button -->
 				<button
 					v-if="columns.length > 1"
-					class="flex items-center justify-center rounded p-1 text-muted-foreground hover:text-destructive transition-colors"
+					class="flex items-center justify-center rounded p-1 text-muted-foreground hover:text-destructive"
 					@click="configStore.removeColumn(breakpointIndex, colIndex)"
 				>
 					<IconLucide-trash-2 class="size-3" />
@@ -171,10 +171,10 @@ function handleAlignChange(colIndex: number, value: string) {
 		<Button
 			variant="outline"
 			size="sm"
-			class="h-7 text-xs self-start"
+			class="h-7 gap-1 text-xs self-start"
 			@click="configStore.addColumn(breakpointIndex)"
 		>
-			<IconLucide-plus class="mr-1 size-3" />
+			<IconLucide-plus class="size-3" />
 			Add column
 		</Button>
 	</div>

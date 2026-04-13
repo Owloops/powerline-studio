@@ -56,7 +56,7 @@ const displayLabel = computed(
 					class="flex h-5 flex-1 items-center justify-center"
 					:style="{ backgroundColor: theme[segment].bg }"
 				>
-					<span class="text-[6px] font-bold leading-none" :style="{ color: theme[segment].fg }"
+					<span class="text-[0.375rem] font-bold leading-none" :style="{ color: theme[segment].fg }"
 						>Aa</span
 					>
 				</div>

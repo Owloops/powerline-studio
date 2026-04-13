@@ -351,13 +351,16 @@ watch(
 
 @keyframes segment-pulse {
 	0% {
-		box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4);
+		outline: 0px solid hsl(var(--primary) / 0.4);
+		outline-offset: 0px;
 	}
 	20% {
-		box-shadow: 0 0 0 4px hsl(var(--primary) / 0.3);
+		outline: 4px solid hsl(var(--primary) / 0.3);
+		outline-offset: 0px;
 	}
 	100% {
-		box-shadow: 0 0 0 0 hsl(var(--primary) / 0);
+		outline: 0px solid hsl(var(--primary) / 0);
+		outline-offset: 0px;
 	}
 }
 

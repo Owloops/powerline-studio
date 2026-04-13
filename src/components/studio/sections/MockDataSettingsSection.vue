@@ -106,7 +106,7 @@ function toggleRateLimits(enabled: boolean) {
 			</div>
 
 			<CollapsibleContent>
-				<div class="mt-4 flex flex-col gap-2">
+				<div class="flex flex-col gap-2 pt-4">
 					<!-- Claude Hook Data (always enabled, collapsible) -->
 					<MockDataFormSection
 						title="Claude Hook Data"

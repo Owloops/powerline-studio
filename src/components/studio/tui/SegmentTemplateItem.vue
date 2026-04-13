@@ -113,14 +113,18 @@ function wrapToken(token: string) {
 				No items configured
 			</div>
 			<div v-for="(item, i) in template.items" :key="i" class="flex items-center gap-1 group">
-				<span class="text-[10px] text-muted-foreground w-4 text-right shrink-0">{{ i + 1 }}</span>
+				<span class="text-[0.625rem] text-muted-foreground w-4 text-right shrink-0">{{
+					i + 1
+				}}</span>
 				<Badge
 					:variant="item.startsWith('{') && item.endsWith('}') ? 'secondary' : 'outline'"
 					class="text-xs font-mono flex-1 justify-start"
 				>
 					{{ item }}
 				</Badge>
-				<div class="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+				<div
+					class="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity"
+				>
 					<Button
 						variant="ghost"
 						size="sm"
@@ -161,8 +165,8 @@ function wrapToken(token: string) {
 			</PopoverTrigger>
 			<PopoverContent class="w-72 p-3" align="start">
 				<!-- Token chips -->
-				<div class="mb-3">
-					<div class="text-xs font-medium mb-1.5">Add token</div>
+				<div class="flex flex-col gap-1.5 pb-3">
+					<div class="text-xs font-medium">Add token</div>
 					<div class="flex flex-wrap gap-1">
 						<Badge
 							v-for="token in availableTokens"
@@ -176,8 +180,8 @@ function wrapToken(token: string) {
 					</div>
 				</div>
 				<!-- Literal text -->
-				<div>
-					<div class="text-xs font-medium mb-1.5">Add literal text</div>
+				<div class="flex flex-col gap-1.5">
+					<div class="text-xs font-medium">Add literal text</div>
 					<div class="flex gap-1.5">
 						<Input
 							v-model="literalDraft"

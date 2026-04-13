@@ -76,7 +76,7 @@ function handleOpenChange(value: boolean) {
 					:key="key"
 					:class="
 						cn(
-							'flex w-full items-center gap-2.5 rounded-sm px-2 py-1.5 text-sm transition-colors',
+							'flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-sm',
 							'hover:bg-accent hover:text-accent-foreground',
 							'cursor-pointer outline-none focus-visible:bg-accent',
 						)

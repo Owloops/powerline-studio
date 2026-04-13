@@ -286,7 +286,7 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 							<button
 								v-for="(item, sortIdx) in sortedBreakpoints"
 								:key="item.index"
-								class="group relative flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs transition-colors"
+								class="group relative flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs"
 								:class="
 									selectedBpIndex === item.index
 										? 'border-primary bg-primary/5 ring-1 ring-primary/30'
@@ -295,7 +295,7 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 								@click="selectBreakpoint(item.index)"
 							>
 								<span
-									class="flex size-5 shrink-0 items-center justify-center rounded text-[10px] font-bold tabular-nums"
+									class="flex size-5 shrink-0 items-center justify-center rounded text-[0.625rem] font-semibold tabular-nums"
 									:class="
 										selectedBpIndex === item.index
 											? 'bg-primary text-primary-foreground'
@@ -346,7 +346,7 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 									<Tooltip>
 										<TooltipTrigger as-child>
 											<button
-												class="rounded p-0.5 text-muted-foreground/50 opacity-0 transition-all hover:bg-primary/10 hover:text-primary group-hover:opacity-100"
+												class="rounded p-0.5 text-muted-foreground/50 opacity-0 transition-opacity hover:bg-primary/10 hover:text-primary group-hover:opacity-100 group-focus-within:opacity-100"
 												@click.stop="startEditMinWidth(item.index, item.bp.minWidth)"
 											>
 												<IconLucide-pencil class="size-3" />
@@ -361,7 +361,7 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 									<Tooltip>
 										<TooltipTrigger as-child>
 											<button
-												class="rounded p-0.5 text-muted-foreground/50 opacity-0 transition-all hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100"
+												class="rounded p-0.5 text-muted-foreground/50 opacity-0 transition-opacity hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100 group-focus-within:opacity-100"
 												@click.stop="removeBreakpoint(item.index)"
 											>
 												<IconLucide-trash-2 class="size-3" />
@@ -384,7 +384,7 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 							<IconLucide-alert-circle class="size-3 shrink-0" />
 							{{ err.message }}
 						</div>
-						<span v-if="errors.length > 3" class="text-[10px] text-destructive/70 pl-1">
+						<span v-if="errors.length > 3" class="text-[0.625rem] text-destructive/70 pl-1">
 							+{{ errors.length - 3 }} more errors
 						</span>
 					</div>
@@ -399,7 +399,7 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 										<PopoverTrigger as-child>
 											<button
 												ref="titleTriggerRef"
-												class="flex w-full items-center gap-2 rounded-t-lg border-b border-border bg-muted/30 px-3 py-2 text-left text-xs transition-colors hover:bg-muted/50"
+												class="flex w-full items-center gap-2 rounded-t-lg border-b border-border bg-muted/30 px-3 py-2 text-left text-xs hover:bg-muted/50"
 												:class="titlePopoverOpen ? 'ring-1 ring-inset ring-primary/30' : ''"
 											>
 												<IconLucide-panel-top class="size-3.5 shrink-0 text-muted-foreground" />
@@ -463,7 +463,7 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 										<PopoverTrigger as-child>
 											<button
 												ref="footerTriggerRef"
-												class="flex w-full items-center gap-2 rounded-b-lg border-t border-border bg-muted/30 px-3 py-2 text-left text-xs transition-colors hover:bg-muted/50"
+												class="flex w-full items-center gap-2 rounded-b-lg border-t border-border bg-muted/30 px-3 py-2 text-left text-xs hover:bg-muted/50"
 												:class="footerPopoverOpen ? 'ring-1 ring-inset ring-primary/30' : ''"
 											>
 												<IconLucide-panel-bottom class="size-3.5 shrink-0 text-muted-foreground" />

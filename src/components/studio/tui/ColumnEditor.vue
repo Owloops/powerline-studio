@@ -54,10 +54,10 @@ function handleValueChange(colIndex: number, type: 'fr' | 'fixed', rawValue: str
 				class="flex flex-col gap-1 rounded-md border border-border bg-card p-2"
 			>
 				<div class="flex items-center gap-1">
-					<span class="text-[10px] text-muted-foreground">Col {{ colIndex + 1 }}</span>
+					<span class="text-[0.625rem] text-muted-foreground">Col {{ colIndex + 1 }}</span>
 					<button
 						v-if="columns.length > 1"
-						class="ml-auto rounded p-0.5 text-muted-foreground hover:text-destructive transition-colors"
+						class="ml-auto rounded p-0.5 text-muted-foreground hover:text-destructive"
 						@click="configStore.removeColumn(breakpointIndex, colIndex)"
 					>
 						<IconLucide-trash-2 class="size-3" />
@@ -98,10 +98,10 @@ function handleValueChange(colIndex: number, type: 'fr' | 'fixed', rawValue: str
 			<Button
 				variant="outline"
 				size="sm"
-				class="h-7 text-xs"
+				class="h-7 gap-1 text-xs"
 				@click="configStore.addColumn(breakpointIndex)"
 			>
-				<IconLucide-plus class="mr-1 size-3" />
+				<IconLucide-plus class="size-3" />
 				Add
 			</Button>
 		</div>

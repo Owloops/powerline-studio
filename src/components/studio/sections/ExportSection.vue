@@ -69,7 +69,7 @@ async function copySnippet(clipboard: typeof jsonClipboard, text: string) {
 			</div>
 
 			<CollapsibleContent>
-				<div class="mt-4 grid grid-cols-1 gap-6 xl:grid-cols-2">
+				<div class="grid grid-cols-1 gap-6 pt-4 xl:grid-cols-2">
 					<!-- Your Config -->
 					<div class="flex flex-col gap-3">
 						<h3 class="text-xs font-medium text-muted-foreground">Your Config</h3>
@@ -89,7 +89,7 @@ async function copySnippet(clipboard: typeof jsonClipboard, text: string) {
 					<div class="flex flex-col gap-3">
 						<h3 class="text-xs font-medium text-muted-foreground">Installation</h3>
 
-						<ol class="flex flex-col gap-4 text-sm text-muted-foreground">
+						<ol role="list" class="flex flex-col gap-4 text-sm text-muted-foreground">
 							<!-- Step 1 -->
 							<li class="flex flex-col gap-1.5">
 								<span class="font-medium text-foreground">1. Install the package</span>

@@ -44,9 +44,9 @@ function wrapToken(token: string) {
 			</Button>
 		</PopoverTrigger>
 		<PopoverContent class="w-80 max-h-64 overflow-y-auto p-3" align="start">
-			<div class="text-xs font-medium text-muted-foreground mb-2">Available tokens</div>
+			<div class="text-xs font-medium text-muted-foreground pb-2">Available tokens</div>
 			<template v-for="[group, groupTokens] in groupTokens(tokens)" :key="group">
-				<div v-if="group" class="text-xs text-muted-foreground mt-2 mb-1">{{ group }}</div>
+				<div v-if="group" class="text-xs text-muted-foreground pt-2 pb-1">{{ group }}</div>
 				<div class="flex flex-wrap gap-1">
 					<Badge
 						v-for="token in groupTokens"

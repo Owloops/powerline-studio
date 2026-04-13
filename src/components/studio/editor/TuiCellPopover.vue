@@ -155,7 +155,7 @@ function resetTemplate() {
 								: meta.name
 						}}
 					</span>
-					<span v-if="isSubSegment" class="text-[10px] font-mono text-muted-foreground">
+					<span v-if="isSubSegment" class="text-[0.625rem] font-mono text-muted-foreground">
 						{{ cellSegment }}
 					</span>
 				</div>
@@ -184,7 +184,7 @@ function resetTemplate() {
 						</NumberFieldIncrement>
 					</NumberFieldContent>
 				</NumberField>
-				<span class="text-[10px] text-muted-foreground">/ {{ maxSpan }} col</span>
+				<span class="text-[0.625rem] text-muted-foreground">/ {{ maxSpan }} col</span>
 			</div>
 
 			<Separator />
@@ -208,7 +208,7 @@ function resetTemplate() {
 						<Separator />
 						<Collapsible v-model:open="colorSectionOpen">
 							<CollapsibleTrigger
-								class="flex w-full items-center justify-between px-3 py-2 text-left hover:bg-accent/50 transition-colors"
+								class="flex w-full items-center justify-between px-3 py-2 text-left hover:bg-accent/50"
 							>
 								<div class="flex items-center gap-1.5">
 									<IconLucide-palette class="size-3.5 text-muted-foreground" />
@@ -224,10 +224,10 @@ function resetTemplate() {
 									class="grid grid-cols-[120px_1fr_1fr_auto] items-end gap-x-2 gap-y-1 px-3 pb-2"
 								>
 									<span />
-									<span class="text-[9px] uppercase tracking-wider text-muted-foreground/50"
+									<span class="text-[0.625rem] uppercase tracking-wider text-muted-foreground/50"
 										>Background</span
 									>
-									<span class="text-[9px] uppercase tracking-wider text-muted-foreground/50"
+									<span class="text-[0.625rem] uppercase tracking-wider text-muted-foreground/50"
 										>Foreground</span
 									>
 									<span />
@@ -252,7 +252,7 @@ function resetTemplate() {
 						<Separator />
 						<Collapsible v-model:open="templateSectionOpen">
 							<CollapsibleTrigger
-								class="flex w-full items-center justify-between px-3 py-2 text-left hover:bg-accent/50 transition-colors"
+								class="flex w-full items-center justify-between px-3 py-2 text-left hover:bg-accent/50"
 							>
 								<div class="flex items-center gap-1.5">
 									<IconLucide-layout-template class="size-3.5 text-muted-foreground" />

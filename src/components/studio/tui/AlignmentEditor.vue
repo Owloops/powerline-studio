@@ -37,7 +37,7 @@ const isEnabled = computed(() => !!props.align)
 
 		<div v-if="isEnabled && align" class="flex flex-wrap gap-2">
 			<div v-for="(val, colIndex) in align" :key="colIndex" class="flex flex-col gap-1">
-				<span class="text-[10px] text-muted-foreground">Col {{ colIndex + 1 }}</span>
+				<span class="text-[0.625rem] text-muted-foreground">Col {{ colIndex + 1 }}</span>
 				<Select
 					:model-value="val"
 					@update:model-value="

@@ -102,7 +102,7 @@ function loadImportedConfig() {
 </script>
 
 <template>
-	<section class="flex flex-col gap-3">
+	<section class="flex flex-col gap-4">
 		<Collapsible v-model:open="isOpen">
 			<!-- Section Header -->
 			<div class="flex items-center justify-between">
@@ -127,7 +127,7 @@ function loadImportedConfig() {
 
 			<CollapsibleContent>
 				<!-- Compact Preset Row -->
-				<div class="flex items-center gap-2 mt-3">
+				<div class="flex items-center gap-2 pt-3">
 					<Select :model-value="presetValue" @update:model-value="handlePresetSelect">
 						<SelectTrigger class="h-8 w-auto min-w-[160px]" size="sm">
 							<span class="flex items-center gap-1.5 text-muted-foreground">

@@ -119,7 +119,7 @@ function insertTokenAtInput(
 						class="h-7 px-2 text-xs text-muted-foreground"
 						@click="resetLeft"
 					>
-						<IconLucide-rotate-ccw class="size-3 mr-1" />
+						<IconLucide-rotate-ccw class="size-3" />
 						Reset
 					</Button>
 				</div>
@@ -144,7 +144,7 @@ function insertTokenAtInput(
 							class="scale-75"
 							@update:model-value="toggleRight"
 						/>
-						<span class="text-[10px] text-muted-foreground">{{
+						<span class="text-[0.625rem] text-muted-foreground">{{
 							rightEnabled ? 'Enabled' : 'Disabled'
 						}}</span>
 					</div>
@@ -161,7 +161,7 @@ function insertTokenAtInput(
 						class="h-7 px-2 text-xs text-muted-foreground"
 						@click="resetRight"
 					>
-						<IconLucide-rotate-ccw class="size-3 mr-1" />
+						<IconLucide-rotate-ccw class="size-3" />
 						Reset
 					</Button>
 				</div>

@@ -57,7 +57,7 @@ function isLateResolved(segRef: string): boolean {
 
 <template>
 	<div class="flex flex-col gap-2">
-		<p class="text-[10px] text-muted-foreground italic">Applies to all breakpoints</p>
+		<p class="text-[0.625rem] text-muted-foreground italic">Applies to all breakpoints</p>
 
 		<div v-if="segmentRefs.length === 0" class="text-xs text-muted-foreground">
 			No segments placed in the grid
@@ -70,7 +70,7 @@ function isLateResolved(segRef: string): boolean {
 				class="flex items-center gap-2 rounded-md border border-dashed border-border px-3 py-2"
 			>
 				<span class="text-xs font-mono">{{ segRef }}</span>
-				<span class="text-[10px] text-muted-foreground">Width-dependent, not templateable</span>
+				<span class="text-[0.625rem] text-muted-foreground">Width-dependent, not templateable</span>
 			</div>
 
 			<!-- Normal segments -->
@@ -83,11 +83,11 @@ function isLateResolved(segRef: string): boolean {
 						<span class="text-xs font-mono">{{ segRef }}</span>
 					</CollapsibleTrigger>
 					<template v-if="!getTemplate(segRef)">
-						<span class="text-[10px] text-muted-foreground">Default</span>
+						<span class="text-[0.625rem] text-muted-foreground">Default</span>
 						<Button
 							variant="ghost"
 							size="sm"
-							class="h-6 px-2 text-[10px]"
+							class="h-6 px-2 text-[0.625rem]"
 							@click="createTemplate(segRef)"
 						>
 							Customize

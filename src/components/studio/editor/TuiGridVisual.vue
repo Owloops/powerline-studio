@@ -308,7 +308,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 				>
 					<PopoverTrigger as-child>
 						<button
-							class="flex items-center justify-center rounded-md bg-muted/50 px-2 py-1 text-[10px] font-mono text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+							class="flex items-center justify-center rounded-md bg-muted/50 px-2 py-1 text-[0.625rem] font-mono text-muted-foreground hover:bg-muted hover:text-foreground"
 						>
 							<span class="truncate">Col {{ colIdx + 1 }} · {{ col }}</span>
 						</button>
@@ -378,7 +378,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 							</Select>
 							<button
 								v-if="columns.length > 1"
-								class="flex items-center gap-1 rounded px-2 py-1 text-xs text-destructive hover:bg-destructive/10 transition-colors"
+								class="flex items-center gap-1 rounded px-2 py-1 text-xs text-destructive hover:bg-destructive/10"
 								@click="handleRemoveColumn(colIdx)"
 							>
 								<IconLucide-trash-2 class="size-3" />
@@ -390,7 +390,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 			</div>
 			<!-- Add column button — matches row-actions width -->
 			<button
-				class="flex w-[42px] shrink-0 items-center justify-center gap-0.5 rounded-md bg-muted/50 py-1 text-[10px] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+				class="flex w-[42px] shrink-0 items-center justify-center gap-0.5 rounded-md bg-muted/50 py-1 text-[0.625rem] text-muted-foreground hover:bg-muted hover:text-foreground"
 				@click="configStore.addColumn(breakpointIndex)"
 			>
 				<IconLucide-plus class="size-3" />
@@ -451,7 +451,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 									>
 										<PopoverTrigger as-child>
 											<button
-												class="flex items-center justify-center rounded-md border border-dashed border-muted-foreground/25 bg-muted/20 px-2 py-3 text-muted-foreground/40 transition-colors hover:border-primary/40 hover:bg-primary/5 hover:text-primary/60"
+												class="flex items-center justify-center rounded-md border border-dashed border-muted-foreground/25 bg-muted/20 px-2 py-3 text-muted-foreground/40 hover:border-primary/40 hover:bg-primary/5 hover:text-primary/60"
 												:style="cell.span > 1 ? { gridColumn: `span ${cell.span}` } : undefined"
 												@click="openSegmentPicker(rowIndex, cell)"
 											>
@@ -476,14 +476,14 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 														class="py-0.5"
 													>
 														<div
-															class="px-2 py-1 text-[10px] font-medium text-muted-foreground uppercase tracking-wider"
+															class="px-2 py-1 text-xs font-medium text-muted-foreground uppercase tracking-wider"
 														>
 															{{ group.label }}
 														</div>
 														<button
 															v-for="seg in group.items"
 															:key="seg"
-															class="flex w-full items-center rounded-sm px-2 py-1.5 text-xs hover:bg-accent hover:text-accent-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+															class="flex w-full items-center rounded-md px-2 py-1.5 text-xs hover:bg-accent hover:text-accent-foreground disabled:opacity-40 disabled:cursor-not-allowed"
 															:disabled="getUsedSegments(rowIndex).has(seg) && seg !== '.'"
 															@click="selectFromPicker(rowIndex, cell, seg)"
 														>
@@ -492,7 +492,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 															}}</span>
 															<span
 																v-if="getUsedSegments(rowIndex).has(seg) && seg !== '.'"
-																class="ml-auto text-[10px] text-muted-foreground"
+																class="ml-auto text-[0.625rem] text-muted-foreground"
 															>
 																(used)
 															</span>
@@ -519,7 +519,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 										@update:span="handleSpanChange(rowIndex, cell, $event)"
 									>
 										<button
-											class="group/cell relative flex items-center gap-1.5 rounded-md border px-3 py-3 text-left text-xs transition-all duration-150"
+											class="group/cell relative flex items-center gap-1.5 rounded-md border px-3 py-3 text-left text-xs transition-[border-color,box-shadow] duration-150"
 											:class="[
 												isCellHighlighted(cell.segment)
 													? 'border-primary bg-primary/10 ring-2 ring-primary/40 tui-cell-highlight-pulse'
@@ -540,7 +540,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 											</span>
 											<span
 												v-if="cell.span > 1"
-												class="ml-auto text-[10px] text-muted-foreground/50 tabular-nums"
+												class="ml-auto text-[0.625rem] text-muted-foreground/50 tabular-nums"
 											>
 												{{ cell.span }}col
 											</span>
@@ -558,16 +558,14 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 												"
 											>
 												<PopoverAnchor as-child>
-													<div
-														role="button"
-														tabindex="0"
-														class="absolute -right-1 -top-1 flex size-5 cursor-pointer items-center justify-center rounded-full border border-border bg-background text-muted-foreground opacity-0 shadow-sm transition-opacity group-hover/cell:opacity-100 hover:text-foreground"
+													<button
+														type="button"
+														class="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full border border-border bg-background text-muted-foreground opacity-0 shadow-sm transition-opacity group-hover/cell:opacity-100 focus-visible:opacity-100 hover:text-foreground"
 														title="Change segment"
 														@click.stop="openSegmentPicker(rowIndex, cell)"
-														@keydown.enter.stop="openSegmentPicker(rowIndex, cell)"
 													>
 														<IconLucide-replace class="size-2.5" />
-													</div>
+													</button>
 												</PopoverAnchor>
 												<PopoverContent class="w-56 p-0" @open-auto-focus.prevent>
 													<div class="p-2">
@@ -587,14 +585,14 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 																class="py-0.5"
 															>
 																<div
-																	class="px-2 py-1 text-[10px] font-medium text-muted-foreground uppercase tracking-wider"
+																	class="px-2 py-1 text-xs font-medium text-muted-foreground uppercase tracking-wider"
 																>
 																	{{ group.label }}
 																</div>
 																<button
 																	v-for="seg in group.items"
 																	:key="seg"
-																	class="flex w-full items-center rounded-sm px-2 py-1.5 text-xs hover:bg-accent hover:text-accent-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+																	class="flex w-full items-center rounded-md px-2 py-1.5 text-xs hover:bg-accent hover:text-accent-foreground disabled:opacity-40 disabled:cursor-not-allowed"
 																	:disabled="
 																		getUsedSegments(rowIndex).has(seg) &&
 																		seg !== '.' &&
@@ -607,13 +605,13 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 																	}}</span>
 																	<span
 																		v-if="seg === cell.segment"
-																		class="ml-auto text-[10px] text-primary"
+																		class="ml-auto text-[0.625rem] text-primary"
 																	>
 																		current
 																	</span>
 																	<span
 																		v-else-if="getUsedSegments(rowIndex).has(seg) && seg !== '.'"
-																		class="ml-auto text-[10px] text-muted-foreground"
+																		class="ml-auto text-[0.625rem] text-muted-foreground"
 																	>
 																		(used)
 																	</span>
@@ -633,7 +631,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 					<!-- Per-row controls: 2x2 grid -->
 					<TooltipProvider :delay-duration="400">
 						<div
-							class="grid grid-cols-2 grid-rows-2 gap-0.5 opacity-0 transition-opacity group-hover/row:opacity-100"
+							class="grid grid-cols-2 grid-rows-2 gap-0.5 opacity-0 transition-opacity group-hover/row:opacity-100 group-focus-within/row:opacity-100"
 						>
 							<!-- Top-left: move up (or invisible placeholder) -->
 							<Tooltip v-if="rowIndex > 0">
@@ -745,19 +743,19 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 			<Button
 				variant="outline"
 				size="sm"
-				class="h-7 text-xs"
+				class="h-7 gap-1 text-xs"
 				@click="configStore.addAreaRow(breakpointIndex, 'cells')"
 			>
-				<IconLucide-plus class="mr-1 size-3" />
+				<IconLucide-plus class="size-3" />
 				Add Row
 			</Button>
 			<Button
 				variant="outline"
 				size="sm"
-				class="h-7 text-xs"
+				class="h-7 gap-1 text-xs"
 				@click="configStore.addAreaRow(breakpointIndex, 'divider')"
 			>
-				<IconLucide-minus class="mr-1 size-3" />
+				<IconLucide-minus class="size-3" />
 				Add Divider
 			</Button>
 		</div>
@@ -771,13 +769,16 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 
 @keyframes tui-cell-pulse {
 	0% {
-		box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4);
+		outline: 0px solid hsl(var(--primary) / 0.4);
+		outline-offset: 0px;
 	}
 	20% {
-		box-shadow: 0 0 0 4px hsl(var(--primary) / 0.3);
+		outline: 4px solid hsl(var(--primary) / 0.3);
+		outline-offset: 0px;
 	}
 	100% {
-		box-shadow: 0 0 0 0 hsl(var(--primary) / 0);
+		outline: 0px solid hsl(var(--primary) / 0);
+		outline-offset: 0px;
 	}
 }
 

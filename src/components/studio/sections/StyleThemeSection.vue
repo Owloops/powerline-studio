@@ -244,7 +244,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 										}}</span>
 										<span
 											:class="[
-												'flex items-center overflow-hidden rounded bg-[#1e1e2e] px-1 font-nerd text-[10px] leading-tight',
+												'flex items-center overflow-hidden rounded bg-[#1e1e2e] px-1 font-nerd text-[0.625rem] leading-tight',
 												configStore.config.display.style !== 'tui' && 'py-1',
 											]"
 										>
@@ -304,7 +304,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 											<span class="w-16">{{ s.title }}</span>
 											<span
 												:class="[
-													'flex items-center overflow-hidden rounded bg-[#1e1e2e] px-1 font-nerd text-[10px] leading-tight',
+													'flex items-center overflow-hidden rounded bg-[#1e1e2e] px-1 font-nerd text-[0.625rem] leading-tight',
 													s.value !== 'tui' && 'py-1',
 												]"
 											>
@@ -375,11 +375,11 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 											v-if="
 												configStore.themeEditor.mode === 'builtin' && configStore.overrideCount > 0
 											"
-											class="rounded bg-muted px-1 py-0.5 text-[10px] leading-none text-muted-foreground"
+											class="rounded bg-muted px-1 py-0.5 text-[0.625rem] leading-none text-muted-foreground"
 											>modified</span
 										>
 										<span
-											class="flex gap-px overflow-hidden rounded text-[9px] font-medium leading-none"
+											class="flex gap-px overflow-hidden rounded text-[0.625rem] font-medium leading-none"
 										>
 											<span
 												v-for="seg in PREVIEW_SEGMENTS"
@@ -399,7 +399,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 										<div class="flex items-center gap-3">
 											<span class="w-24">{{ CANONICAL_THEME_LABELS[name] }}</span>
 											<span
-												class="flex gap-px overflow-hidden rounded text-[9px] font-medium leading-none"
+												class="flex gap-px overflow-hidden rounded text-[0.625rem] font-medium leading-none"
 											>
 												<span
 													v-for="seg in PREVIEW_SEGMENTS"
@@ -495,7 +495,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 									<PopoverContent class="w-auto p-2" align="start">
 										<div class="grid grid-cols-3 gap-1.5">
 											<button
-												class="flex flex-col items-center gap-1 rounded-md border p-1.5 text-xs transition-colors hover:bg-accent"
+												class="flex flex-col items-center gap-1 rounded-md border p-1.5 text-xs hover:bg-accent"
 												:class="
 													tuiCurrentBox === undefined
 														? 'ring-2 ring-primary border-primary'
@@ -503,15 +503,15 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 												"
 												@click="selectBoxPreset(undefined)"
 											>
-												<span class="text-muted-foreground text-[10px]">Default</span>
-												<span class="font-mono text-[10px] leading-tight text-muted-foreground"
+												<span class="text-muted-foreground text-[0.625rem]">Default</span>
+												<span class="font-mono text-[0.625rem] leading-tight text-muted-foreground"
 													>(auto)</span
 												>
 											</button>
 											<button
 												v-for="preset in boxPresets"
 												:key="preset.name"
-												class="flex flex-col items-center gap-0.5 rounded-md border p-1.5 text-xs transition-colors hover:bg-accent"
+												class="flex flex-col items-center gap-0.5 rounded-md border p-1.5 text-xs hover:bg-accent"
 												:class="
 													tuiCurrentBox === preset.name
 														? 'ring-2 ring-primary border-primary'
@@ -519,8 +519,10 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 												"
 												@click="selectBoxPreset(preset.name)"
 											>
-												<span class="text-muted-foreground text-[10px]">{{ preset.label }}</span>
-												<div class="font-mono text-[10px] leading-tight whitespace-pre">
+												<span class="text-muted-foreground text-[0.625rem]">{{
+													preset.label
+												}}</span>
+												<div class="font-mono text-[0.625rem] leading-tight whitespace-pre">
 													<div v-for="(line, i) in boxPreview(preset.chars)" :key="i">
 														{{ line }}
 													</div>
@@ -692,7 +694,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 									@click="handleLoadSaved(saved)"
 								>
 									<span
-										class="flex gap-px overflow-hidden rounded text-[9px] font-medium leading-none"
+										class="flex gap-px overflow-hidden rounded text-[0.625rem] font-medium leading-none"
 									>
 										<span
 											v-for="seg in PREVIEW_SEGMENTS"

@@ -196,8 +196,8 @@ function confirmPreset() {
 			v-if="errors.length > 0"
 			class="rounded-md border border-destructive/50 bg-destructive/5 p-3"
 		>
-			<div class="text-xs font-medium text-destructive mb-1">Validation Issues</div>
-			<ul class="space-y-0.5">
+			<div class="text-xs font-medium text-destructive pb-1">Validation Issues</div>
+			<ul role="list" class="space-y-0.5">
 				<li v-for="(err, i) in errors" :key="i" class="text-xs text-destructive/80">
 					{{ err.message }}
 				</li>

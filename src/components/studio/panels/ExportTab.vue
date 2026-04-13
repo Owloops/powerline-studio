@@ -62,7 +62,7 @@ async function copySnippet(clipboard: typeof jsonClipboard, text: string) {
 		<section class="flex flex-col gap-3">
 			<h3 class="text-sm font-medium">Installation</h3>
 
-			<ol class="flex flex-col gap-4 text-sm text-muted-foreground">
+			<ol role="list" class="flex flex-col gap-4 text-sm text-muted-foreground">
 				<!-- Step 1 -->
 				<li class="flex flex-col gap-1.5">
 					<span class="font-medium text-foreground">1. Install the package</span>

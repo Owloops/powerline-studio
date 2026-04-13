@@ -23,7 +23,7 @@ function onCheckedChange(checked: boolean) {
 </script>
 
 <template>
-	<div class="flex flex-col gap-1">
+	<div class="flex flex-col gap-1.5">
 		<div class="flex items-center" :class="compact ? 'justify-between gap-2' : 'gap-3'">
 			<label
 				v-if="compact"

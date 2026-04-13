@@ -52,7 +52,7 @@ function resetSegment(key: keyof ColorTheme) {
 			>
 				<span class="flex items-center gap-2">
 					Customize Colors
-					<Badge v-if="overrideCount > 0" variant="primary" class="px-1.5 py-0 text-[10px]">
+					<Badge v-if="overrideCount > 0" variant="primary" class="px-1.5 py-0 text-[0.625rem]">
 						{{ overrideCount }}
 					</Badge>
 				</span>
@@ -65,10 +65,10 @@ function resetSegment(key: keyof ColorTheme) {
 				<div class="flex flex-col gap-2 pt-3">
 					<div class="grid grid-cols-[120px_1fr_1fr_auto] items-end gap-x-2">
 						<span />
-						<span class="text-[10px] font-medium uppercase tracking-wider text-muted-foreground"
+						<span class="text-[0.625rem] font-medium uppercase tracking-wider text-muted-foreground"
 							>Background</span
 						>
-						<span class="text-[10px] font-medium uppercase tracking-wider text-muted-foreground"
+						<span class="text-[0.625rem] font-medium uppercase tracking-wider text-muted-foreground"
 							>Foreground</span
 						>
 						<span class="size-6" />

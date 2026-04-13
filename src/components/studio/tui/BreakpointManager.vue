@@ -77,7 +77,7 @@ function cancelEdit() {
 				<button
 					v-for="(item, sortIdx) in sortedBreakpoints"
 					:key="item.id"
-					class="group relative flex items-center rounded-lg border px-3 py-2 text-left transition-colors"
+					class="group relative flex items-center rounded-lg border px-3 py-2 text-left"
 					:class="
 						selectedId === item.id
 							? 'border-primary ring-1 ring-primary/30 bg-primary/5'
@@ -87,7 +87,7 @@ function cancelEdit() {
 				>
 					<div class="flex flex-1 items-center gap-3">
 						<div
-							class="flex size-7 shrink-0 items-center justify-center rounded-md text-[10px] font-bold tabular-nums"
+							class="flex size-7 shrink-0 items-center justify-center rounded-md text-[0.625rem] font-semibold tabular-nums"
 							:class="
 								selectedId === item.id
 									? 'bg-primary text-primary-foreground'
@@ -113,7 +113,7 @@ function cancelEdit() {
 										@keydown.escape="cancelEdit"
 										@blur="commitEdit(item.index)"
 									/>
-									<span class="text-[10px] text-muted-foreground">cols</span>
+									<span class="text-[0.625rem] text-muted-foreground">cols</span>
 								</div>
 							</template>
 							<template v-else>
@@ -132,7 +132,7 @@ function cancelEdit() {
 						<Tooltip v-if="item.bp.minWidth > 0">
 							<TooltipTrigger as-child>
 								<button
-									class="rounded p-1 text-muted-foreground/50 opacity-0 transition-all hover:bg-muted hover:text-foreground group-hover:opacity-100"
+									class="rounded p-1 text-muted-foreground/50 opacity-0 transition-opacity hover:bg-muted hover:text-foreground group-hover:opacity-100 group-focus-within:opacity-100"
 									@click.stop="startEditing(item.id, item.bp.minWidth)"
 								>
 									<IconLucide-pencil class="size-3" />
@@ -144,7 +144,7 @@ function cancelEdit() {
 						<Tooltip v-if="breakpoints.length > 1">
 							<TooltipTrigger as-child>
 								<button
-									class="rounded p-1 text-muted-foreground/50 opacity-0 transition-all hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100"
+									class="rounded p-1 text-muted-foreground/50 opacity-0 transition-opacity hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100 group-focus-within:opacity-100"
 									@click.stop="$emit('remove', item.id)"
 								>
 									<IconLucide-trash-2 class="size-3" />

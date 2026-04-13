@@ -171,7 +171,9 @@ watch(
 					<div class="flex items-center gap-1.5">
 						<IconLucide-layout-template class="size-3.5 text-muted-foreground" />
 						<span class="text-xs font-medium">Segment Templates</span>
-						<span class="text-[10px] text-muted-foreground">({{ activeSegmentRefs.length }})</span>
+						<span class="text-[0.625rem] text-muted-foreground"
+							>({{ activeSegmentRefs.length }})</span
+						>
 					</div>
 					<IconLucide-chevron-right
 						class="size-3.5 text-muted-foreground transition-transform duration-200"

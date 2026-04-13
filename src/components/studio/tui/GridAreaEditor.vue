@@ -100,7 +100,9 @@ function handleSingleCellUpdate(
 				</div>
 
 				<!-- Per-row controls -->
-				<div class="flex flex-col gap-0.5 opacity-0 transition-opacity group-hover/row:opacity-100">
+				<div
+					class="flex flex-col gap-0.5 opacity-0 transition-opacity group-hover/row:opacity-100 group-focus-within/row:opacity-100"
+				>
 					<button
 						v-if="rowIndex > 0"
 						class="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
@@ -134,19 +136,19 @@ function handleSingleCellUpdate(
 			<Button
 				variant="outline"
 				size="sm"
-				class="h-7 text-xs"
+				class="h-7 gap-1 text-xs"
 				@click="configStore.addAreaRow(breakpointIndex, 'cells')"
 			>
-				<IconLucide-plus class="mr-1 size-3" />
+				<IconLucide-plus class="size-3" />
 				Add Row
 			</Button>
 			<Button
 				variant="outline"
 				size="sm"
-				class="h-7 text-xs"
+				class="h-7 gap-1 text-xs"
 				@click="configStore.addAreaRow(breakpointIndex, 'divider')"
 			>
-				<IconLucide-minus class="mr-1 size-3" />
+				<IconLucide-minus class="size-3" />
 				Add Divider
 			</Button>
 		</div>
