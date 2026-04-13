@@ -193,7 +193,7 @@ function loadImportedConfig() {
 
 			<CollapsibleContent>
 				<TooltipProvider :delay-duration="300">
-					<div class="flex items-end gap-3 pt-3">
+					<div class="flex items-end gap-2 pt-3">
 						<!-- Preset -->
 						<div class="flex flex-col gap-1.5">
 							<div class="flex items-center gap-1.5">
@@ -262,7 +262,7 @@ function loadImportedConfig() {
 						<!-- Import / Reset -->
 						<div class="flex flex-col gap-1.5">
 							<Label class="text-xs font-medium text-muted-foreground">&nbsp;</Label>
-							<div class="flex items-center gap-1.5">
+							<div class="flex items-center gap-2">
 								<Dialog v-model:open="showImportDialog">
 									<DialogTrigger as-child>
 										<Button variant="outline" size="sm" class="h-8">
