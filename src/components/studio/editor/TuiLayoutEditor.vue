@@ -142,7 +142,7 @@ function updateTitleLeft(value: string | undefined) {
 	configStore.setTuiTitle({ left: value })
 }
 
-function updateTitleRight(value: string | false | undefined) {
+function updateTitleRight(value: string | undefined) {
 	configStore.setTuiTitle({ right: value })
 }
 
@@ -150,17 +150,16 @@ function updateFooterLeft(value: string | undefined) {
 	configStore.setTuiFooter({ left: value })
 }
 
-function updateFooterRight(value: string | false | undefined) {
-	configStore.setTuiFooter({ right: value === false ? undefined : value })
+function updateFooterRight(value: string | undefined) {
+	configStore.setTuiFooter({ right: value })
 }
 
 // Title/footer display text for the clickable strips — split into left/right for independent truncation
 const titlePreview = computed(() => {
 	const left = titleConfig.value?.left ?? '{model}'
 	const right = titleConfig.value?.right
-	if (right === false) return { left: left || '(no title)', right: '' }
-	const rightText = right ?? 'claude-powerline'
-	return { left: left || '(empty)', right: rightText || '(empty)' }
+	if (!left && !right) return { left: '(no title configured)', right: '' }
+	return { left: left || '(empty)', right: right || '(empty)' }
 })
 
 const footerPreview = computed(() => {
@@ -433,9 +432,7 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 											label="Title Bar"
 											:left="titleConfig?.left"
 											:right="titleConfig?.right"
-											:allow-disable-right="true"
 											left-placeholder="{model}"
-											right-placeholder="claude-powerline"
 											@update:left="updateTitleLeft"
 											@update:right="updateTitleRight"
 										/>
@@ -496,8 +493,7 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 										<TemplateEditor
 											label="Footer"
 											:left="footerConfig?.left"
-											:right="footerConfig?.right ?? undefined"
-											:allow-disable-right="false"
+											:right="footerConfig?.right"
 											@update:left="updateFooterLeft"
 											@update:right="updateFooterRight"
 										/>

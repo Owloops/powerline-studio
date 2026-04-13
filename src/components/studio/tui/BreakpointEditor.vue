@@ -33,7 +33,7 @@ function updateTitleLeft(value: string | undefined) {
 	configStore.setTuiTitle({ left: value })
 }
 
-function updateTitleRight(value: string | false | undefined) {
+function updateTitleRight(value: string | undefined) {
 	configStore.setTuiTitle({ right: value })
 }
 
@@ -41,8 +41,8 @@ function updateFooterLeft(value: string | undefined) {
 	configStore.setTuiFooter({ left: value })
 }
 
-function updateFooterRight(value: string | false | undefined) {
-	configStore.setTuiFooter({ right: value === false ? undefined : value })
+function updateFooterRight(value: string | undefined) {
+	configStore.setTuiFooter({ right: value })
 }
 
 // --- Segment refs from this breakpoint ---
@@ -104,9 +104,7 @@ watch(
 						label="Title Bar"
 						:left="titleConfig?.left"
 						:right="titleConfig?.right"
-						:allow-disable-right="true"
 						left-placeholder="{model}"
-						right-placeholder="claude-powerline"
 						@update:left="updateTitleLeft"
 						@update:right="updateTitleRight"
 					/>
@@ -144,8 +142,7 @@ watch(
 					<TemplateEditor
 						label="Footer"
 						:left="footerConfig?.left"
-						:right="footerConfig?.right ?? undefined"
-						:allow-disable-right="false"
+						:right="footerConfig?.right"
 						@update:left="updateFooterLeft"
 						@update:right="updateFooterRight"
 					/>

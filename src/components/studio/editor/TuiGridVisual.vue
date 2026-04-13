@@ -517,6 +517,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 											}
 										"
 										@update:span="handleSpanChange(rowIndex, cell, $event)"
+										@swap="handleCellUpdate(rowIndex, cell, $event)"
 									>
 										<button
 											class="group/cell relative flex items-center gap-1.5 rounded-md border px-3 py-3 text-left text-xs transition-[border-color,box-shadow] duration-150"

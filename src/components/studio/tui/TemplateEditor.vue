@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
 import TokenPicker from './TokenPicker.vue'
 import { SEGMENT_PARTS } from '@owloops/claude-powerline/browser'
@@ -10,22 +9,15 @@ import type { SegmentName } from '@owloops/claude-powerline/browser'
 const props = defineProps<{
 	label: string
 	left: string | undefined
-	right: string | false | undefined
-	allowDisableRight: boolean
+	right: string | undefined
 	leftPlaceholder?: string
 	rightPlaceholder?: string
 }>()
 
 const emit = defineEmits<{
 	'update:left': [value: string | undefined]
-	'update:right': [value: string | false | undefined]
+	'update:right': [value: string | undefined]
 }>()
-
-// Preserved right value when toggling disable
-const savedRightValue = shallowRef<string>('')
-
-const rightEnabled = computed(() => props.right !== false)
-const rightString = computed(() => (typeof props.right === 'string' ? props.right : ''))
 
 const leftInputRef = shallowRef<InstanceType<typeof Input> | null>(null)
 const rightInputRef = shallowRef<InstanceType<typeof Input> | null>(null)
@@ -58,15 +50,6 @@ function resetRight() {
 	emit('update:right', undefined)
 }
 
-function toggleRight(enabled: boolean) {
-	if (!enabled) {
-		savedRightValue.value = rightString.value
-		emit('update:right', false)
-	} else {
-		emit('update:right', savedRightValue.value || undefined)
-	}
-}
-
 function insertTokenAtInput(
 	inputRef: InstanceType<typeof Input> | null,
 	token: string,
@@ -95,7 +78,7 @@ function insertTokenAtInput(
 		if (target === 'left') {
 			emit('update:left', (props.left ?? '') + text)
 		} else {
-			emit('update:right', rightString.value + text)
+			emit('update:right', (props.right ?? '') + text)
 		}
 	}
 }
@@ -136,26 +119,14 @@ function insertTokenAtInput(
 		<!-- Right template -->
 		<div class="flex flex-col gap-1.5">
 			<div class="flex items-center justify-between">
-				<div class="flex items-center gap-2">
-					<Label class="text-xs">Right template</Label>
-					<div v-if="allowDisableRight" class="flex items-center gap-1.5">
-						<Switch
-							:model-value="rightEnabled"
-							class="scale-75"
-							@update:model-value="toggleRight"
-						/>
-						<span class="text-[0.625rem] text-muted-foreground">{{
-							rightEnabled ? 'Enabled' : 'Disabled'
-						}}</span>
-					</div>
-				</div>
-				<div v-if="rightEnabled" class="flex items-center gap-1">
+				<Label class="text-xs">Right template</Label>
+				<div class="flex items-center gap-1">
 					<TokenPicker
 						:tokens="titleTokens"
 						@select="insertTokenAtInput(rightInputRef, $event, 'right')"
 					/>
 					<Button
-						v-if="right !== undefined && right !== false"
+						v-if="right !== undefined"
 						variant="ghost"
 						size="sm"
 						class="h-7 px-2 text-xs text-muted-foreground"
@@ -167,9 +138,8 @@ function insertTokenAtInput(
 				</div>
 			</div>
 			<Input
-				v-if="rightEnabled"
 				ref="rightInputRef"
-				:model-value="rightString"
+				:model-value="right ?? ''"
 				:placeholder="rightPlaceholder"
 				class="h-8 text-xs font-mono"
 				@update:model-value="handleRightInput"

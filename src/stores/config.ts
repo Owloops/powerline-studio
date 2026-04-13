@@ -320,11 +320,26 @@ export const useConfigStore = defineStore('config', () => {
 	function ensureTuiConfig() {
 		if (config.value.display.tui) return
 		config.value.display.tui = {
+			fitContent: true,
+			minWidth: 40,
+			padding: { horizontal: 1 },
+			separator: { column: '' },
+			title: {
+				left: '{model}',
+				right: '{dir}',
+			},
 			breakpoints: [
 				{
 					minWidth: 0,
-					areas: ['. .'],
-					columns: ['auto', '1fr'],
+					areas: [
+						'git.icon   git.head      .            git.working',
+						'---',
+						'context.icon  context.bar  context.pct  context.tokens',
+						'---',
+						'session       session      today        today',
+					],
+					columns: ['auto', '1fr', 'auto', 'auto'],
+					align: ['left', 'left', 'right', 'right'],
 				},
 			],
 		}

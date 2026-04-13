@@ -616,9 +616,8 @@ function computeTuiHitboxes(
 		})
 	}
 
-	const hasRight = titleRight !== false
-	if (hasRight && titleRight) {
-		const titleRightResolved = resolveTitleToken(titleRight as string, tuiData, resolvedData)
+	if (titleRight) {
+		const titleRightResolved = resolveTitleToken(titleRight, tuiData, resolvedData)
 		const titleRightText = titleRightResolved ? ` ${titleRightResolved} ` : ''
 		const titleRightLen = visibleLength(titleRightText)
 		if (titleRightLen > 0) {
