@@ -76,11 +76,11 @@ async function copySnippet(clipboard: typeof jsonClipboard, text: string) {
 						<div
 							v-if="!isLoading"
 							v-html="html"
-							class="max-h-120 overflow-auto rounded-lg border bg-card p-4 text-sm [&_pre]:!bg-transparent [&_pre]:!p-0 [&_code]:text-xs"
+							class="max-h-60 overflow-auto rounded-lg border bg-card p-4 text-sm [&_pre]:!bg-transparent [&_pre]:!p-0 [&_code]:text-xs"
 						/>
 						<pre
 							v-else
-							class="max-h-120 overflow-auto rounded-lg border bg-card p-4 text-xs text-muted-foreground"
+							class="max-h-60 overflow-auto rounded-lg border bg-card p-4 text-xs text-muted-foreground"
 							>{{ configStore.configJson }}</pre
 						>
 					</div>
