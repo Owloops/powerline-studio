@@ -19,16 +19,30 @@ const PREVIEW_WORDS = [
 	'jukeboxes',
 ]
 
-const props = defineProps<{
-	label: string
-	bg: string
-	fg: string
-	index?: number
-	showReset?: boolean
-	isOverridden?: boolean
-}>()
+const props = withDefaults(
+	defineProps<{
+		label: string
+		bg: string
+		fg: string
+		index?: number
+		showLabel?: boolean
+		showPreview?: boolean
+		showReset?: boolean
+		isOverridden?: boolean
+	}>(),
+	{ showLabel: true, showPreview: true },
+)
 
-const previewWord = computed(() => PREVIEW_WORDS[(props.index ?? 0) % PREVIEW_WORDS.length])
+const gridClass = computed(() => {
+	if (props.showLabel && props.showPreview) return 'grid-cols-[120px_1fr_1fr_1fr_auto]'
+	if (props.showLabel) return 'grid-cols-[120px_1fr_1fr_auto]'
+	if (props.showPreview) return 'grid-cols-[1fr_1fr_1fr_auto]'
+	return 'grid-cols-[1fr_1fr_auto]'
+})
+
+const previewWord = computed(() =>
+	props.index != null ? PREVIEW_WORDS[props.index % PREVIEW_WORDS.length] : 'Abcdef',
+)
 
 const emit = defineEmits<{
 	'update:bg': [color: string]
@@ -38,8 +52,9 @@ const emit = defineEmits<{
 </script>
 
 <template>
-	<div class="grid grid-cols-[120px_1fr_1fr_1fr_auto] items-center gap-2">
+	<div class="grid items-center gap-2" :class="gridClass">
 		<span
+			v-if="showLabel"
 			class="truncate text-xs"
 			:class="isOverridden ? 'font-medium text-foreground' : 'text-muted-foreground'"
 		>
@@ -56,6 +71,7 @@ const emit = defineEmits<{
 			@update:color="emit('update:fg', $event)"
 		/>
 		<span
+			v-if="showPreview"
 			class="flex h-7 items-center justify-center truncate rounded-md border border-border px-1 text-[0.625rem] font-bold"
 			:style="{ backgroundColor: bg, color: fg }"
 		>

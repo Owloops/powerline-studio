@@ -220,25 +220,27 @@ function resetTemplate() {
 								/>
 							</CollapsibleTrigger>
 							<CollapsibleContent>
-								<div
-									class="grid grid-cols-[120px_1fr_1fr_1fr_auto] items-end gap-x-2 gap-y-1 px-3 pb-2"
-								>
-									<span />
-									<span class="text-[0.625rem] uppercase tracking-wider text-muted-foreground/50"
-										>Background</span
-									>
-									<span class="text-[0.625rem] uppercase tracking-wider text-muted-foreground/50"
-										>Foreground</span
-									>
-									<span class="text-[0.625rem] uppercase tracking-wider text-muted-foreground/50"
-										>Preview</span
-									>
-									<span />
+								<div class="flex flex-col gap-1 px-3 pb-2">
+									<div class="grid grid-cols-[1fr_1fr_1fr_auto] items-end gap-2">
+										<span
+											class="pl-1 text-[0.625rem] uppercase tracking-wider text-muted-foreground/50"
+											>Background</span
+										>
+										<span
+											class="pl-1 text-[0.625rem] uppercase tracking-wider text-muted-foreground/50"
+											>Foreground</span
+										>
+										<span
+											class="pl-1 text-[0.625rem] uppercase tracking-wider text-muted-foreground/50"
+											>Preview</span
+										>
+										<span class="size-6" />
+									</div>
 									<ColorPairRow
-										class="col-span-full"
 										:label="meta.name"
 										:bg="segmentColors.bg"
 										:fg="segmentColors.fg"
+										:show-label="false"
 										:show-reset="true"
 										:is-overridden="isColorOverridden"
 										@update:bg="handleColorUpdate('bg', $event)"

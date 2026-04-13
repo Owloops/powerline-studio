@@ -664,6 +664,13 @@ export const useConfigStore = defineStore('config', () => {
 
 	const themeEditor = reactive<ThemeEditorState>(resolveInitialThemeState())
 
+	// Re-sync themeEditor after useStorage hydrates from localStorage (initOnMounted)
+	watch(
+		() => config.value.theme,
+		() => rehydrateThemeEditor(),
+		{ once: true },
+	)
+
 	function rehydrateThemeEditor() {
 		const fresh = resolveInitialThemeState()
 		themeEditor.mode = fresh.mode
