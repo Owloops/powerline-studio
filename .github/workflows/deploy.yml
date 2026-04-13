@@ -29,15 +29,20 @@ jobs:
           ref: feat/browser-entry
           path: claude-powerline
 
-      - uses: voidzero-dev/setup-vp@v1
+      - uses: actions/setup-node@v4
         with:
-          cache: true
+          node-version: 22
 
       - name: Build claude-powerline
         working-directory: claude-powerline
         run: |
-          pnpm install
-          pnpm build
+          npm install
+          npm run build
+
+      - uses: voidzero-dev/setup-vp@v1
+        with:
+          cache: true
+          cwd: powerline-studio
 
       - name: Build powerline-studio
         working-directory: powerline-studio
