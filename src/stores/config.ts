@@ -640,7 +640,7 @@ export const useConfigStore = defineStore('config', () => {
 		if (currentTheme === 'custom') {
 			const customColors = config.value.colors?.custom as ColorTheme | undefined
 			const draft = customColors
-				? structuredClone(customColors)
+				? structuredClone(toRaw(customColors))
 				: structuredClone(getCanonicalThemeColors('dark'))
 			return {
 				mode: 'custom',

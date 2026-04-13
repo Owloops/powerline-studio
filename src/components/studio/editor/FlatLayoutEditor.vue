@@ -152,6 +152,8 @@ function handleAddLine() {
 }
 
 function handleRemoveLine(lineIndex: number) {
+	// Cancel any pending reorder commit before line indices shift
+	clearTimeout(reorderCommitTimer)
 	// Clear stale composite-keyed state before indices shift
 	openPopover.value = null
 	highlightedChip.value = null

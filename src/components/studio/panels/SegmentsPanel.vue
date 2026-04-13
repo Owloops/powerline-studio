@@ -67,13 +67,22 @@ function setRowRef(key: string, el: HTMLElement | null) {
 
 // --- Handlers ---
 
-function handleReorder(newOrder: SegmentKey[]) {
-	segmentOrder.value = newOrder
-	// Build full order: reordered enabled keys first, then disabled keys
+let reorderCommitTimer: ReturnType<typeof setTimeout> | undefined
+
+function commitReorder(order: SegmentKey[]) {
 	const disabledKeys = (Object.keys(configStore.currentLineSegments) as SegmentKey[]).filter(
 		(key) => !enabledKeySet.value.has(key),
 	)
-	configStore.reorderSegments(editorStore.activeLineIndex, [...newOrder, ...disabledKeys])
+	configStore.reorderSegments(editorStore.activeLineIndex, [...order, ...disabledKeys])
+}
+
+function handleReorder(newOrder: SegmentKey[]) {
+	segmentOrder.value = newOrder
+	// Debounce the store commit to avoid reactive avalanche during drag
+	clearTimeout(reorderCommitTimer)
+	reorderCommitTimer = setTimeout(() => {
+		commitReorder(newOrder)
+	}, 150)
 }
 
 function handleSelect(key: string) {
