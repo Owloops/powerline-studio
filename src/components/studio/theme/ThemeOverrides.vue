@@ -2,7 +2,6 @@
 import type { ColorTheme, SegmentColor } from '@owloops/claude-powerline/browser'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
 import ColorPairRow from './ColorPairRow.vue'
 import { SEGMENT_KEYS, SEGMENT_LABELS } from '@/lib/themes'
 
@@ -92,6 +91,5 @@ function resetSegment(key: keyof ColorTheme) {
 				</div>
 			</CollapsibleContent>
 		</Collapsible>
-		<Separator />
 	</div>
 </template>

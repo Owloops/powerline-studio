@@ -788,5 +788,6 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 				</div>
 			</CollapsibleContent>
 		</Collapsible>
+		<Separator v-show="isOpen" />
 	</section>
 </template>

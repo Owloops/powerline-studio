@@ -339,5 +339,6 @@ function loadImportedConfig() {
 				</TooltipProvider>
 			</CollapsibleContent>
 		</Collapsible>
+		<Separator v-show="isOpen" />
 	</section>
 </template>

@@ -513,5 +513,6 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 				</div>
 			</CollapsibleContent>
 		</Collapsible>
+		<Separator v-show="isOpen" />
 	</section>
 </template>

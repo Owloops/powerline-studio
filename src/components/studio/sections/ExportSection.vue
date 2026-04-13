@@ -165,5 +165,6 @@ function downloadJson() {
 				</div>
 			</CollapsibleContent>
 		</Collapsible>
+		<Separator v-show="isOpen" />
 	</section>
 </template>

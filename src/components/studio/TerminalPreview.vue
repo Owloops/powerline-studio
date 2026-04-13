@@ -297,7 +297,7 @@ const effectiveWidth = computed(() =>
 		</Teleport>
 		<!-- Title Bar -->
 		<div class="relative flex h-9 items-center border-b border-border bg-muted px-4">
-			<div class="flex gap-2" aria-hidden="true">
+			<div class="flex gap-2">
 				<button
 					class="size-3 cursor-pointer rounded-full border-0 bg-[#FF5F56] p-0 transition-transform hover:scale-125 active:scale-90"
 					@click="spawnParticle(EMOJIS_RED, $event)"
