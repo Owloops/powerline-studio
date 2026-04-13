@@ -39,16 +39,18 @@ jobs:
           npm install
           npm run build
 
-      - uses: voidzero-dev/setup-vp@v1
-        with:
-          working-directory: powerline-studio
-          cache: true
+      - name: Enable corepack and install pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@10 --activate
+
+      - name: Install vite-plus CLI
+        working-directory: powerline-studio
+        run: pnpm install
 
       - name: Build powerline-studio
         working-directory: powerline-studio
-        run: |
-          pnpm install
-          vp build --base /powerline-studio/
+        run: pnpm run build-only --base /powerline-studio/
 
       - name: Add 404 fallback for SPA routing
         run: cp powerline-studio/dist/index.html powerline-studio/dist/404.html
