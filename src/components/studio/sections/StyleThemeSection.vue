@@ -235,15 +235,17 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 			<CollapsibleContent>
 				<div class="flex flex-col gap-6 pt-4">
 					<!-- Style, Theme, and TUI options grid -->
-					<div class="grid grid-cols-5 gap-x-3 gap-y-4">
-						<div class="col-span-2 flex flex-col gap-1.5">
+					<div class="flex flex-col gap-4 md:grid md:grid-cols-5 md:gap-x-3 md:gap-y-4">
+						<div class="flex flex-col gap-1.5 md:col-span-3">
 							<Label class="text-xs font-medium text-muted-foreground">Display Style</Label>
 							<Select
 								:model-value="configStore.config.display.style"
 								@update:model-value="configStore.setStyle($event as StyleValue)"
 							>
 								<SelectTrigger class="w-full" size="sm">
-									<span class="flex items-center gap-2">
+									<span
+										class="flex flex-col items-start gap-1 md:flex-row md:items-center md:gap-2"
+									>
 										<span>{{
 											styles.find((s) => s.value === configStore.config.display.style)?.title
 										}}</span>
@@ -367,22 +369,27 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 							</Select>
 						</div>
 
-						<div class="col-span-2 flex flex-col gap-1.5">
+						<div class="flex flex-col gap-1.5 md:col-span-2">
 							<Label class="text-xs font-medium text-muted-foreground">Theme</Label>
 							<Select :model-value="themeSelectValue" @update:model-value="handleSelectTheme">
 								<SelectTrigger class="w-full" size="sm">
-									<span class="flex items-center gap-2">
-										<span v-if="configStore.themeEditor.mode === 'custom'">Custom Theme</span>
-										<span v-else>{{
-											CANONICAL_THEME_LABELS[configStore.themeEditor.builtinTheme]
-										}}</span>
-										<span
-											v-if="
-												configStore.themeEditor.mode === 'builtin' && configStore.overrideCount > 0
-											"
-											class="rounded bg-muted px-1 py-0.5 text-[0.625rem] leading-none text-muted-foreground"
-											>modified</span
-										>
+									<span
+										class="flex flex-col items-start gap-1 md:flex-row md:items-center md:gap-2"
+									>
+										<span class="flex items-center gap-1.5">
+											<span v-if="configStore.themeEditor.mode === 'custom'">Custom Theme</span>
+											<span v-else>{{
+												CANONICAL_THEME_LABELS[configStore.themeEditor.builtinTheme]
+											}}</span>
+											<span
+												v-if="
+													configStore.themeEditor.mode === 'builtin' &&
+													configStore.overrideCount > 0
+												"
+												class="rounded bg-muted px-1 py-0.5 text-[0.625rem] leading-none text-muted-foreground"
+												>modified</span
+											>
+										</span>
 										<span
 											class="flex gap-px overflow-hidden rounded text-[0.625rem] font-medium leading-none"
 										>
@@ -423,32 +430,9 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 							</Select>
 						</div>
 
-						<!-- Custom Theme Button -->
-						<div class="flex flex-col gap-1.5">
-							<Label class="text-xs font-medium text-muted-foreground">&nbsp;</Label>
-							<Button
-								variant="outline"
-								size="sm"
-								class="w-full whitespace-nowrap"
-								:class="
-									configStore.themeEditor.mode === 'custom'
-										? 'border-primary bg-primary/5 text-primary'
-										: ''
-								"
-								@click="handleToggleCustom"
-							>
-								<IconLucide-palette
-									v-if="configStore.themeEditor.mode !== 'custom'"
-									class="size-3.5"
-								/>
-								<IconLucide-x v-else class="size-3.5" />
-								{{ configStore.themeEditor.mode === 'custom' ? 'Cancel Custom' : 'Custom Theme' }}
-							</Button>
-						</div>
-
 						<!-- Non-TUI: Padding, Auto-wrap -->
 						<template v-if="!configStore.isTuiStyle">
-							<div class="col-span-5 flex items-end gap-3">
+							<div class="flex flex-wrap items-end gap-3 md:col-span-5">
 								<div class="flex w-28 shrink-0 flex-col gap-1.5">
 									<Label for="padding" class="text-xs font-medium text-muted-foreground"
 										>Padding</Label
@@ -489,10 +473,10 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 						<TooltipProvider v-else :delay-duration="300">
 							<Collapsible
 								v-model:open="tuiExtraOpen"
-								class="col-span-5 grid grid-cols-subgrid items-end gap-y-4"
+								class="grid grid-cols-2 items-end gap-x-3 gap-y-4 md:col-span-5 md:grid-cols-subgrid"
 							>
 								<!-- Box Style Popover -->
-								<div class="col-span-2 flex flex-col gap-1.5">
+								<div class="col-span-1 flex flex-col gap-1.5 md:col-span-2">
 									<Label class="text-xs font-medium text-muted-foreground">Box Style</Label>
 									<Popover v-model:open="boxStyleOpen">
 										<PopoverTrigger as-child>
@@ -544,7 +528,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 								</div>
 
 								<!-- Fit Content -->
-								<div class="col-span-2 flex flex-col gap-1.5">
+								<div class="col-span-1 flex flex-col gap-1.5 md:col-span-2">
 									<div class="flex items-center gap-1">
 										<Label for="fit-content" class="text-xs font-medium text-muted-foreground"
 											>Fit Content</Label
@@ -570,7 +554,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 
 								<!-- Extra settings trigger -->
 								<CollapsibleTrigger
-									class="flex h-8 items-center justify-end gap-1 self-end rounded-md px-2 text-xs text-muted-foreground hover:bg-accent/50"
+									class="col-span-2 flex h-8 items-center justify-end gap-1 self-end rounded-md px-2 text-xs text-muted-foreground hover:bg-accent/50 md:col-span-1"
 								>
 									<span class="flex-1 text-center">Show more options</span>
 									<IconLucide-chevron-down
@@ -579,7 +563,9 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 									/>
 								</CollapsibleTrigger>
 
-								<CollapsibleContent class="col-span-5 grid grid-cols-subgrid gap-y-3 pt-2">
+								<CollapsibleContent
+									class="col-span-2 grid grid-cols-2 gap-x-3 gap-y-3 pt-2 md:col-span-5 md:grid-cols-subgrid"
+								>
 									<!-- Min Width -->
 									<div class="flex flex-col gap-1.5">
 										<div class="flex items-center gap-1">
@@ -773,6 +759,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 						:overrides="configStore.themeEditor.overrides"
 						@update:overrides="handleUpdateOverrides"
 						@reset:segment="handleResetSegment"
+						@toggle:custom="handleToggleCustom"
 					/>
 
 					<!-- Confirmation Dialog -->

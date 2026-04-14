@@ -34,9 +34,11 @@ const props = withDefaults(
 )
 
 const gridClass = computed(() => {
-	if (props.showLabel && props.showPreview) return 'grid-cols-[120px_1fr_1fr_1fr_auto]'
-	if (props.showLabel) return 'grid-cols-[120px_1fr_1fr_auto]'
-	if (props.showPreview) return 'grid-cols-[1fr_1fr_1fr_auto]'
+	if (props.showLabel && props.showPreview)
+		return 'grid-cols-[1fr_auto_auto_auto] @min-[440px]:grid-cols-[80px_1fr_1fr_0.6fr_auto] sm:grid-cols-[120px_1fr_1fr_1fr_auto]'
+	if (props.showLabel) return 'grid-cols-[1fr_auto_auto_auto] sm:grid-cols-[120px_1fr_1fr_auto]'
+	if (props.showPreview)
+		return 'grid-cols-[1fr_1fr_auto] @min-[440px]:grid-cols-[1fr_1fr_0.6fr_auto] sm:grid-cols-[1fr_1fr_1fr_auto]'
 	return 'grid-cols-[1fr_1fr_auto]'
 })
 
@@ -72,7 +74,7 @@ const emit = defineEmits<{
 		/>
 		<span
 			v-if="showPreview"
-			class="flex h-7 items-center justify-center truncate rounded-md border border-border px-1 text-[0.625rem] font-bold"
+			class="hidden h-7 min-w-0 items-center justify-center truncate rounded-md border border-border px-1 text-[0.625rem] font-bold @min-[440px]:flex"
 			:style="{ backgroundColor: bg, color: fg }"
 		>
 			{{ previewWord }}

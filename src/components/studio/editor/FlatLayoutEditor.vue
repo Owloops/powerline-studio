@@ -343,15 +343,15 @@ watch(
 	<section class="flex flex-col gap-4">
 		<Collapsible v-model:open="isOpen">
 			<CollapsibleTrigger
-				class="relative flex cursor-pointer items-center rounded-md px-1 py-0.5 -ml-1 text-left transition-colors hover:bg-accent/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+				class="relative flex cursor-pointer items-center gap-1 rounded-md px-1 py-0.5 -ml-1 text-left transition-colors hover:bg-accent/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
 			>
 				<span
 					v-if="step"
-					class="absolute -left-18 top-0.5 flex size-8 items-center justify-center rounded-full border border-muted-foreground/15 text-xs font-semibold tabular-nums text-muted-foreground/25"
+					class="absolute -left-18 top-0.5 hidden size-8 items-center justify-center rounded-full border border-muted-foreground/15 text-xs font-semibold tabular-nums text-muted-foreground/25 sm:flex"
 					>{{ step }}</span
 				>
 				<IconLucide-chevron-right
-					class="absolute -left-7 top-2 size-4 text-muted-foreground transition-transform duration-200"
+					class="size-4 shrink-0 text-muted-foreground transition-transform duration-200 sm:absolute sm:-left-7 sm:top-2"
 					:class="isOpen && 'rotate-90'"
 				/>
 				<div>
@@ -364,13 +364,13 @@ watch(
 				<div class="flex flex-col gap-4 pt-4">
 					<!-- Preset / Import / Reset -->
 					<TooltipProvider :delay-duration="300">
-						<div class="flex items-end gap-3">
-							<div class="flex flex-col gap-1.5">
+						<div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+							<div class="flex min-w-0 flex-col gap-1.5">
 								<div class="flex items-center gap-1.5">
 									<Label class="text-xs font-medium text-muted-foreground">Preset</Label>
 									<Transition
-										enter-active-class="transition-all duration-150 ease-out"
-										leave-active-class="transition-all duration-100 ease-in"
+										enter-active-class="transition-[opacity,transform] duration-150 ease-out"
+										leave-active-class="transition-[opacity,transform] duration-100 ease-in"
 										enter-from-class="opacity-0 scale-95"
 										leave-to-class="opacity-0 scale-95"
 									>
@@ -397,7 +397,7 @@ watch(
 									:model-value="configStore.activePresetId ?? undefined"
 									@update:model-value="handlePresetSelect"
 								>
-									<SelectTrigger class="h-8 w-auto min-w-[200px]" size="sm">
+									<SelectTrigger class="h-8 w-full sm:w-auto sm:min-w-[200px]" size="sm">
 										<span
 											class="flex items-center gap-1.5"
 											:class="selectedPresetName ? 'text-foreground' : 'text-muted-foreground'"
@@ -418,8 +418,10 @@ watch(
 							</div>
 
 							<div class="flex flex-col gap-1.5">
-								<Label class="text-xs font-medium text-muted-foreground">&nbsp;</Label>
-								<div class="flex items-center gap-3">
+								<Label class="hidden text-xs font-medium text-muted-foreground sm:block"
+									>&nbsp;</Label
+								>
+								<div class="flex flex-wrap items-center gap-3">
 									<Dialog v-model:open="showImportDialog">
 										<DialogTrigger as-child>
 											<Button variant="outline" size="sm" class="h-8">

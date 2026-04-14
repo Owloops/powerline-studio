@@ -29,7 +29,7 @@ function handleRemove() {
 		<PopoverTrigger as-child>
 			<slot />
 		</PopoverTrigger>
-		<PopoverContent :side-offset="8" align="start" class="w-96 p-0">
+		<PopoverContent :side-offset="8" align="start" class="w-[calc(100vw-2rem)] p-0 sm:w-96">
 			<SegmentConfigContent
 				:segment-key="segmentKey"
 				:line-index="lineIndex"

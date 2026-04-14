@@ -16,11 +16,11 @@ const configStore = useConfigStore()
 </script>
 
 <template>
-	<div class="flex min-h-svh flex-col">
+	<div class="flex min-h-svh min-w-88 flex-col">
 		<StudioHeader />
 
 		<!-- Terminal Preview — sticky after header scrolls away -->
-		<div class="sticky top-0 z-30 border-b border-border bg-background px-4 py-3">
+		<div class="sticky top-0 z-30 overflow-x-auto border-b border-border bg-background px-4 py-3">
 			<TerminalPreview class="mx-auto" />
 		</div>
 

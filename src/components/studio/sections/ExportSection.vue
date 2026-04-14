@@ -55,14 +55,14 @@ function downloadJson() {
 	<section class="flex flex-col gap-4">
 		<Collapsible v-model:open="isOpen">
 			<!-- Section Header -->
-			<div class="flex items-center justify-between">
+			<div class="flex flex-wrap items-center justify-between gap-2">
 				<SectionTrigger
 					title="Export"
 					description="Copy your config JSON and installation instructions"
 					:step="step"
 					:is-open="isOpen"
 				/>
-				<div class="flex items-center gap-2">
+				<div class="ml-4 flex items-center gap-2 sm:ml-0">
 					<CopyButton
 						variant="outline"
 						size="sm"

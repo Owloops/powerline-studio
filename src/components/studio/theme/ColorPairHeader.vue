@@ -4,7 +4,8 @@ withDefaults(
 		gridClass?: string
 	}>(),
 	{
-		gridClass: 'grid-cols-[120px_1fr_1fr_1fr_auto]',
+		gridClass:
+			'grid-cols-[1fr_auto_auto_auto] @min-[440px]:grid-cols-[80px_1fr_1fr_0.6fr_auto] sm:grid-cols-[120px_1fr_1fr_1fr_auto]',
 	},
 )
 </script>
@@ -18,7 +19,8 @@ withDefaults(
 		<span class="text-[0.625rem] font-medium uppercase tracking-wider text-muted-foreground"
 			>Foreground</span
 		>
-		<span class="text-[0.625rem] font-medium uppercase tracking-wider text-muted-foreground"
+		<span
+			class="hidden text-[0.625rem] font-medium uppercase tracking-wider text-muted-foreground @min-[440px]:block"
 			>Preview</span
 		>
 		<span class="size-6" />

@@ -141,17 +141,16 @@ function getCellMeta(segment: string) {
 }
 
 function getCellDisplay(segment: string) {
-	if (segment === '.') return { label: '\u00B7', isEmpty: true, isDivider: false }
-	if (segment === '---') return { label: '--- divider ---', isEmpty: false, isDivider: true }
+	if (segment === '.') return { name: '\u00B7', part: '', isEmpty: true, isDivider: false }
+	if (segment === '---')
+		return { name: '--- divider ---', part: '', isEmpty: false, isDivider: true }
 	const meta = getCellMeta(segment)
 	const dotIdx = segment.indexOf('.')
-	let label = meta?.name ?? segment
-	if (dotIdx > 0 && meta) {
-		const part = segment.slice(dotIdx + 1)
-		label = `${meta.name} ${part}`
-	}
+	const name = meta?.name ?? segment
+	const part = dotIdx > 0 ? segment.slice(dotIdx + 1) : ''
 	return {
-		label,
+		name,
+		part,
 		isEmpty: false,
 		isDivider: false,
 	}
@@ -273,9 +272,9 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 </script>
 
 <template>
-	<div class="flex flex-col gap-1.5">
+	<div class="flex flex-col gap-1.5 overflow-x-auto">
 		<!-- Column headers (clickable for settings) with row-actions spacer -->
-		<div class="flex items-center gap-1.5">
+		<div class="flex min-w-fit items-center gap-1.5">
 			<div class="grid flex-1 gap-1.5" :style="{ gridTemplateColumns }">
 				<Popover
 					v-for="(col, colIdx) in columns"
@@ -380,7 +379,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 		</div>
 
 		<!-- Grid rows with dashed guideline overlay -->
-		<div class="relative">
+		<div class="relative min-w-fit">
 			<!-- Dashed vertical guidelines overlay (offset right to exclude row actions) -->
 			<div
 				class="pointer-events-none absolute inset-0 right-[48px] z-0 grid gap-1.5"
@@ -515,10 +514,17 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 											<component
 												v-if="getCellMeta(cell.segment)?.icon"
 												:is="getCellMeta(cell.segment)!.icon"
-												class="size-3.5 shrink-0 text-muted-foreground"
+												class="hidden size-3.5 shrink-0 text-muted-foreground sm:block"
 											/>
-											<span class="truncate font-medium">
-												{{ getCellDisplay(cell.segment).label }}
+											<span
+												class="min-w-0 text-[0.5625rem] font-medium leading-tight sm:text-xs sm:leading-normal"
+											>
+												{{ getCellDisplay(cell.segment).name
+												}}<br v-if="getCellDisplay(cell.segment).part" class="sm:hidden" /><span
+													v-if="getCellDisplay(cell.segment).part"
+													class="hidden sm:inline"
+													>&nbsp;</span
+												>{{ getCellDisplay(cell.segment).part }}
 											</span>
 											<span
 												v-if="cell.span > 1"
@@ -542,7 +548,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 												<PopoverAnchor as-child>
 													<button
 														type="button"
-														class="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full border border-border bg-background text-muted-foreground opacity-0 shadow-sm transition-opacity group-hover/cell:opacity-100 focus-visible:opacity-100 hover:text-foreground"
+														class="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full border border-border bg-background text-muted-foreground shadow-sm transition-opacity hover:text-foreground sm:opacity-0 sm:group-hover/cell:opacity-100 sm:focus-visible:opacity-100"
 														title="Change segment"
 														@click.stop="openSegmentPicker(rowIndex, cell)"
 													>
@@ -613,7 +619,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 					<!-- Per-row controls: 2x2 grid -->
 					<TooltipProvider :delay-duration="400">
 						<div
-							class="grid grid-cols-2 grid-rows-2 gap-0.5 opacity-0 transition-opacity group-hover/row:opacity-100 group-focus-within/row:opacity-100"
+							class="grid grid-cols-2 grid-rows-2 gap-0.5 opacity-40 transition-opacity group-hover/row:opacity-100 group-focus-within/row:opacity-100 sm:opacity-0"
 						>
 							<!-- Top-left: move up (or invisible placeholder) -->
 							<Tooltip v-if="rowIndex > 0">
@@ -766,6 +772,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 @media (prefers-reduced-motion: reduce) {
 	.tui-cell-highlight-pulse {
 		animation: none;
+		box-shadow: 0 0 0 3px hsl(var(--primary) / 0.3);
 	}
 }
 </style>

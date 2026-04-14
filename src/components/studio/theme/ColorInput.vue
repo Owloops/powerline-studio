@@ -37,14 +37,14 @@ const colorValue = computed({
 		<PopoverTrigger as-child>
 			<button
 				type="button"
-				class="color-input-trigger flex h-8 items-center gap-1.5 rounded-md border border-border bg-background px-1.5 text-xs font-mono hover:border-ring/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+				class="color-input-trigger flex h-8 min-w-0 items-center gap-1.5 rounded-md border border-border bg-background px-1.5 text-xs font-mono hover:border-ring/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 				:aria-label="label"
 			>
 				<span
 					class="size-4 shrink-0 rounded border border-border/50"
 					:style="{ backgroundColor: props.color }"
 				/>
-				<span class="text-muted-foreground select-none">{{ props.color }}</span>
+				<span class="min-w-0 truncate text-muted-foreground select-none">{{ props.color }}</span>
 			</button>
 		</PopoverTrigger>
 		<PopoverContent class="w-auto p-3" :side-offset="8" align="start">

@@ -180,14 +180,14 @@ function loadImportedConfig() {
 
 			<CollapsibleContent>
 				<TooltipProvider :delay-duration="300">
-					<div class="flex items-end gap-3 pt-3">
+					<div class="flex flex-wrap items-end gap-3 pt-3">
 						<!-- Preset -->
-						<div class="flex flex-col gap-1.5">
+						<div class="flex min-w-0 flex-1 flex-col gap-1.5 sm:flex-initial">
 							<div class="flex items-center gap-1.5">
 								<Label class="text-xs font-medium text-muted-foreground">Preset</Label>
 								<Transition
-									enter-active-class="transition-all duration-150 ease-out"
-									leave-active-class="transition-all duration-100 ease-in"
+									enter-active-class="transition-[opacity,transform] duration-150 ease-out"
+									leave-active-class="transition-[opacity,transform] duration-100 ease-in"
 									enter-from-class="opacity-0 scale-95"
 									leave-to-class="opacity-0 scale-95"
 								>
@@ -214,7 +214,7 @@ function loadImportedConfig() {
 								:model-value="configStore.activePresetId ?? undefined"
 								@update:model-value="handlePresetSelect"
 							>
-								<SelectTrigger class="h-8 w-auto min-w-[200px]" size="sm">
+								<SelectTrigger class="h-8 w-full sm:w-auto sm:min-w-[200px]" size="sm">
 									<span
 										class="flex items-center gap-1.5"
 										:class="selectedPresetName ? 'text-foreground' : 'text-muted-foreground'"
@@ -248,7 +248,9 @@ function loadImportedConfig() {
 
 						<!-- Import / Reset -->
 						<div class="flex flex-col gap-1.5">
-							<Label class="text-xs font-medium text-muted-foreground">&nbsp;</Label>
+							<Label class="hidden text-xs font-medium text-muted-foreground sm:block"
+								>&nbsp;</Label
+							>
 							<div class="flex items-center gap-3">
 								<Dialog v-model:open="showImportDialog">
 									<DialogTrigger as-child>

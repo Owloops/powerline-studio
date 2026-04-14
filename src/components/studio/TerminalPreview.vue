@@ -421,7 +421,7 @@ const effectiveWidth = computed(() =>
 </script>
 
 <template>
-	<div class="w-fit overflow-hidden rounded-xl border border-border shadow-lg">
+	<div class="w-fit max-w-full overflow-hidden rounded-xl border border-border shadow-lg">
 		<!-- Emoji particles (fixed, can drift anywhere) -->
 		<Teleport to="body">
 			<span
@@ -459,7 +459,7 @@ const effectiveWidth = computed(() =>
 				powerline-studio — bash
 			</span>
 			<div class="flex shrink-0 items-center gap-1">
-				<Badge variant="secondary">
+				<Badge variant="secondary" class="hidden sm:inline-flex">
 					{{ effectiveWidth }}/{{ previewStore.terminalWidth }} cols
 				</Badge>
 
@@ -471,11 +471,11 @@ const effectiveWidth = computed(() =>
 								class="ml-3 flex h-7 cursor-pointer items-center gap-1 rounded-md border-none bg-transparent px-2 text-xs hover:bg-foreground/10"
 							>
 								<IconLucide-clipboard-list class="size-3.5 shrink-0 text-muted-foreground" />
-								<span class="text-muted-foreground">{{ mockPresetLabel }}</span>
+								<span class="hidden text-muted-foreground sm:inline">{{ mockPresetLabel }}</span>
 								<IconLucide-chevron-down class="size-3.5 text-muted-foreground" />
 							</button>
 						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end" class="min-w-[260px]">
+						<DropdownMenuContent align="end" class="min-w-[220px]">
 							<DropdownMenuItem class="gap-2" @click="mockDataModalOpen = true">
 								<IconLucide-sliders-horizontal class="size-3.5" />
 								Configure custom mock data
@@ -520,7 +520,12 @@ const effectiveWidth = computed(() =>
 										class="pointer-events-none"
 										:style="anchorStyle"
 									/>
-									<PopoverContent align="end" side="bottom" :side-offset="8" class="w-84 p-0">
+									<PopoverContent
+										align="end"
+										side="bottom"
+										:side-offset="8"
+										class="w-[calc(100vw-2rem)] p-0 sm:w-84"
+									>
 										<PreviewControls />
 									</PopoverContent>
 								</Popover>

@@ -21,7 +21,12 @@ const emit = defineEmits<{
 		<PopoverTrigger as-child>
 			<slot />
 		</PopoverTrigger>
-		<PopoverContent :side-offset="8" align="start" class="w-92 p-0" @open-auto-focus.prevent>
+		<PopoverContent
+			:side-offset="8"
+			align="start"
+			class="w-[calc(100vw-2rem)] p-0 sm:w-92"
+			@open-auto-focus.prevent
+		>
 			<TuiCellContent
 				:cell-segment="cellSegment"
 				:span="span"

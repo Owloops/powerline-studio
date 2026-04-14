@@ -2,6 +2,7 @@
 import type { ColorTheme, SegmentColor } from '@owloops/claude-powerline/browser'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import ColorPairRow from './ColorPairRow.vue'
 import ColorPairHeader from './ColorPairHeader.vue'
 import { SEGMENT_KEYS, SEGMENT_LABELS } from '@/lib/themes'
@@ -9,11 +10,13 @@ import { SEGMENT_KEYS, SEGMENT_LABELS } from '@/lib/themes'
 const props = defineProps<{
 	baseTheme: ColorTheme
 	overrides: Partial<ColorTheme>
+	isCustomMode?: boolean
 }>()
 
 const emit = defineEmits<{
 	'update:overrides': [overrides: Partial<ColorTheme>]
 	'reset:segment': [key: keyof ColorTheme]
+	'toggle:custom': []
 }>()
 
 const overrideCount = computed(() => Object.keys(props.overrides).length)
@@ -62,7 +65,11 @@ function resetSegment(key: keyof ColorTheme) {
 				/>
 			</CollapsibleTrigger>
 			<CollapsibleContent>
-				<div class="flex flex-col gap-2 pt-3">
+				<div class="flex flex-col gap-3 pt-3">
+					<Button variant="outline" size="sm" class="w-full" @click="emit('toggle:custom')">
+						<IconLucide-palette class="size-3.5" />
+						Create Custom Theme
+					</Button>
 					<ColorPairHeader />
 					<ColorPairRow
 						v-for="(key, i) in SEGMENT_KEYS"
