@@ -383,6 +383,7 @@ watch(
 												<TooltipTrigger as-child>
 													<button
 														class="flex size-4 cursor-pointer items-center justify-center rounded text-muted-foreground transition-colors hover:text-foreground"
+														aria-label="Reset to preset"
 														@click="handleReset"
 													>
 														<IconLucide-rotate-ccw class="size-2.5" />

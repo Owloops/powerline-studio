@@ -46,6 +46,7 @@ const toggleEnabled = (v: boolean) => {
 				<Switch
 					v-if="toggleable"
 					:model-value="enabled"
+					:aria-label="`Enable ${title}`"
 					class="shrink-0"
 					@update:model-value="toggleEnabled"
 				/>

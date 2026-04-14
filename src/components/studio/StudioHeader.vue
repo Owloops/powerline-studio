@@ -8,10 +8,10 @@ const { isDark, toggleDark } = useDarkMode()
 <template>
 	<header class="border-b border-border bg-background px-4">
 		<div class="mx-auto flex h-12 max-w-4xl items-center justify-between">
-			<span class="flex items-center gap-1.5 text-sm font-semibold tracking-tight">
+			<h1 class="flex items-center gap-1.5 text-sm font-semibold tracking-tight">
 				<img src="/favicon.svg" alt="" class="size-5" />
 				Powerline Studio
-			</span>
+			</h1>
 
 			<div class="flex items-center gap-1">
 				<Popover>

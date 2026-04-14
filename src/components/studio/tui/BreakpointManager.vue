@@ -133,6 +133,7 @@ function cancelEdit() {
 							<TooltipTrigger as-child>
 								<button
 									class="rounded p-1 text-muted-foreground/50 opacity-0 transition-opacity hover:bg-muted hover:text-foreground group-hover:opacity-100 group-focus-within:opacity-100"
+									aria-label="Edit min-width"
 									@click.stop="startEditing(item.id, item.bp.minWidth)"
 								>
 									<IconLucide-pencil class="size-3" />
@@ -144,6 +145,7 @@ function cancelEdit() {
 						<ConfirmPopover v-if="breakpoints.length > 1" @confirm="$emit('remove', item.id)">
 							<button
 								class="rounded p-1 text-muted-foreground/50 opacity-0 transition-opacity hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100 group-focus-within:opacity-100"
+								aria-label="Remove breakpoint"
 								@click.stop
 							>
 								<IconLucide-trash-2 class="size-3" />

@@ -99,8 +99,13 @@ const cellClasses = computed(() => {
 					<span
 						v-for="i in span"
 						:key="i"
+						role="button"
+						tabindex="0"
+						:aria-label="`Select column ${i}`"
 						class="size-1 rounded-full bg-muted-foreground/20 hover:bg-primary/40 transition-colors"
 						@click.stop="openPerColumn(i - 1)"
+						@keydown.enter.stop="openPerColumn(i - 1)"
+						@keydown.space.prevent.stop="openPerColumn(i - 1)"
 					/>
 				</div>
 			</button>

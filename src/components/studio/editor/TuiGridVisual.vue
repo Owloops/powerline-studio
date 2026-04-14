@@ -433,6 +433,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 											<button
 												class="flex items-center justify-center rounded-md border border-dashed border-muted-foreground/25 bg-muted/20 px-2 py-3 text-muted-foreground/40 hover:border-primary/40 hover:bg-primary/5 hover:text-primary/60"
 												:style="cell.span > 1 ? { gridColumn: `span ${cell.span}` } : undefined"
+												aria-label="Add segment"
 												@click="openSegmentPicker(rowIndex, cell)"
 											>
 												<IconLucide-plus class="size-4" />
@@ -549,7 +550,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 													<button
 														type="button"
 														class="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full border border-border bg-background text-muted-foreground shadow-sm transition-opacity hover:text-foreground sm:opacity-0 sm:group-hover/cell:opacity-100 sm:focus-visible:opacity-100"
-														title="Change segment"
+														aria-label="Change segment"
 														@click.stop="openSegmentPicker(rowIndex, cell)"
 													>
 														<IconLucide-replace class="size-2.5" />
@@ -626,6 +627,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 								<TooltipTrigger as-child>
 									<button
 										class="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
+										aria-label="Move row up"
 										@click="configStore.moveAreaRow(breakpointIndex, rowIndex, rowIndex - 1)"
 									>
 										<IconLucide-chevron-up class="size-3" />
@@ -642,6 +644,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 										<PopoverTrigger as-child>
 											<button
 												class="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
+												aria-label="Insert row"
 											>
 												<IconLucide-plus class="size-3" />
 											</button>
@@ -686,6 +689,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 								<TooltipTrigger as-child>
 									<button
 										class="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
+										aria-label="Move row down"
 										@click="configStore.moveAreaRow(breakpointIndex, rowIndex, rowIndex + 1)"
 									>
 										<IconLucide-chevron-down class="size-3" />
@@ -702,6 +706,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 							>
 								<button
 									class="flex size-5 items-center justify-center rounded text-destructive/70 hover:bg-destructive/10 hover:text-destructive"
+									aria-label="Remove row"
 								>
 									<IconLucide-trash-2 class="size-3" />
 								</button>

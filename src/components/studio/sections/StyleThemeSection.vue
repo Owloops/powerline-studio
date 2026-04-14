@@ -535,7 +535,13 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 										>
 										<Tooltip>
 											<TooltipTrigger as-child>
-												<IconLucide-info class="size-3 text-muted-foreground/50" />
+												<button
+													type="button"
+													class="inline-flex cursor-default"
+													aria-label="More info"
+												>
+													<IconLucide-info class="size-3 text-muted-foreground/50" />
+												</button>
 											</TooltipTrigger>
 											<TooltipContent side="top" class="max-w-56 text-xs">
 												Shrink the panel to fit its content width instead of filling available
@@ -574,7 +580,13 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 											>
 											<Tooltip>
 												<TooltipTrigger as-child>
-													<IconLucide-info class="size-3 text-muted-foreground/50" />
+													<button
+														type="button"
+														class="inline-flex cursor-default"
+														aria-label="More info"
+													>
+														<IconLucide-info class="size-3 text-muted-foreground/50" />
+													</button>
 												</TooltipTrigger>
 												<TooltipContent side="top" class="max-w-56 text-xs">
 													Minimum panel width in columns. The panel won't shrink below this even if
@@ -605,7 +617,13 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 											>
 											<Tooltip>
 												<TooltipTrigger as-child>
-													<IconLucide-info class="size-3 text-muted-foreground/50" />
+													<button
+														type="button"
+														class="inline-flex cursor-default"
+														aria-label="More info"
+													>
+														<IconLucide-info class="size-3 text-muted-foreground/50" />
+													</button>
 												</TooltipTrigger>
 												<TooltipContent side="top" class="max-w-56 text-xs">
 													Maximum panel width in columns. The panel won't grow beyond this. Leave
@@ -657,7 +675,13 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 											<Label class="text-xs font-medium text-muted-foreground">Padding</Label>
 											<Tooltip>
 												<TooltipTrigger as-child>
-													<IconLucide-info class="size-3 text-muted-foreground/50" />
+													<button
+														type="button"
+														class="inline-flex cursor-default"
+														aria-label="More info"
+													>
+														<IconLucide-info class="size-3 text-muted-foreground/50" />
+													</button>
 												</TooltipTrigger>
 												<TooltipContent side="top" class="max-w-56 text-xs">
 													Horizontal padding inside each cell. Only applies when Fit Content is

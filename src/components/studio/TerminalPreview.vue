@@ -444,14 +444,20 @@ const effectiveWidth = computed(() =>
 			<div class="flex gap-2">
 				<button
 					class="size-3 cursor-pointer rounded-full border-0 bg-[#FF5F56] p-0 transition-transform hover:scale-125 active:scale-90"
+					aria-hidden="true"
+					tabindex="-1"
 					@click="spawnParticle(EMOJIS_RED, $event)"
 				/>
 				<button
 					class="size-3 cursor-pointer rounded-full border-0 bg-[#FFBD2E] p-0 transition-transform hover:scale-125 active:scale-90"
+					aria-hidden="true"
+					tabindex="-1"
 					@click="spawnParticle(EMOJIS_YELLOW, $event)"
 				/>
 				<button
 					class="size-3 cursor-pointer rounded-full border-0 bg-[#27C93F] p-0 transition-transform hover:scale-125 active:scale-90"
+					aria-hidden="true"
+					tabindex="-1"
 					@click="spawnParticle(EMOJIS_GREEN, $event)"
 				/>
 			</div>
@@ -469,6 +475,7 @@ const effectiveWidth = computed(() =>
 						<DropdownMenuTrigger as-child>
 							<button
 								class="ml-3 flex h-7 cursor-pointer items-center gap-1 rounded-md border-none bg-transparent px-2 text-xs hover:bg-foreground/10"
+								:aria-label="`Mock data preset: ${mockPresetLabel}`"
 							>
 								<IconLucide-clipboard-list class="size-3.5 shrink-0 text-muted-foreground" />
 								<span class="hidden text-muted-foreground sm:inline">{{ mockPresetLabel }}</span>
@@ -551,7 +558,7 @@ const effectiveWidth = computed(() =>
 				v-if="previewStore.htmlOutput"
 				class="whitespace-pre px-4 py-3"
 				:style="preStyle"
-				role="img"
+				role="group"
 				aria-label="Terminal preview of powerline statusline"
 			><div :style="contentStyle"><div v-if="previewStore.showClaudeHeader" :style="{ lineHeight: headerLineHeight }"><span v-html="claudeHeaderTopHtml" /><span class="tch">❯</span><span class="tch"> </span><Typewriter
 	as="span"
@@ -561,7 +568,7 @@ const effectiveWidth = computed(() =>
 	backspace="character"
 	:backspace-factor="0.5"
 	@complete="handleTypewriterComplete"
->{{ currentTypewriterText }}</Typewriter><span v-html="claudeHeaderBottomHtml" /></div><div class="relative"><div v-html="previewStore.htmlOutput" /><SegmentOverlay class="absolute inset-0" /><div
+>{{ currentTypewriterText }}</Typewriter><span v-html="claudeHeaderBottomHtml" /></div><div class="relative"><div aria-hidden="true" v-html="previewStore.htmlOutput" /><SegmentOverlay class="absolute inset-0" /><div
 					v-if="reservedStyle"
 					class="pointer-events-none absolute inset-y-0"
 					:style="reservedStyle"

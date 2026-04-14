@@ -160,7 +160,7 @@ function resetTemplate() {
 		</div>
 		<button
 			class="flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-			title="Clear cell"
+			aria-label="Clear cell"
 			@click="emit('swap', '.')"
 		>
 			<IconLucide-trash-2 class="size-3.5" />
@@ -169,7 +169,7 @@ function resetTemplate() {
 			<PopoverTrigger as-child>
 				<button
 					class="flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
-					title="Change segment"
+					aria-label="Change segment"
 				>
 					<IconLucide-replace class="size-3.5" />
 				</button>

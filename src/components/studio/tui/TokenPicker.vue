@@ -51,9 +51,13 @@ function wrapToken(token: string) {
 					<Badge
 						v-for="token in groupTokens"
 						:key="token"
+						role="button"
+						tabindex="0"
 						variant="secondary"
 						class="cursor-pointer hover:bg-primary/10 text-xs"
 						@click="handleSelect(token)"
+						@keydown.enter="handleSelect(token)"
+						@keydown.space.prevent="handleSelect(token)"
 					>
 						{{ wrapToken(token) }}
 					</Badge>

@@ -29,9 +29,14 @@ function handleConfirm() {
 		<PopoverTrigger as-child :disabled="disabled">
 			<slot />
 		</PopoverTrigger>
-		<PopoverContent class="w-auto p-3" align="center" @open-auto-focus.prevent>
+		<PopoverContent
+			class="w-auto p-3"
+			align="center"
+			role="alertdialog"
+			aria-describedby="confirm-desc"
+		>
 			<div class="flex flex-col gap-2">
-				<p class="text-xs text-muted-foreground">Are you sure?</p>
+				<p id="confirm-desc" class="text-xs text-muted-foreground">Are you sure?</p>
 				<div class="flex items-center justify-end gap-2">
 					<Button variant="outline" size="sm" class="h-7 text-xs" @click="open = false">
 						Cancel

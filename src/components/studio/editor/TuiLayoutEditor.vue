@@ -566,10 +566,12 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 							</TooltipProvider>
 						</div>
 
-						<div class="flex flex-wrap gap-1.5">
+						<div class="flex flex-wrap gap-1.5" role="tablist" aria-label="Breakpoints">
 							<button
 								v-for="(item, sortIdx) in sortedBreakpoints"
 								:key="item.index"
+								role="tab"
+								:aria-selected="selectedBpIndex === item.index"
 								class="group relative flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs transition-[border-color,background-color,box-shadow] duration-150"
 								:class="
 									selectedBpIndex === item.index

@@ -142,6 +142,9 @@ function handleOpenChange(open: boolean) {
 		<div
 			v-for="(hitbox, index) in previewStore.segmentHitboxes"
 			:key="`${hitbox.segmentType}-${hitbox.line}-${index}`"
+			role="button"
+			tabindex="0"
+			:aria-label="`Configure ${hitboxTitle(hitbox.segmentType)} segment`"
 			class="segment-hitbox pointer-events-auto absolute cursor-pointer rounded-sm"
 			:style="{
 				left: `${hitbox.charStart}ch`,
@@ -149,8 +152,13 @@ function handleOpenChange(open: boolean) {
 				top: `${hitbox.line * previewStore.effectiveLineHeight}em`,
 				height: `${previewStore.effectiveLineHeight}em`,
 			}"
-			:title="hitboxTitle(hitbox.segmentType)"
 			@click="handleClick($event, hitbox.segmentType, hitbox.sourceLineIndex, hitbox.cellSegment)"
+			@keydown.enter="
+				handleClick($event, hitbox.segmentType, hitbox.sourceLineIndex, hitbox.cellSegment)
+			"
+			@keydown.space.prevent="
+				handleClick($event, hitbox.segmentType, hitbox.sourceLineIndex, hitbox.cellSegment)
+			"
 		/>
 
 		<!-- Inline config popover anchored to clicked hitbox -->

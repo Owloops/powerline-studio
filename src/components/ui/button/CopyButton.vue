@@ -60,8 +60,10 @@ watch(
 		:disabled="disabled"
 		:whilePress="pressState"
 		:transition="pressTransition"
+		:aria-label="iconOnly ? (copied ? copiedLabel : label) : undefined"
 		:class="cn(buttonVariants({ variant, size }), 'relative', props.class)"
 	>
+		<span class="sr-only" aria-live="polite">{{ copied ? copiedLabel : '' }}</span>
 		<motion.span
 			class="flex items-center justify-center overflow-hidden"
 			:style="{ gap: iconOnly ? '0px' : '6px' }"

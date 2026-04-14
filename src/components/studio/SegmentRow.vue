@@ -54,7 +54,7 @@ function handleRemove(event: MouseEvent) {
 				@keydown.space.prevent="handleRowClick"
 			>
 				<!-- Drag handle indicator -->
-				<GripVertical class="size-4 shrink-0 text-muted-foreground/50" />
+				<GripVertical class="size-4 shrink-0 text-muted-foreground/50" aria-hidden="true" />
 
 				<!-- Segment icon + name -->
 				<component

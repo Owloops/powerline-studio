@@ -36,7 +36,9 @@ const fitContent = computed(() => tui.value?.fitContent ?? false)
 						<Label for="fit-content" class="text-xs">Fit Content</Label>
 						<Tooltip>
 							<TooltipTrigger as-child>
-								<IconLucide-info class="size-3 text-muted-foreground/50" />
+								<button type="button" class="inline-flex cursor-default" aria-label="More info">
+									<IconLucide-info class="size-3 text-muted-foreground/50" />
+								</button>
 							</TooltipTrigger>
 							<TooltipContent side="right" class="max-w-56 text-xs">
 								Shrink the panel to fit its content width instead of filling available space.
@@ -56,7 +58,9 @@ const fitContent = computed(() => tui.value?.fitContent ?? false)
 						<Label for="tui-min-width" class="text-xs">Min Width</Label>
 						<Tooltip>
 							<TooltipTrigger as-child>
-								<IconLucide-info class="size-3 text-muted-foreground/50" />
+								<button type="button" class="inline-flex cursor-default" aria-label="More info">
+									<IconLucide-info class="size-3 text-muted-foreground/50" />
+								</button>
 							</TooltipTrigger>
 							<TooltipContent side="right" class="max-w-56 text-xs">
 								Minimum panel width in characters.
@@ -84,7 +88,9 @@ const fitContent = computed(() => tui.value?.fitContent ?? false)
 						<Label for="tui-max-width" class="text-xs">Max Width</Label>
 						<Tooltip>
 							<TooltipTrigger as-child>
-								<IconLucide-info class="size-3 text-muted-foreground/50" />
+								<button type="button" class="inline-flex cursor-default" aria-label="More info">
+									<IconLucide-info class="size-3 text-muted-foreground/50" />
+								</button>
 							</TooltipTrigger>
 							<TooltipContent side="right" class="max-w-56 text-xs">
 								Maximum panel width in characters.

@@ -17,6 +17,12 @@ const configStore = useConfigStore()
 
 <template>
 	<div class="flex min-h-svh min-w-88 flex-col">
+		<a
+			href="#main-content"
+			class="sr-only focus:not-sr-only focus:fixed focus:left-2 focus:top-2 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground focus:shadow-lg"
+		>
+			Skip to main content
+		</a>
 		<StudioHeader />
 
 		<!-- Terminal Preview — sticky after header scrolls away -->
@@ -25,7 +31,7 @@ const configStore = useConfigStore()
 		</div>
 
 		<!-- Section Flow -->
-		<div class="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-8 px-4 py-6">
+		<main id="main-content" class="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-8 px-4 py-6">
 			<StyleThemeSection :step="1" />
 
 			<!-- Layout Editor -->
@@ -34,7 +40,7 @@ const configStore = useConfigStore()
 
 			<!-- Export -->
 			<ExportSection :step="3" />
-		</div>
+		</main>
 
 		<!-- Footer -->
 		<footer class="border-t border-border py-8">
