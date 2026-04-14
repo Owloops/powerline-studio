@@ -299,5 +299,18 @@ const CHARSET_OPTIONS = [
 				</SelectContent>
 			</Select>
 		</div>
+
+		<!-- Claude Code header -->
+		<div class="flex items-center justify-between gap-3">
+			<Label for="preview-claude-header" class="w-20 shrink-0 text-xs">CC Header</Label>
+			<div class="flex flex-1 items-center gap-2">
+				<Switch
+					id="preview-claude-header"
+					:model-value="previewStore.showClaudeHeader"
+					@update:model-value="previewStore.showClaudeHeader = $event"
+				/>
+				<span class="text-xs text-muted-foreground">Show Claude Code in preview</span>
+			</div>
+		</div>
 	</div>
 </template>

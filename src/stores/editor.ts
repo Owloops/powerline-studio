@@ -22,6 +22,7 @@ export type FocusedTuiArea = 'title' | 'footer'
 
 export const useEditorStore = defineStore('editor', () => {
 	const selectedSegment = ref<string | null>(null)
+	const layoutEditorOpen = ref(false)
 	const expandedSections = reactive(new Set<string>())
 	const activeLineIndex = ref(0)
 	const selectedTuiArea = ref<TuiAreaTarget | null>(null)
@@ -121,6 +122,7 @@ export const useEditorStore = defineStore('editor', () => {
 
 	return {
 		selectedSegment,
+		layoutEditorOpen,
 		expandedSections,
 		activeLineIndex,
 		selectedTuiArea,

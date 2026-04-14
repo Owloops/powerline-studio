@@ -636,9 +636,22 @@ export const useConfigStore = defineStore('config', () => {
 	}
 
 	function resetToDefaults() {
+		const currentStyle = config.value.display.style
+		const currentTheme = config.value.theme
+		const currentColors = config.value.colors
+			? structuredClone(toRaw(config.value.colors))
+			: undefined
+		const currentTui = config.value.display.tui
+			? structuredClone(toRaw(config.value.display.tui))
+			: undefined
+
 		config.value = structuredClone(DEFAULT_CONFIG)
+		config.value.display.style = currentStyle
+		config.value.theme = currentTheme
+		if (currentColors) config.value.colors = currentColors
+		if (currentStyle === 'tui' && currentTui) config.value.display.tui = currentTui
+
 		activePresetId.value = null
-		rehydrateThemeEditor()
 	}
 
 	function $reset() {

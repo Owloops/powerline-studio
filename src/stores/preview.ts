@@ -18,6 +18,7 @@ export const usePreviewStore = defineStore('preview', () => {
 	const fontSize = ref(14)
 	const lineHeight = ref(1)
 	const reservedWidth = ref(45)
+	const showClaudeHeader = ref(false)
 	const ansiOutput = ref('')
 	const htmlOutput = ref('')
 	const segmentHitboxes = shallowRef<SegmentHitbox[]>([])
@@ -85,6 +86,7 @@ export const usePreviewStore = defineStore('preview', () => {
 		fontSize,
 		lineHeight,
 		reservedWidth,
+		showClaudeHeader,
 		darkBackground,
 		terminalBgColor,
 		terminalFgColor,

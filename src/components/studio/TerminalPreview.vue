@@ -3,11 +3,137 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuRadioGroup,
+	DropdownMenuRadioItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import PreviewControls from './PreviewControls.vue'
 import SegmentOverlay from './SegmentOverlay.vue'
+import MockDataModal from './mockdata/MockDataModal.vue'
+import { MOCK_DATA_PRESETS } from '@/data/mockPresets'
 
 const previewStore = usePreviewStore()
+const mockDataStore = useMockDataStore()
+
+const mockDataModalOpen = ref(false)
+
+const mockPresetLabel = computed(() => {
+	if (mockDataStore.activePreset === 'custom') return 'Custom'
+	return (
+		MOCK_DATA_PRESETS.find((p) => p.id === mockDataStore.activePreset)?.name ??
+		mockDataStore.activePreset
+	)
+})
+
+function handleMockPresetChange(value: string) {
+	if (value !== 'custom') {
+		mockDataStore.applyPreset(value)
+	}
+}
+
+const claudeHeaderTopHtml = computed(() => {
+	if (!previewStore.showClaudeHeader) return ''
+	const w = previewStore.terminalWidth
+	const hr = '─'.repeat(w)
+	const model = mockDataStore.hookData.model?.display_name ?? 'Sonnet 4'
+	const cwd = mockDataStore.hookData.cwd ?? '~'
+
+	const logoColor = 'color: rgb(215, 119, 87)'
+	const dimColor = 'color: inherit; opacity: 0.5'
+
+	const logoLines = [' ▐▛███▜▌ ', '▝▜█████▛▘', '  ▘▘ ▝▝  ']
+
+	const textLines = ['  Claude Code', `  ${model} · Claude Max`, `  ${cwd}`]
+
+	const wrap = (ch: string) => `<span class="tch">${ch}</span>`
+	const wrapStr = (s: string) => [...s].map(wrap).join('')
+
+	const lines = logoLines.map(
+		(logo, i) => `<span style="${logoColor}">${wrapStr(logo)}</span>${wrapStr(textLines[i] ?? '')}`,
+	)
+
+	const hrHtml = `<span style="${dimColor}">${wrapStr(hr)}</span>`
+
+	return lines.join('\n') + '\n' + hrHtml + '\n'
+})
+
+const claudeHeaderBottomHtml = computed(() => {
+	if (!previewStore.showClaudeHeader) return ''
+	const w = previewStore.terminalWidth
+	const hr = '─'.repeat(w)
+	const dimColor = 'color: inherit; opacity: 0.5'
+	const wrap = (ch: string) => `<span class="tch">${ch}</span>`
+	const wrapStr = (s: string) => [...s].map(wrap).join('')
+	const hrHtml = `<span style="${dimColor}">${wrapStr(hr)}</span>`
+	return '\n' + hrHtml + '\n'
+})
+
+// --- Typewriter sentences ---
+
+import { delay, wrap as motionWrap } from 'motion-v'
+import { Typewriter } from 'motion-plus-vue'
+
+const TYPEWRITER_LINES = [
+	'make my statusline look amazing',
+	'why do programmers prefer dark mode? because light attracts bugs',
+	'is this the best statusline configurator ever? yes. yes it is',
+	'a SQL query walks into a bar, sees two tables, and asks... can I join you?',
+	'have you tried the TUI layout yet?',
+	"there are only 10 types of people in the world: those who understand binary and those who don't",
+	'claude-powerline is pretty awesome, not gonna lie',
+	'a programmer had a problem, they decided to use regex. now they have two problems',
+	"try switching between themes, it's oddly satisfying",
+	"the best thing about a boolean is that even if you're wrong, you're only off by a bit",
+	'fun fact: the first computer bug was an actual moth found in 1947',
+	'drag those segments around, you know you want to',
+	"why do Java developers wear glasses? because they can't C#",
+	"export your config when you're done, it's just JSON",
+	'to understand recursion, you must first understand recursion',
+	'fun fact: git was created by Linus Torvalds in just 10 days',
+	'have you tried clicking the traffic light buttons?',
+	"there's no place like 127.0.0.1",
+	'a clean statusline is a happy statusline',
+	"!false — it's funny because it's true",
+	'fun fact: the Apollo 11 guidance computer had only 74KB of memory',
+	'what do you call a mass of poorly-written code? spaghetti',
+	'your statusline called. it wants more segments',
+	"fun fact: the term 'bug' predates computers — Edison used it in 1878",
+	"knock knock. race condition. who's there?",
+	'try the capsule style, it looks surprisingly clean',
+	'fun fact: the first 1GB hard drive weighed 550 pounds and cost $40,000',
+	"why do Python programmers have low self-esteem? they're constantly comparing themselves to others",
+	'pro tip: the reserved area shows how much space tmux takes',
+	'fun fact: the @ symbol was almost removed from keyboards in the 1800s',
+	'an SQL statement walks into a bar and sees two tables. can I join you?',
+	'a statusline is worth a thousand keystrokes',
+	'fun fact: the first website ever made is still online at info.cern.ch',
+	"hey, you're doing great. this config looks nice",
+	'what sits on your desk, stares at you, and judges your commit messages?',
+	'fun fact: the average developer mass-produces about 100 lines of code per day',
+	'try importing an existing config — it just works',
+	"it works on my machine. then we'll ship your machine",
+	'fun fact: about 70% of all open-source projects are maintained by one person',
+	"what is a programmer's favorite hangout place? foo bar",
+]
+
+const typewriterIndex = ref(Math.floor(Math.random() * TYPEWRITER_LINES.length))
+
+const currentTypewriterText = computed(() => TYPEWRITER_LINES[typewriterIndex.value] ?? '')
+
+function handleTypewriterComplete() {
+	delay(
+		() => {
+			typewriterIndex.value = motionWrap(0, TYPEWRITER_LINES.length, typewriterIndex.value + 1)
+		},
+		3 + Math.random() * 4,
+	)
+}
 
 const EMOJIS_RED = [
 	'🔥',
@@ -318,10 +444,46 @@ const effectiveWidth = computed(() =>
 				<Badge variant="secondary">
 					{{ effectiveWidth }}/{{ previewStore.terminalWidth }} cols
 				</Badge>
+
+				<!-- Mock Data Controls -->
 				<TooltipProvider :delay-duration="300" :disable-hoverable-content="true">
+					<DropdownMenu>
+						<DropdownMenuTrigger as-child>
+							<button
+								class="ml-3 flex h-7 cursor-pointer items-center gap-1 rounded-md border-none bg-transparent px-2 text-xs hover:bg-foreground/10"
+							>
+								<IconLucide-clipboard-list class="size-3.5 shrink-0 text-muted-foreground" />
+								<span class="text-muted-foreground">{{ mockPresetLabel }}</span>
+								<IconLucide-chevron-down class="size-3.5 text-muted-foreground" />
+							</button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end" class="min-w-[260px]">
+							<DropdownMenuItem class="gap-2" @click="mockDataModalOpen = true">
+								<IconLucide-sliders-horizontal class="size-3.5" />
+								Configure custom mock data
+							</DropdownMenuItem>
+							<DropdownMenuSeparator />
+							<DropdownMenuRadioGroup
+								:model-value="mockDataStore.activePreset"
+								@update:model-value="handleMockPresetChange"
+							>
+								<DropdownMenuRadioItem
+									v-for="preset in MOCK_DATA_PRESETS"
+									:key="preset.id"
+									:value="preset.id"
+									class="flex flex-col items-start gap-0 py-2 [&>span:first-child]:top-3"
+								>
+									<span class="font-medium">{{ preset.name }}</span>
+									<span class="text-xs text-muted-foreground">{{ preset.description }}</span>
+								</DropdownMenuRadioItem>
+							</DropdownMenuRadioGroup>
+						</DropdownMenuContent>
+					</DropdownMenu>
+
+					<!-- Preview Settings -->
 					<Tooltip :disabled="popoverOpen">
 						<TooltipTrigger as-child>
-							<div class="ml-3 inline-flex">
+							<div class="inline-flex">
 								<Popover v-model:open="popoverOpen">
 									<PopoverTrigger as-child>
 										<Button
@@ -354,6 +516,9 @@ const effectiveWidth = computed(() =>
 			</div>
 		</div>
 
+		<!-- Mock Data Modal -->
+		<MockDataModal v-model:open="mockDataModalOpen" />
+
 		<!-- Terminal Body -->
 		<ScrollArea
 			class="min-h-[3rem] max-h-[40svh] bg-(--terminal-bg) text-(--terminal-fg)"
@@ -365,11 +530,19 @@ const effectiveWidth = computed(() =>
 				:style="preStyle"
 				role="img"
 				aria-label="Terminal preview of powerline statusline"
-			><div class="relative" :style="contentStyle"><div v-html="previewStore.htmlOutput" /><SegmentOverlay class="absolute inset-0" /><div
+			><div :style="contentStyle"><template v-if="previewStore.showClaudeHeader"><span v-html="claudeHeaderTopHtml" /><span class="tch">❯</span><span class="tch"> </span><Typewriter
+	as="span"
+	:speed="40"
+	:cursor-style="{ background: previewStore.terminalFgColor, width: '1ch', opacity: 0.7 }"
+	:text-style="{ fontFamily: 'inherit', fontSize: 'inherit', lineHeight: 'inherit', color: 'inherit' }"
+	backspace="character"
+	:backspace-factor="0.5"
+	@complete="handleTypewriterComplete"
+>{{ currentTypewriterText }}</Typewriter><span v-html="claudeHeaderBottomHtml" /></template><div class="relative"><div v-html="previewStore.htmlOutput" /><SegmentOverlay class="absolute inset-0" /><div
 					v-if="reservedStyle"
 					class="pointer-events-none absolute inset-y-0"
 					:style="reservedStyle"
-				><div class="reserved-stripes absolute inset-0" /><div class="absolute inset-0 flex items-center justify-center"><span class="reserved-label">RESERVED</span></div></div></div></pre>
+				><div class="reserved-stripes absolute inset-0" /><div class="absolute inset-0 flex items-center justify-center"><span class="reserved-label">RESERVED</span></div></div></div></div></pre>
 			<p v-else class="px-4 py-3 text-sm italic text-muted-foreground">
 				Preview will appear here...
 			</p>

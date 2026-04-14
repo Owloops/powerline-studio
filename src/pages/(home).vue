@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import StudioHeader from '@/components/studio/StudioHeader.vue'
 import TerminalPreview from '@/components/studio/TerminalPreview.vue'
-import PresetSection from '@/components/studio/sections/PresetSection.vue'
 import StyleThemeSection from '@/components/studio/sections/StyleThemeSection.vue'
 import FlatLayoutEditor from '@/components/studio/editor/FlatLayoutEditor.vue'
 import TuiLayoutEditor from '@/components/studio/editor/TuiLayoutEditor.vue'
 import ExportSection from '@/components/studio/sections/ExportSection.vue'
-import MockDataSettingsSection from '@/components/studio/sections/MockDataSettingsSection.vue'
 
 useHead({ title: 'Powerline Studio' })
 
@@ -18,7 +16,7 @@ const configStore = useConfigStore()
 </script>
 
 <template>
-	<div class="flex flex-col">
+	<div class="flex min-h-svh flex-col">
 		<StudioHeader />
 
 		<!-- Terminal Preview — sticky after header scrolls away -->
@@ -27,17 +25,15 @@ const configStore = useConfigStore()
 		</div>
 
 		<!-- Section Flow -->
-		<div class="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 py-6">
-			<PresetSection :step="1" />
-			<StyleThemeSection :step="2" />
+		<div class="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-8 px-4 py-6">
+			<StyleThemeSection :step="1" />
 
 			<!-- Layout Editor -->
-			<FlatLayoutEditor v-if="!configStore.isTuiStyle" :step="3" />
-			<TuiLayoutEditor v-else :step="3" />
+			<FlatLayoutEditor v-if="!configStore.isTuiStyle" :step="2" />
+			<TuiLayoutEditor v-else :step="2" />
 
-			<!-- Export & Mock Data -->
-			<ExportSection :step="4" />
-			<MockDataSettingsSection />
+			<!-- Export -->
+			<ExportSection :step="3" />
 		</div>
 
 		<!-- Footer -->
