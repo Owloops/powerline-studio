@@ -54,7 +54,7 @@ const configStore = useConfigStore()
 					href="https://github.com/FallDownTheSystem"
 					target="_blank"
 					rel="noopener noreferrer"
-					class="font-medium text-foreground hover:underline"
+					class="rounded font-medium text-foreground hover:underline outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
 					>FallDownTheSystem</a
 				>
 			</div>

@@ -77,7 +77,7 @@ function cancelEdit() {
 				<button
 					v-for="(item, sortIdx) in sortedBreakpoints"
 					:key="item.id"
-					class="group relative flex items-center rounded-lg border px-3 py-2 text-left"
+					class="group relative flex items-center rounded-lg border px-3 py-2 text-left outline-none focus-visible:border-primary dark:focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/50"
 					:class="
 						selectedId === item.id
 							? 'border-primary ring-1 ring-primary/30 bg-primary/5'
@@ -132,7 +132,7 @@ function cancelEdit() {
 						<Tooltip v-if="item.bp.minWidth > 0">
 							<TooltipTrigger as-child>
 								<button
-									class="rounded p-1 text-muted-foreground/50 opacity-0 transition-opacity hover:bg-muted hover:text-foreground group-hover:opacity-100 group-focus-within:opacity-100"
+									class="rounded p-1 text-muted-foreground/50 opacity-0 transition-opacity hover:bg-muted hover:text-foreground group-hover:opacity-100 group-focus-within:opacity-100 outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
 									aria-label="Edit min-width"
 									@click.stop="startEditing(item.id, item.bp.minWidth)"
 								>
@@ -144,7 +144,7 @@ function cancelEdit() {
 
 						<ConfirmPopover v-if="breakpoints.length > 1" @confirm="$emit('remove', item.id)">
 							<button
-								class="rounded p-1 text-muted-foreground/50 opacity-0 transition-opacity hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100 group-focus-within:opacity-100"
+								class="rounded p-1 text-muted-foreground/50 opacity-0 transition-opacity hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100 group-focus-within:opacity-100 outline-none focus-visible:ring-[3px] focus-visible:ring-destructive/50"
 								aria-label="Remove breakpoint"
 								@click.stop
 							>

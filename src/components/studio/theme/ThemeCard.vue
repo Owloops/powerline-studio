@@ -36,7 +36,7 @@ const displayLabel = computed(
 		:class="
 			cn(
 				'theme-card flex cursor-pointer flex-col gap-2.5 rounded-xl border bg-card p-3 text-left text-card-foreground outline-none',
-				'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
+				'focus-visible:border-primary dark:focus-visible:border-primary focus-visible:ring-primary/50 focus-visible:ring-[3px]',
 				'data-[state=checked]:border-primary data-[state=checked]:ring-primary/20 data-[state=checked]:ring-2 data-[state=checked]:bg-primary/5',
 				props.class,
 			)

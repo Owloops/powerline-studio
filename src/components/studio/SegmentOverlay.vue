@@ -241,6 +241,12 @@ function handleOpenChange(open: boolean) {
 		opacity 0ms;
 }
 
+.segment-hitbox:focus-visible {
+	opacity: 1;
+	outline: none;
+	box-shadow: inset 0 0 0 1.5px var(--color-primary);
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.segment-hitbox {
 		transition: none;

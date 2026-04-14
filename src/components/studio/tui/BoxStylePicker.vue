@@ -30,7 +30,7 @@ function boxPreview(chars: BoxChars) {
 	<div class="grid grid-cols-3 gap-2">
 		<!-- Default (auto) -->
 		<button
-			class="flex flex-col items-center gap-1.5 rounded-md border p-2 text-xs hover:bg-accent"
+			class="flex flex-col items-center gap-1.5 rounded-md border p-2 text-xs hover:bg-accent outline-none focus-visible:border-primary dark:focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/50"
 			:class="currentBox === undefined ? 'ring-2 ring-primary border-primary' : 'border-border'"
 			@click="selectPreset(undefined)"
 		>
@@ -42,7 +42,7 @@ function boxPreview(chars: BoxChars) {
 		<button
 			v-for="preset in presets"
 			:key="preset.name"
-			class="flex flex-col items-center gap-1 rounded-md border p-2 text-xs hover:bg-accent"
+			class="flex flex-col items-center gap-1 rounded-md border p-2 text-xs hover:bg-accent outline-none focus-visible:border-primary dark:focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/50"
 			:class="currentBox === preset.name ? 'ring-2 ring-primary border-primary' : 'border-border'"
 			@click="selectPreset(preset.name)"
 		>

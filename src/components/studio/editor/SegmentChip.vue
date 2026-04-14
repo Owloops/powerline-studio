@@ -20,7 +20,7 @@ const meta = computed(() => SEGMENT_META[props.segmentKey])
 		type="button"
 		:class="
 			cn(
-				'group relative flex cursor-pointer items-center gap-1.5 rounded-[inherit] text-xs font-medium outline-none transition-[border-color,box-shadow] duration-150',
+				'group relative flex cursor-pointer items-center gap-1.5 rounded-[inherit] text-xs font-medium outline-none transition-[border-color,box-shadow] duration-150 focus-visible:ring-[3px] focus-visible:ring-primary/50',
 				!selected && 'bg-card hover:bg-accent/50',
 				selected && 'bg-primary/5',
 				'px-2.5 py-1.5',

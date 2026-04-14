@@ -67,7 +67,7 @@ const displayValue = computed(() => {
 
 const cellClasses = computed(() => {
 	const base =
-		'relative flex items-center justify-center rounded-md border px-2 py-1.5 text-xs font-mono cursor-pointer transition-[box-shadow,ring-color] duration-150 focus:outline-none focus:ring-2 focus:ring-primary/30'
+		'relative flex items-center justify-center rounded-md border px-2 py-1.5 text-xs font-mono cursor-pointer transition-[box-shadow,ring-color] duration-150 outline-none focus-visible:border-primary dark:focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/50'
 	if (props.value === '.') {
 		return `${base} border-dashed border-muted-foreground/30 text-muted-foreground/50 bg-muted/30`
 	}

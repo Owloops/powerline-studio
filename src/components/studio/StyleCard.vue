@@ -23,7 +23,7 @@ const segments = [
 				'flex cursor-pointer flex-col gap-2 rounded-xl border bg-card p-3 text-left text-card-foreground shadow-sm outline-none',
 				'hover:bg-accent/50',
 				'transition-[background-color,border-color,box-shadow] duration-150',
-				'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
+				'focus-visible:border-primary dark:focus-visible:border-primary focus-visible:ring-primary/50 focus-visible:ring-[3px]',
 				'data-[state=checked]:border-primary data-[state=checked]:ring-primary/20 data-[state=checked]:ring-2 data-[state=checked]:bg-primary/5',
 				$attrs.class as HTMLAttributes['class'],
 			)

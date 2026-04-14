@@ -159,7 +159,7 @@ function resetTemplate() {
 			</span>
 		</div>
 		<button
-			class="flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+			class="flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive outline-none focus-visible:ring-[3px] focus-visible:ring-destructive/50"
 			aria-label="Clear cell"
 			@click="emit('swap', '.')"
 		>
@@ -168,7 +168,7 @@ function resetTemplate() {
 		<Popover v-model:open="pickerOpen">
 			<PopoverTrigger as-child>
 				<button
-					class="flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
+					class="flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
 					aria-label="Change segment"
 				>
 					<IconLucide-replace class="size-3.5" />

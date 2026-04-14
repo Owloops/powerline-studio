@@ -36,7 +36,11 @@ const fitContent = computed(() => tui.value?.fitContent ?? false)
 						<Label for="fit-content" class="text-xs">Fit Content</Label>
 						<Tooltip>
 							<TooltipTrigger as-child>
-								<button type="button" class="inline-flex cursor-default" aria-label="More info">
+								<button
+									type="button"
+									class="inline-flex cursor-default rounded-sm outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
+									aria-label="More info"
+								>
 									<IconLucide-info class="size-3 text-muted-foreground/50" />
 								</button>
 							</TooltipTrigger>
@@ -58,7 +62,11 @@ const fitContent = computed(() => tui.value?.fitContent ?? false)
 						<Label for="tui-min-width" class="text-xs">Min Width</Label>
 						<Tooltip>
 							<TooltipTrigger as-child>
-								<button type="button" class="inline-flex cursor-default" aria-label="More info">
+								<button
+									type="button"
+									class="inline-flex cursor-default rounded-sm outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
+									aria-label="More info"
+								>
 									<IconLucide-info class="size-3 text-muted-foreground/50" />
 								</button>
 							</TooltipTrigger>
@@ -88,7 +96,11 @@ const fitContent = computed(() => tui.value?.fitContent ?? false)
 						<Label for="tui-max-width" class="text-xs">Max Width</Label>
 						<Tooltip>
 							<TooltipTrigger as-child>
-								<button type="button" class="inline-flex cursor-default" aria-label="More info">
+								<button
+									type="button"
+									class="inline-flex cursor-default rounded-sm outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
+									aria-label="More info"
+								>
 									<IconLucide-info class="size-3 text-muted-foreground/50" />
 								</button>
 							</TooltipTrigger>

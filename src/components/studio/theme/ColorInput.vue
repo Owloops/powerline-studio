@@ -37,7 +37,7 @@ const colorValue = computed({
 		<PopoverTrigger as-child>
 			<button
 				type="button"
-				class="color-input-trigger flex h-8 min-w-0 items-center gap-1.5 rounded-md border border-border bg-background px-1.5 text-xs font-mono hover:border-ring/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+				class="color-input-trigger flex h-8 min-w-0 items-center gap-1.5 rounded-md border border-border bg-background px-1.5 text-xs font-mono hover:border-ring/50 outline-none focus-visible:border-primary dark:focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/50"
 				:aria-label="label"
 			>
 				<span

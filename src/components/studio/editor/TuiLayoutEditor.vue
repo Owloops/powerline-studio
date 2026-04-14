@@ -375,7 +375,7 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 	<section class="flex flex-col gap-4">
 		<Collapsible v-model:open="isOpen">
 			<CollapsibleTrigger
-				class="relative flex cursor-pointer items-center gap-1 rounded-md px-1 py-0.5 -ml-1 text-left transition-colors hover:bg-accent/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+				class="relative flex cursor-pointer items-center gap-1 rounded-md px-1 py-0.5 -ml-1 text-left transition-colors hover:bg-accent/50 outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
 			>
 				<span
 					v-if="step"
@@ -430,7 +430,7 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 											<Tooltip>
 												<TooltipTrigger as-child>
 													<button
-														class="flex size-4 cursor-pointer items-center justify-center rounded text-muted-foreground transition-colors hover:text-foreground"
+														class="flex size-4 cursor-pointer items-center justify-center rounded text-muted-foreground transition-colors hover:text-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
 														@click="handleReset"
 													>
 														<IconLucide-rotate-ccw class="size-2.5" />
@@ -572,7 +572,7 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 								:key="item.index"
 								role="tab"
 								:aria-selected="selectedBpIndex === item.index"
-								class="group relative flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs transition-[border-color,background-color,box-shadow] duration-150"
+								class="group relative flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs transition-[border-color,background-color,box-shadow] duration-150 outline-none focus-visible:border-primary dark:focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/50"
 								:class="
 									selectedBpIndex === item.index
 										? 'border-primary bg-primary/5 ring-1 ring-primary/30'
@@ -632,7 +632,7 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 									<Tooltip>
 										<TooltipTrigger as-child>
 											<button
-												class="rounded p-0.5 text-muted-foreground/50 opacity-0 transition-opacity hover:bg-primary/10 hover:text-primary group-hover:opacity-100 group-focus-within:opacity-100"
+												class="rounded p-0.5 text-muted-foreground/50 opacity-0 transition-opacity hover:bg-primary/10 hover:text-primary group-hover:opacity-100 group-focus-within:opacity-100 outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
 												@click.stop="startEditMinWidth(item.index, item.bp.minWidth)"
 											>
 												<IconLucide-pencil class="size-3" />
@@ -648,7 +648,7 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 									@confirm="removeBreakpoint(item.index)"
 								>
 									<button
-										class="rounded p-0.5 text-muted-foreground/50 opacity-0 transition-opacity hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100 group-focus-within:opacity-100"
+										class="rounded p-0.5 text-muted-foreground/50 opacity-0 transition-opacity hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100 group-focus-within:opacity-100 outline-none focus-visible:ring-[3px] focus-visible:ring-destructive/50"
 										@click.stop
 									>
 										<IconLucide-trash-2 class="size-3" />
@@ -674,7 +674,7 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 					</div>
 
 					<!-- Seamless Title / Grid / Footer unit -->
-					<div class="rounded-lg border border-border overflow-hidden">
+					<div class="rounded-lg border border-border overflow-visible">
 						<!-- Title Bar (clickable strip) -->
 						<TooltipProvider :delay-duration="400">
 							<Tooltip :disabled="titlePopoverOpen">
@@ -683,7 +683,7 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 										<PopoverTrigger as-child>
 											<button
 												ref="titleTriggerRef"
-												class="flex w-full items-center gap-2 rounded-t-lg border-b border-border bg-muted/30 px-3 py-2 text-left text-xs hover:bg-muted/50"
+												class="flex w-full items-center gap-2 rounded-t-lg border-b border-border bg-muted/30 px-3 py-2 text-left text-xs hover:bg-muted/50 outline-none focus-visible:border-primary dark:focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/50"
 												:class="titlePopoverOpen ? 'ring-1 ring-inset ring-primary/30' : ''"
 											>
 												<IconLucide-panel-top class="size-3.5 shrink-0 text-muted-foreground" />
@@ -749,7 +749,7 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 										<PopoverTrigger as-child>
 											<button
 												ref="footerTriggerRef"
-												class="flex w-full items-center gap-2 rounded-b-lg border-t border-border bg-muted/30 px-3 py-2 text-left text-xs hover:bg-muted/50"
+												class="flex w-full items-center gap-2 rounded-b-lg border-t border-border bg-muted/30 px-3 py-2 text-left text-xs hover:bg-muted/50 outline-none focus-visible:border-primary dark:focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/50"
 												:class="footerPopoverOpen ? 'ring-1 ring-inset ring-primary/30' : ''"
 											>
 												<IconLucide-panel-bottom class="size-3.5 shrink-0 text-muted-foreground" />

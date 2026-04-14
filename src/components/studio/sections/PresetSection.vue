@@ -199,7 +199,7 @@ function loadImportedConfig() {
 										<Tooltip>
 											<TooltipTrigger as-child>
 												<button
-													class="flex size-4 cursor-pointer items-center justify-center rounded text-muted-foreground transition-colors hover:text-foreground"
+													class="flex size-4 cursor-pointer items-center justify-center rounded text-muted-foreground transition-colors hover:text-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
 													aria-label="Reset to preset"
 													@click="handleReset"
 												>

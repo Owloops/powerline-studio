@@ -43,7 +43,7 @@ function handleRemove(event: MouseEvent) {
 				tabindex="0"
 				:class="
 					cn(
-						'flex h-10 select-none items-center gap-2 rounded-md px-2 transition-colors',
+						'flex h-10 select-none items-center gap-2 rounded-md px-2 transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50',
 						'cursor-grab active:cursor-grabbing',
 						'hover:bg-accent/50',
 						selected && 'hover:bg-accent',

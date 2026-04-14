@@ -488,7 +488,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 										<PopoverContent class="w-auto p-2" align="start">
 											<div class="grid grid-cols-3 gap-1.5">
 												<button
-													class="flex flex-col items-center gap-1 rounded-md border p-1.5 text-xs hover:bg-accent"
+													class="flex flex-col items-center gap-1 rounded-md border p-1.5 text-xs hover:bg-accent outline-none focus-visible:border-primary dark:focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/50"
 													:class="
 														tuiCurrentBox === undefined
 															? 'ring-2 ring-primary border-primary'
@@ -505,7 +505,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 												<button
 													v-for="preset in boxPresets"
 													:key="preset.name"
-													class="flex flex-col items-center gap-0.5 rounded-md border p-1.5 text-xs hover:bg-accent"
+													class="flex flex-col items-center gap-0.5 rounded-md border p-1.5 text-xs hover:bg-accent outline-none focus-visible:border-primary dark:focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/50"
 													:class="
 														tuiCurrentBox === preset.name
 															? 'ring-2 ring-primary border-primary'
@@ -537,7 +537,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 											<TooltipTrigger as-child>
 												<button
 													type="button"
-													class="inline-flex cursor-default"
+													class="inline-flex cursor-default rounded-sm outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
 													aria-label="More info"
 												>
 													<IconLucide-info class="size-3 text-muted-foreground/50" />
@@ -560,7 +560,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 
 								<!-- Extra settings trigger -->
 								<CollapsibleTrigger
-									class="col-span-2 flex h-8 items-center justify-end gap-1 self-end rounded-md px-2 text-xs text-muted-foreground hover:bg-accent/50 md:col-span-1"
+									class="col-span-2 flex h-8 items-center justify-end gap-1 self-end rounded-md px-2 text-xs text-muted-foreground hover:bg-accent/50 md:col-span-1 outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
 								>
 									<span class="flex-1 text-center">Show more options</span>
 									<IconLucide-chevron-down
@@ -582,7 +582,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 												<TooltipTrigger as-child>
 													<button
 														type="button"
-														class="inline-flex cursor-default"
+														class="inline-flex cursor-default rounded-sm outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
 														aria-label="More info"
 													>
 														<IconLucide-info class="size-3 text-muted-foreground/50" />
@@ -619,7 +619,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 												<TooltipTrigger as-child>
 													<button
 														type="button"
-														class="inline-flex cursor-default"
+														class="inline-flex cursor-default rounded-sm outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
 														aria-label="More info"
 													>
 														<IconLucide-info class="size-3 text-muted-foreground/50" />
@@ -677,7 +677,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 												<TooltipTrigger as-child>
 													<button
 														type="button"
-														class="inline-flex cursor-default"
+														class="inline-flex cursor-default rounded-sm outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
 														aria-label="More info"
 													>
 														<IconLucide-info class="size-3 text-muted-foreground/50" />
@@ -726,7 +726,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 								class="group flex items-center gap-2 rounded-md px-2 py-1 hover:bg-accent/50"
 							>
 								<button
-									class="flex flex-1 cursor-pointer items-center gap-2 text-left text-sm"
+									class="flex flex-1 cursor-pointer items-center gap-2 rounded text-left text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
 									@click="handleLoadSaved(saved)"
 								>
 									<span
@@ -747,7 +747,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 								</button>
 								<ConfirmPopover @confirm="handleDeleteSaved(saved.id)">
 									<button
-										class="flex size-5 cursor-pointer items-center justify-center rounded-full text-muted-foreground opacity-0 transition-opacity hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100"
+										class="flex size-5 cursor-pointer items-center justify-center rounded-full text-muted-foreground opacity-0 transition-opacity hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100 outline-none focus-visible:ring-[3px] focus-visible:ring-destructive/50"
 										:aria-label="`Delete ${saved.name}`"
 										@click.stop
 									>

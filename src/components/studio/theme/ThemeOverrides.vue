@@ -51,7 +51,7 @@ function resetSegment(key: keyof ColorTheme) {
 	<div class="flex flex-col gap-3">
 		<Collapsible v-model:open="isOpen">
 			<CollapsibleTrigger
-				class="flex w-full items-center justify-between rounded-md px-1 py-1 text-sm font-medium hover:bg-accent/50"
+				class="flex w-full items-center justify-between rounded-md px-1 py-1 text-sm font-medium hover:bg-accent/50 outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
 			>
 				<span class="flex items-center gap-2">
 					Customize Colors

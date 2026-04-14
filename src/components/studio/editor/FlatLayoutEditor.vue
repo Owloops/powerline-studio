@@ -343,7 +343,7 @@ watch(
 	<section class="flex flex-col gap-4">
 		<Collapsible v-model:open="isOpen">
 			<CollapsibleTrigger
-				class="relative flex cursor-pointer items-center gap-1 rounded-md px-1 py-0.5 -ml-1 text-left transition-colors hover:bg-accent/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+				class="relative flex cursor-pointer items-center gap-1 rounded-md px-1 py-0.5 -ml-1 text-left transition-colors hover:bg-accent/50 outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
 			>
 				<span
 					v-if="step"
@@ -382,7 +382,7 @@ watch(
 											<Tooltip>
 												<TooltipTrigger as-child>
 													<button
-														class="flex size-4 cursor-pointer items-center justify-center rounded text-muted-foreground transition-colors hover:text-foreground"
+														class="flex size-4 cursor-pointer items-center justify-center rounded text-muted-foreground transition-colors hover:text-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
 														aria-label="Reset to preset"
 														@click="handleReset"
 													>
@@ -536,7 +536,7 @@ watch(
 								axis="x"
 								:values="segmentOrders[lineIndex] ?? []"
 								as="div"
-								class="flex min-w-0 items-center gap-2 overflow-x-auto"
+								class="flex min-w-0 items-center gap-2 overflow-x-auto p-1 -m-1"
 								@update:values="handleReorder(lineIndex, $event)"
 							>
 								<AnimatePresence>
@@ -553,7 +553,7 @@ watch(
 											cn(
 												'reorder-chip cursor-grab active:cursor-grabbing',
 												'rounded-md border border-border',
-												'has-[:focus-visible]:border-ring has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring/50',
+												'has-[:focus-visible]:border-primary has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-primary/50',
 												openPopover === compositeKey(lineIndex, key) &&
 													'border-r border-primary ring-2 ring-primary/20',
 												highlightedChip === compositeKey(lineIndex, key) &&

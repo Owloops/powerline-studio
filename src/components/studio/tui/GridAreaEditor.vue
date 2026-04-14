@@ -90,7 +90,7 @@ function handleSingleCellUpdate(
 				>
 					<button
 						v-if="rowIndex > 0"
-						class="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
+						class="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
 						title="Move row up"
 						@click="configStore.moveAreaRow(breakpointIndex, rowIndex, rowIndex - 1)"
 					>
@@ -98,7 +98,7 @@ function handleSingleCellUpdate(
 					</button>
 					<button
 						v-if="rowIndex < parsedGrid.length - 1"
-						class="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
+						class="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
 						title="Move row down"
 						@click="configStore.moveAreaRow(breakpointIndex, rowIndex, rowIndex + 1)"
 					>
@@ -109,7 +109,7 @@ function handleSingleCellUpdate(
 						@confirm="configStore.removeAreaRow(breakpointIndex, rowIndex)"
 					>
 						<button
-							class="flex size-5 items-center justify-center rounded text-destructive/70 hover:bg-destructive/10 hover:text-destructive"
+							class="flex size-5 items-center justify-center rounded text-destructive/70 hover:bg-destructive/10 hover:text-destructive outline-none focus-visible:ring-[3px] focus-visible:ring-destructive/50"
 							title="Remove row"
 						>
 							<IconLucide-trash-2 class="size-3" />

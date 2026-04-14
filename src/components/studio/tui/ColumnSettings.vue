@@ -161,7 +161,7 @@ function handleAlignChange(colIndex: number, value: string) {
 					@confirm="configStore.removeColumn(breakpointIndex, colIndex)"
 				>
 					<button
-						class="flex items-center justify-center rounded p-1 text-muted-foreground hover:text-destructive"
+						class="flex items-center justify-center rounded p-1 text-muted-foreground hover:text-destructive outline-none focus-visible:ring-[3px] focus-visible:ring-destructive/50"
 					>
 						<IconLucide-trash-2 class="size-3" />
 					</button>

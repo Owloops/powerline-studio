@@ -474,7 +474,7 @@ const effectiveWidth = computed(() =>
 					<DropdownMenu>
 						<DropdownMenuTrigger as-child>
 							<button
-								class="ml-3 flex h-7 cursor-pointer items-center gap-1 rounded-md border-none bg-transparent px-2 text-xs hover:bg-foreground/10"
+								class="ml-3 flex h-7 cursor-pointer items-center gap-1 rounded-md border-none bg-transparent px-2 text-xs hover:bg-foreground/10 outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
 								:aria-label="`Mock data preset: ${mockPresetLabel}`"
 							>
 								<IconLucide-clipboard-list class="size-3.5 shrink-0 text-muted-foreground" />

@@ -272,7 +272,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 </script>
 
 <template>
-	<div class="flex flex-col gap-1.5 overflow-x-auto">
+	<div class="flex flex-col gap-1.5 overflow-x-auto p-1 -m-1">
 		<!-- Column headers (clickable for settings) with row-actions spacer -->
 		<div class="flex min-w-fit items-center gap-1.5">
 			<div class="grid flex-1 gap-1.5" :style="{ gridTemplateColumns }">
@@ -288,7 +288,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 				>
 					<PopoverTrigger as-child>
 						<button
-							class="flex items-center justify-center rounded-md bg-muted/50 px-2 py-1 text-[0.625rem] font-mono text-muted-foreground hover:bg-muted hover:text-foreground"
+							class="flex items-center justify-center rounded-md bg-muted/50 px-2 py-1 text-[0.625rem] font-mono text-muted-foreground hover:bg-muted hover:text-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
 						>
 							<span class="truncate">Col {{ colIdx + 1 }} · {{ col }}</span>
 						</button>
@@ -358,7 +358,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 							</Select>
 							<ConfirmPopover v-if="columns.length > 1" @confirm="handleRemoveColumn(colIdx)">
 								<button
-									class="flex items-center gap-1 rounded px-2 py-1 text-xs text-destructive hover:bg-destructive/10"
+									class="flex items-center gap-1 rounded px-2 py-1 text-xs text-destructive hover:bg-destructive/10 outline-none focus-visible:ring-[3px] focus-visible:ring-destructive/50"
 								>
 									<IconLucide-trash-2 class="size-3" />
 									Remove column
@@ -370,7 +370,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 			</div>
 			<!-- Add column button — matches row-actions width -->
 			<button
-				class="flex w-[42px] shrink-0 items-center justify-center gap-0.5 rounded-md bg-muted/50 py-1 text-[0.625rem] text-muted-foreground hover:bg-muted hover:text-foreground"
+				class="flex w-[42px] shrink-0 items-center justify-center gap-0.5 rounded-md bg-muted/50 py-1 text-[0.625rem] text-muted-foreground hover:bg-muted hover:text-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
 				@click="configStore.addColumn(breakpointIndex)"
 			>
 				<IconLucide-plus class="size-3" />
@@ -431,7 +431,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 									>
 										<PopoverTrigger as-child>
 											<button
-												class="flex items-center justify-center rounded-md border border-dashed border-muted-foreground/25 bg-muted/20 px-2 py-3 text-muted-foreground/40 hover:border-primary/40 hover:bg-primary/5 hover:text-primary/60"
+												class="flex items-center justify-center rounded-md border border-dashed border-muted-foreground/25 bg-muted/20 px-2 py-3 text-muted-foreground/40 hover:border-primary/40 hover:bg-primary/5 hover:text-primary/60 outline-none focus-visible:border-primary dark:focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/50"
 												:style="cell.span > 1 ? { gridColumn: `span ${cell.span}` } : undefined"
 												aria-label="Add segment"
 												@click="openSegmentPicker(rowIndex, cell)"
@@ -501,7 +501,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 										@swap="handleCellUpdate(rowIndex, cell, $event)"
 									>
 										<button
-											class="group/cell relative flex items-center gap-1.5 rounded-md border px-3 py-3 text-left text-xs transition-[border-color,box-shadow] duration-150"
+											class="group/cell relative flex items-center gap-1.5 rounded-md border px-3 py-3 text-left text-xs transition-[border-color,box-shadow] duration-150 outline-none focus-visible:border-primary dark:focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/50"
 											:class="[
 												isCellHighlighted(cell.segment)
 													? 'border-primary bg-primary/10 ring-2 ring-primary/40 tui-cell-highlight-pulse'
@@ -549,7 +549,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 												<PopoverAnchor as-child>
 													<button
 														type="button"
-														class="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full border border-border bg-background text-muted-foreground shadow-sm transition-opacity hover:text-foreground sm:opacity-0 sm:group-hover/cell:opacity-100 sm:focus-visible:opacity-100"
+														class="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full border border-border bg-background text-muted-foreground shadow-sm transition-opacity hover:text-foreground sm:opacity-0 sm:group-hover/cell:opacity-100 sm:focus-visible:opacity-100 outline-none focus-visible:border-primary dark:focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/50"
 														aria-label="Change segment"
 														@click.stop="openSegmentPicker(rowIndex, cell)"
 													>
@@ -626,7 +626,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 							<Tooltip v-if="rowIndex > 0">
 								<TooltipTrigger as-child>
 									<button
-										class="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
+										class="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
 										aria-label="Move row up"
 										@click="configStore.moveAreaRow(breakpointIndex, rowIndex, rowIndex - 1)"
 									>
@@ -643,7 +643,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 									<TooltipTrigger as-child>
 										<PopoverTrigger as-child>
 											<button
-												class="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
+												class="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
 												aria-label="Insert row"
 											>
 												<IconLucide-plus class="size-3" />
@@ -688,7 +688,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 							<Tooltip v-if="rowIndex < parsedGrid.length - 1">
 								<TooltipTrigger as-child>
 									<button
-										class="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
+										class="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
 										aria-label="Move row down"
 										@click="configStore.moveAreaRow(breakpointIndex, rowIndex, rowIndex + 1)"
 									>
@@ -705,7 +705,7 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 								@confirm="configStore.removeAreaRow(breakpointIndex, rowIndex)"
 							>
 								<button
-									class="flex size-5 items-center justify-center rounded text-destructive/70 hover:bg-destructive/10 hover:text-destructive"
+									class="flex size-5 items-center justify-center rounded text-destructive/70 hover:bg-destructive/10 hover:text-destructive outline-none focus-visible:ring-[3px] focus-visible:ring-destructive/50"
 									aria-label="Remove row"
 								>
 									<IconLucide-trash-2 class="size-3" />

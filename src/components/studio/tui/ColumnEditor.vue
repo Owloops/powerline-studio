@@ -59,7 +59,9 @@ function handleValueChange(colIndex: number, type: 'fr' | 'fixed', rawValue: str
 						v-if="columns.length > 1"
 						@confirm="configStore.removeColumn(breakpointIndex, colIndex)"
 					>
-						<button class="ml-auto rounded p-0.5 text-muted-foreground hover:text-destructive">
+						<button
+							class="ml-auto rounded p-0.5 text-muted-foreground hover:text-destructive outline-none focus-visible:ring-[3px] focus-visible:ring-destructive/50"
+						>
 							<IconLucide-trash-2 class="size-3" />
 						</button>
 					</ConfirmPopover>
