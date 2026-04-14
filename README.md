@@ -26,8 +26,6 @@ pnpm install
 vp dev
 ```
 
-Requires [claude-powerline](https://github.com/owloops/claude-powerline) linked locally (the `feat/browser-entry` branch) at `../claude-powerline`.
-
 ## Tech Stack
 
 Vue 3.6, Vite 8, Tailwind CSS 4, shadcn-vue, Pinia, ansi_up, Shiki.
