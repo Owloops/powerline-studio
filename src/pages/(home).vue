@@ -6,7 +6,27 @@ import FlatLayoutEditor from '@/components/studio/editor/FlatLayoutEditor.vue'
 import TuiLayoutEditor from '@/components/studio/editor/TuiLayoutEditor.vue'
 import ExportSection from '@/components/studio/sections/ExportSection.vue'
 
+const SITE_URL = 'https://powerline.owloops.com'
+const DESCRIPTION =
+	'Visual configuration editor for claude-powerline — design themes, styles, segments, and TUI layouts for your Claude Code status line (/statusline) with a live terminal preview.'
+
 useHead({ title: 'Powerline Studio' })
+
+useSeoMeta({
+	description: DESCRIPTION,
+	ogType: 'website',
+	ogTitle: 'Powerline Studio',
+	ogDescription: DESCRIPTION,
+	ogImage: `${SITE_URL}/og.png`,
+	ogImageWidth: 1200,
+	ogImageHeight: 630,
+	ogUrl: SITE_URL,
+	ogSiteName: 'Powerline Studio',
+	twitterCard: 'summary_large_image',
+	twitterTitle: 'Powerline Studio',
+	twitterDescription: DESCRIPTION,
+	twitterImage: `${SITE_URL}/og.png`,
+})
 
 // Activate the rendering pipeline — watches config/mock/preview stores and
 // writes htmlOutput to previewStore reactively.
