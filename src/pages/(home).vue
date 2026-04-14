@@ -52,6 +52,10 @@ const configStore = useConfigStore()
 					>FallDownTheSystem</a
 				>
 			</div>
+			<p class="mx-auto mt-3 max-w-4xl px-4 text-center text-[0.625rem] text-muted-foreground/50">
+				claude-powerline and Powerline Studio are independent community projects. Not affiliated
+				with, endorsed by, or sponsored by Anthropic, PBC. Claude is a trademark of Anthropic.
+			</p>
 		</footer>
 	</div>
 </template>
