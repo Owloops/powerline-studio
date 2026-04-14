@@ -26,7 +26,7 @@ export const TUI_PRESETS: TuiPreset[] = [
 				{
 					minWidth: 0,
 					areas: [
-						'git.icon   git.head     .            git.working',
+						'git.icon   git.headVal     .            git.working',
 						'---',
 						'context.icon  context.bar  context.pct  context.tokens',
 					],
@@ -56,7 +56,7 @@ export const TUI_PRESETS: TuiPreset[] = [
 				right: '{dir}',
 			},
 			segments: {
-				'git.info': {
+				'git.headVal': {
 					items: ['{branch}', '{status}', '{ahead}', '{behind}'],
 					gap: 1,
 				},
@@ -65,7 +65,7 @@ export const TUI_PRESETS: TuiPreset[] = [
 				{
 					minWidth: 0,
 					areas: [
-						'git.icon     git.info     git.info     git.info     git.working',
+						'git.icon     git.headVal     git.headVal     git.headVal     git.working',
 						'---',
 						'context.icon  context.bar  context.bar  context.pct  context.tokens',
 						'block.icon    block.bar    block.bar    block.value  block.time',
@@ -101,7 +101,7 @@ export const TUI_PRESETS: TuiPreset[] = [
 				right: '{metrics.lastResponse}',
 			},
 			segments: {
-				'git.info': {
+				'git.headVal': {
 					items: ['{branch}', '{status}', '{ahead}', '{behind}'],
 					gap: 1,
 				},
@@ -110,7 +110,7 @@ export const TUI_PRESETS: TuiPreset[] = [
 				{
 					minWidth: 55,
 					areas: [
-						'git.icon     git.info     git.info     git.info        git.working',
+						'git.icon     git.headVal     git.headVal     git.headVal        git.working',
 						'---',
 						'context.icon  context.bar  context.bar  context.pct     context.tokens',
 						'block.icon    block.bar    block.bar    block.value     block.time',

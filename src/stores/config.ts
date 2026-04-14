@@ -332,7 +332,7 @@ export const useConfigStore = defineStore('config', () => {
 				{
 					minWidth: 0,
 					areas: [
-						'git.icon   git.head      .            git.working',
+						'git.icon   git.headVal      .            git.working',
 						'---',
 						'context.icon  context.bar  context.pct  context.tokens',
 						'---',

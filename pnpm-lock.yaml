@@ -38,8 +38,8 @@ importers:
         specifier: ^1.8.0
         version: 1.8.0(vue@3.6.0-beta.9(typescript@6.0.2))
       '@owloops/claude-powerline':
-        specifier: ^1.25.0
-        version: 1.25.0
+        specifier: ^1.25.1
+        version: 1.25.1
       '@tailwindcss/vite':
         specifier: ^4.2.2
         version: 4.2.2(@voidzero-dev/vite-plus-core@0.1.16(@types/node@24.12.2)(jiti@2.6.1)(terser@5.46.1)(typescript@6.0.2)(yaml@2.8.3))
@@ -592,8 +592,8 @@ packages:
   '@one-ini/wasm@0.1.1':
     resolution: {integrity: sha512-XuySG1E38YScSJoMlqovLru4KTUNSjgVTIjyh7qMX6aNN5HY5Ct5LhRJdxO79JtTzKfzV/bnWpz+zquYrISsvw==}
 
-  '@owloops/claude-powerline@1.25.0':
-    resolution: {integrity: sha512-3bwWAaB88tue1oPOEcBpbGPJbqSwKzgR5fOkE0bUzss4yJsI4VD2AbMgQ/WyYmpMZq0kSbdjj1eR/eOEth+HfA==}
+  '@owloops/claude-powerline@1.25.1':
+    resolution: {integrity: sha512-Hr7b3HNk7zu5YRcRorq7gFtzWS2R8zgRADI+FTDVLPOoBJpg9OzyHCcFUl5WWakMOlnkNvqWosz4JjEv2+DSew==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -4558,7 +4558,7 @@ snapshots:
 
   '@one-ini/wasm@0.1.1': {}
 
-  '@owloops/claude-powerline@1.25.0': {}
+  '@owloops/claude-powerline@1.25.1': {}
 
   '@oxc-project/runtime@0.123.0': {}
 
