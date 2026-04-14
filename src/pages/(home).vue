@@ -45,7 +45,7 @@ const configStore = useConfigStore()
 				<IconLucide-heart class="size-3 text-red-500" />
 				<span>by</span>
 				<a
-					href="https://github.com/FallDownTheSystem"
+					href="https://github.com/FallDownTheSystem/powerline-studio"
 					target="_blank"
 					rel="noopener noreferrer"
 					class="font-medium text-foreground hover:underline"
