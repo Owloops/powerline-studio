@@ -641,15 +641,12 @@ export const useConfigStore = defineStore('config', () => {
 		const currentColors = config.value.colors
 			? structuredClone(toRaw(config.value.colors))
 			: undefined
-		const currentTui = config.value.display.tui
-			? structuredClone(toRaw(config.value.display.tui))
-			: undefined
 
 		config.value = structuredClone(DEFAULT_CONFIG)
 		config.value.display.style = currentStyle
 		config.value.theme = currentTheme
 		if (currentColors) config.value.colors = currentColors
-		if (currentStyle === 'tui' && currentTui) config.value.display.tui = currentTui
+		if (currentStyle === 'tui') ensureTuiConfig()
 
 		activePresetId.value = null
 	}
