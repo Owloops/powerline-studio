@@ -124,16 +124,29 @@ const TYPEWRITER_LINES = [
 ]
 
 const typewriterIndex = ref(Math.floor(Math.random() * TYPEWRITER_LINES.length))
+const typewriterPaused = ref(false)
 
-const currentTypewriterText = computed(() => TYPEWRITER_LINES[typewriterIndex.value] ?? '')
+const currentTypewriterText = computed(() =>
+	typewriterPaused.value ? '' : (TYPEWRITER_LINES[typewriterIndex.value] ?? ''),
+)
 
 function handleTypewriterComplete() {
-	delay(
-		() => {
-			typewriterIndex.value = motionWrap(0, TYPEWRITER_LINES.length, typewriterIndex.value + 1)
-		},
-		3 + Math.random() * 4,
-	)
+	if (typewriterPaused.value) {
+		delay(
+			() => {
+				typewriterIndex.value = motionWrap(0, TYPEWRITER_LINES.length, typewriterIndex.value + 1)
+				typewriterPaused.value = false
+			},
+			0.5 + Math.random() * 1.5,
+		)
+	} else {
+		delay(
+			() => {
+				typewriterPaused.value = true
+			},
+			3 + Math.random() * 4,
+		)
+	}
 }
 
 const EMOJIS_RED = [
