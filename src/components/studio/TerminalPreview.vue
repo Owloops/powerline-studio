@@ -17,6 +17,7 @@ import PreviewControls from './PreviewControls.vue'
 import SegmentOverlay from './SegmentOverlay.vue'
 import MockDataModal from './mockdata/MockDataModal.vue'
 import { MOCK_DATA_PRESETS } from '@/data/mockPresets'
+import { getTerminalFont } from '@/lib/terminalFonts'
 
 const previewStore = usePreviewStore()
 const mockDataStore = useMockDataStore()
@@ -383,6 +384,10 @@ const preStyle = computed(() => ({
 	lineHeight: previewStore.effectiveLineHeight,
 }))
 
+const headerLineHeight = computed(
+	() => getTerminalFont(previewStore.terminalFont).tuiLineHeight - 0.05,
+)
+
 const contentStyle = computed(() => ({
 	width: `${previewStore.terminalWidth}ch`,
 }))
@@ -530,7 +535,7 @@ const effectiveWidth = computed(() =>
 				:style="preStyle"
 				role="img"
 				aria-label="Terminal preview of powerline statusline"
-			><div :style="contentStyle"><template v-if="previewStore.showClaudeHeader"><span v-html="claudeHeaderTopHtml" /><span class="tch">❯</span><span class="tch"> </span><Typewriter
+			><div :style="contentStyle"><div v-if="previewStore.showClaudeHeader" :style="{ lineHeight: headerLineHeight }"><span v-html="claudeHeaderTopHtml" /><span class="tch">❯</span><span class="tch"> </span><Typewriter
 	as="span"
 	:speed="40"
 	:cursor-style="{ background: previewStore.terminalFgColor, width: '1ch', opacity: 0.7 }"
@@ -538,7 +543,7 @@ const effectiveWidth = computed(() =>
 	backspace="character"
 	:backspace-factor="0.5"
 	@complete="handleTypewriterComplete"
->{{ currentTypewriterText }}</Typewriter><span v-html="claudeHeaderBottomHtml" /></template><div class="relative"><div v-html="previewStore.htmlOutput" /><SegmentOverlay class="absolute inset-0" /><div
+>{{ currentTypewriterText }}</Typewriter><span v-html="claudeHeaderBottomHtml" /></div><div class="relative"><div v-html="previewStore.htmlOutput" /><SegmentOverlay class="absolute inset-0" /><div
 					v-if="reservedStyle"
 					class="pointer-events-none absolute inset-y-0"
 					:style="reservedStyle"
