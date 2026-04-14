@@ -24,7 +24,7 @@
 		"@formkit/auto-animate": "^0.9.0",
 		"@formwerk/core": "^0.14.4",
 		"@lucide/vue": "^1.8.0",
-		"@owloops/claude-powerline": "^1.25.0",
+		"@owloops/claude-powerline": "^1.25.1",
 		"@tailwindcss/vite": "^4.2.2",
 		"@unhead/vue": "^2.1.13",
 		"@vueuse/core": "^14.2.1",
