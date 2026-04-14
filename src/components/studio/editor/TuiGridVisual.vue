@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { AlignValue, ParsedCell } from '@/types/tui'
 import { SEGMENT_NAME_LIST, SEGMENT_PART_REFS, parseGridAreas } from '@/types/tui'
+import { Reorder } from 'motion-v'
 import {
 	SEGMENT_META,
 	isSegmentKey,
@@ -269,6 +270,70 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 	const newRow = type === 'divider' ? '---' : Array(bp.columns.length).fill('.').join(' ')
 	bp.areas.splice(rowIndex + 1, 0, newRow)
 }
+
+// --- Drag-and-drop cell reordering ---
+
+const prefersReducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
+
+const whileDragStyle = computed(() =>
+	prefersReducedMotion.value
+		? undefined
+		: { scale: 1.03, boxShadow: '0 2px 8px -2px rgb(0 0 0 / 0.15)', zIndex: 10 },
+)
+
+/** Create unique string keys for cells in a row (disambiguates duplicate segments). */
+function createCellKeys(cells: ParsedCell[]): string[] {
+	const counts: Record<string, number> = {}
+	return cells.map((cell) => {
+		const base = cell.segment
+		const count = counts[base] ?? 0
+		counts[base] = count + 1
+		return count > 0 ? `${base}§${count}` : base
+	})
+}
+
+// Local cell key order per row — drives Reorder.Group values
+const localRowKeys = ref<string[][]>([])
+
+watch(
+	parsedGrid,
+	(newGrid) => {
+		localRowKeys.value = newGrid.map((row) => createCellKeys(row))
+	},
+	{ immediate: true, deep: true },
+)
+
+// Key→cell lookup per row
+const cellByKey = computed(() => {
+	return parsedGrid.value.map((row) => {
+		const keys = createCellKeys(row)
+		const map = new Map<string, ParsedCell>()
+		for (let i = 0; i < row.length; i++) {
+			map.set(keys[i]!, row[i]!)
+		}
+		return map
+	})
+})
+
+function getReorderCell(rowIndex: number, key: string): ParsedCell | undefined {
+	return cellByKey.value[rowIndex]?.get(key)
+}
+
+let reorderCommitTimer: ReturnType<typeof setTimeout> | undefined
+
+function handleCellReorder(rowIndex: number, newKeys: string[]) {
+	localRowKeys.value[rowIndex] = newKeys
+	const map = cellByKey.value[rowIndex]
+	if (!map) return
+
+	clearTimeout(reorderCommitTimer)
+	reorderCommitTimer = setTimeout(() => {
+		const orderedCells = newKeys
+			.map((key) => map.get(key))
+			.filter((c): c is ParsedCell => c != null)
+		configStore.reorderAreaCells(props.breakpointIndex, rowIndex, orderedCells)
+	}, 150)
+}
 </script>
 
 <template>
@@ -402,24 +467,43 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 					class="group/row flex items-center gap-1.5"
 				>
 					<!-- Grid cells -->
-					<div class="grid flex-1 gap-1.5" :style="{ gridTemplateColumns }">
-						<!-- Divider row -->
-						<template v-if="row.length === 1 && row[0]!.segment === '---'">
-							<div
-								class="flex items-center justify-center rounded-md border border-dashed border-muted-foreground/30 bg-muted/20 px-2 py-2 text-xs font-mono text-muted-foreground/50"
-								:style="{ gridColumn: `span ${columns.length}` }"
-							>
-								--- divider ---
-							</div>
-						</template>
+					<!-- Divider row -->
+					<div
+						v-if="row.length === 1 && row[0]!.segment === '---'"
+						class="grid flex-1 gap-1.5"
+						:style="{ gridTemplateColumns }"
+					>
+						<div
+							class="flex items-center justify-center rounded-md border border-dashed border-muted-foreground/30 bg-muted/20 px-2 py-2 text-xs font-mono text-muted-foreground/50"
+							:style="{ gridColumn: `span ${columns.length}` }"
+						>
+							--- divider ---
+						</div>
+					</div>
 
-						<!-- Normal cells -->
-						<template v-else>
-							<template v-for="cell in row" :key="getCellKey(rowIndex, cell)">
+					<!-- Normal cells with drag reorder -->
+					<Reorder.Group
+						v-else
+						axis="x"
+						:values="localRowKeys[rowIndex] ?? []"
+						as="div"
+						class="flex flex-1 gap-1.5"
+						@update:values="(newKeys: string[]) => handleCellReorder(rowIndex, newKeys)"
+					>
+						<Reorder.Item
+							v-for="key in localRowKeys[rowIndex] ?? []"
+							:key="key"
+							:value="key"
+							as="div"
+							class="relative"
+							:while-drag="whileDragStyle"
+							:style="{ flex: `${getReorderCell(rowIndex, key)?.span ?? 1} 1 0%` }"
+						>
+							<template v-if="getReorderCell(rowIndex, key) as cell">
 								<!-- Empty cell: shows "+" button opening segment picker -->
-								<template v-if="cell.segment === '.'">
+								<template v-if="getReorderCell(rowIndex, key)!.segment === '.'">
 									<Popover
-										:open="openPicker === getCellKey(rowIndex, cell)"
+										:open="openPicker === getCellKey(rowIndex, getReorderCell(rowIndex, key)!)"
 										@update:open="
 											(val: boolean) => {
 												if (!val) {
@@ -431,10 +515,9 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 									>
 										<PopoverTrigger as-child>
 											<button
-												class="flex items-center justify-center rounded-md border border-dashed border-muted-foreground/25 bg-muted/20 px-2 py-3 text-muted-foreground/40 hover:border-primary/40 hover:bg-primary/5 hover:text-primary/60 outline-none focus-visible:border-primary dark:focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/50"
-												:style="cell.span > 1 ? { gridColumn: `span ${cell.span}` } : undefined"
+												class="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 bg-muted/20 px-2 py-3 text-muted-foreground/40 hover:border-primary/40 hover:bg-primary/5 hover:text-primary/60 outline-none focus-visible:border-primary dark:focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/50"
 												aria-label="Add segment"
-												@click="openSegmentPicker(rowIndex, cell)"
+												@click="openSegmentPicker(rowIndex, getReorderCell(rowIndex, key)!)"
 											>
 												<IconLucide-plus class="size-4" />
 											</button>
@@ -466,7 +549,9 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 															:key="seg"
 															class="flex w-full items-center rounded-md px-2 py-1.5 text-xs hover:bg-accent hover:text-accent-foreground disabled:opacity-40 disabled:cursor-not-allowed"
 															:disabled="getUsedSegments(rowIndex).has(seg) && seg !== '.'"
-															@click="selectFromPicker(rowIndex, cell, seg)"
+															@click="
+																selectFromPicker(rowIndex, getReorderCell(rowIndex, key)!, seg)
+															"
 														>
 															<span class="font-mono">{{
 																seg === '.' ? '\u00B7 (empty)' : seg
@@ -488,55 +573,59 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 								<!-- Filled cell: clickable with config popover -->
 								<template v-else>
 									<TuiCellPopover
-										:cell-segment="cell.segment"
-										:span="cell.span"
-										:max-span="getMaxSpan(rowIndex, cell)"
-										:open="openPopover === getCellPopoverKey(cell)"
+										:cell-segment="getReorderCell(rowIndex, key)!.segment"
+										:span="getReorderCell(rowIndex, key)!.span"
+										:max-span="getMaxSpan(rowIndex, getReorderCell(rowIndex, key)!)"
+										:open="openPopover === getCellPopoverKey(getReorderCell(rowIndex, key)!)"
 										@update:open="
 											(val: boolean) => {
-												openPopover = val ? getCellPopoverKey(cell) : null
+												openPopover = val ? getCellPopoverKey(getReorderCell(rowIndex, key)!) : null
 											}
 										"
-										@update:span="handleSpanChange(rowIndex, cell, $event)"
-										@swap="handleCellUpdate(rowIndex, cell, $event)"
+										@update:span="
+											handleSpanChange(rowIndex, getReorderCell(rowIndex, key)!, $event)
+										"
+										@swap="handleCellUpdate(rowIndex, getReorderCell(rowIndex, key)!, $event)"
 									>
 										<button
-											class="group/cell relative flex items-center gap-1.5 rounded-md border px-3 py-3 text-left text-xs transition-[border-color,box-shadow] duration-150 outline-none focus-visible:border-primary dark:focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/50"
+											class="group/cell relative flex w-full items-center gap-1.5 rounded-md border px-3 py-3 text-left text-xs transition-[border-color,box-shadow] duration-150 outline-none focus-visible:border-primary dark:focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/50"
 											:class="[
-												isCellHighlighted(cell.segment)
+												isCellHighlighted(getReorderCell(rowIndex, key)!.segment)
 													? 'border-primary bg-primary/10 ring-2 ring-primary/40 tui-cell-highlight-pulse'
 													: 'border-border bg-card hover:border-primary/40 hover:ring-1 hover:ring-primary/20',
-												openPopover === getCellPopoverKey(cell)
+												openPopover === getCellPopoverKey(getReorderCell(rowIndex, key)!)
 													? 'border-primary ring-2 ring-primary/40'
 													: '',
 											]"
-											:style="cell.span > 1 ? { gridColumn: `span ${cell.span}` } : undefined"
 										>
 											<component
-												v-if="getCellMeta(cell.segment)?.icon"
-												:is="getCellMeta(cell.segment)!.icon"
+												v-if="getCellMeta(getReorderCell(rowIndex, key)!.segment)?.icon"
+												:is="getCellMeta(getReorderCell(rowIndex, key)!.segment)!.icon"
 												class="hidden size-3.5 shrink-0 text-muted-foreground sm:block"
 											/>
 											<span
 												class="min-w-0 text-[0.5625rem] font-medium leading-tight sm:text-xs sm:leading-normal"
 											>
-												{{ getCellDisplay(cell.segment).name
-												}}<br v-if="getCellDisplay(cell.segment).part" class="sm:hidden" /><span
-													v-if="getCellDisplay(cell.segment).part"
+												{{ getCellDisplay(getReorderCell(rowIndex, key)!.segment).name
+												}}<br
+													v-if="getCellDisplay(getReorderCell(rowIndex, key)!.segment).part"
+													class="sm:hidden"
+												/><span
+													v-if="getCellDisplay(getReorderCell(rowIndex, key)!.segment).part"
 													class="hidden sm:inline"
 													>&nbsp;</span
-												>{{ getCellDisplay(cell.segment).part }}
+												>{{ getCellDisplay(getReorderCell(rowIndex, key)!.segment).part }}
 											</span>
 											<span
-												v-if="cell.span > 1"
+												v-if="getReorderCell(rowIndex, key)!.span > 1"
 												class="ml-auto text-[0.625rem] text-muted-foreground/50 tabular-nums"
 											>
-												{{ cell.span }}col
+												{{ getReorderCell(rowIndex, key)!.span }}col
 											</span>
 
 											<!-- Inline change button with segment picker popover -->
 											<Popover
-												:open="openPicker === getCellKey(rowIndex, cell)"
+												:open="openPicker === getCellKey(rowIndex, getReorderCell(rowIndex, key)!)"
 												@update:open="
 													(val: boolean) => {
 														if (!val) {
@@ -551,7 +640,9 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 														type="button"
 														class="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full border border-border bg-background text-muted-foreground shadow-sm transition-opacity hover:text-foreground sm:opacity-0 sm:group-hover/cell:opacity-100 sm:focus-visible:opacity-100 outline-none focus-visible:border-primary dark:focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/50"
 														aria-label="Change segment"
-														@click.stop="openSegmentPicker(rowIndex, cell)"
+														@click.stop="
+															openSegmentPicker(rowIndex, getReorderCell(rowIndex, key)!)
+														"
 													>
 														<IconLucide-replace class="size-2.5" />
 													</button>
@@ -585,15 +676,17 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 																	:disabled="
 																		getUsedSegments(rowIndex).has(seg) &&
 																		seg !== '.' &&
-																		seg !== cell.segment
+																		seg !== getReorderCell(rowIndex, key)!.segment
 																	"
-																	@click="selectFromPicker(rowIndex, cell, seg)"
+																	@click="
+																		selectFromPicker(rowIndex, getReorderCell(rowIndex, key)!, seg)
+																	"
 																>
 																	<span class="font-mono">{{
 																		seg === '.' ? '\u00B7 (empty)' : seg
 																	}}</span>
 																	<span
-																		v-if="seg === cell.segment"
+																		v-if="seg === getReorderCell(rowIndex, key)!.segment"
 																		class="ml-auto text-[0.625rem] text-primary"
 																	>
 																		current
@@ -614,8 +707,8 @@ function insertRowBelow(rowIndex: number, type: 'cells' | 'divider') {
 									</TuiCellPopover>
 								</template>
 							</template>
-						</template>
-					</div>
+						</Reorder.Item>
+					</Reorder.Group>
 
 					<!-- Per-row controls: 2x2 grid -->
 					<TooltipProvider :delay-duration="400">

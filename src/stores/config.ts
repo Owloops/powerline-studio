@@ -454,6 +454,25 @@ export const useConfigStore = defineStore('config', () => {
 		bp.areas.splice(rowIndex, 1)
 	}
 
+	function reorderAreaCells(
+		bpIndex: number,
+		rowIndex: number,
+		orderedCells: { segment: string; span: number }[],
+	) {
+		ensureTuiConfig()
+		const bp = config.value.display.tui!.breakpoints[bpIndex]
+		if (!bp) return
+		const row = bp.areas[rowIndex]
+		if (row === undefined || row.trim() === '---') return
+		const tokens: string[] = []
+		for (const cell of orderedCells) {
+			for (let i = 0; i < cell.span; i++) {
+				tokens.push(cell.segment)
+			}
+		}
+		bp.areas[rowIndex] = tokens.join(' ')
+	}
+
 	function moveAreaRow(bpIndex: number, fromIndex: number, toIndex: number) {
 		ensureTuiConfig()
 		const bp = config.value.display.tui!.breakpoints[bpIndex]
@@ -851,6 +870,7 @@ export const useConfigStore = defineStore('config', () => {
 		setAreaSpan,
 		addAreaRow,
 		removeAreaRow,
+		reorderAreaCells,
 		moveAreaRow,
 		addColumn,
 		removeColumn,
