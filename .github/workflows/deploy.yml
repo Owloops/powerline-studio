@@ -34,7 +34,7 @@ jobs:
         run: pnpm install
 
       - name: Build
-        run: pnpm run build-only --base /
+        run: pnpm run build-only
 
       - name: Add 404 fallback for SPA routing
         run: cp dist/index.html dist/404.html
