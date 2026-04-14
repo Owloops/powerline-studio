@@ -36,7 +36,7 @@ Add a browser-safe entry point to claude-powerline that exports only the pure re
 
 # Decisions
 
-1. **Browser integration**: Created `feat/browser-entry` branch in claude-powerline that splits Node-dependent code from pure rendering, adds `@owloops/claude-powerline/browser` entry point. Zero Node imports in browser bundle (48KB). All 208 tests pass. Already linked as local dependency. Changes: split colors.ts (pure hex + color-support.ts), split terminal.ts (pure string utils + terminal-width.ts), inline path.basename, globalThis.process?.env for env segment, dynamic import for terminal width in TUI renderer.
+1. **Browser integration**: Split Node-dependent code from pure rendering in claude-powerline, added `@owloops/claude-powerline/browser` entry point (merged to main). Zero Node imports in browser bundle (48KB). All 208 tests pass. Changes: split colors.ts (pure hex + color-support.ts), split terminal.ts (pure string utils + terminal-width.ts), inline path.basename, globalThis.process?.env for env segment, dynamic import for terminal width in TUI renderer.
 
 2. **Rendering approach**: ANSI-to-HTML conversion using the real claude-powerline renderer. Config + mock data → SegmentRenderer/renderTuiPanel → ANSI escape codes → ansi_up library → styled HTML in a monospace `<pre>`. Pixel-perfect match to real terminal output.
 

@@ -80,7 +80,7 @@ src/
 
 ### Key Dependency
 
-`@owloops/claude-powerline` is linked locally from `../claude-powerline` (the `feat/browser-entry` branch). It provides the browser-safe rendering engine with zero Node.js imports.
+`@owloops/claude-powerline` provides the browser-safe rendering engine (`/browser` entry point) with zero Node.js imports.
 
 ## Code Conventions
 
