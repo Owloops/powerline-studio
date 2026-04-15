@@ -537,7 +537,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 											<TooltipTrigger as-child>
 												<button
 													type="button"
-													class="inline-flex cursor-default rounded-sm outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
+													class="inline-flex cursor-default rounded-sm outline-none focus-visible:outline-0 focus-visible:ring-[3px] focus-visible:ring-primary/50"
 													aria-label="More info"
 												>
 													<IconLucide-info class="size-3 text-muted-foreground/50" />
@@ -582,7 +582,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 												<TooltipTrigger as-child>
 													<button
 														type="button"
-														class="inline-flex cursor-default rounded-sm outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
+														class="inline-flex cursor-default rounded-sm outline-none focus-visible:outline-0 focus-visible:ring-[3px] focus-visible:ring-primary/50"
 														aria-label="More info"
 													>
 														<IconLucide-info class="size-3 text-muted-foreground/50" />
@@ -619,7 +619,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 												<TooltipTrigger as-child>
 													<button
 														type="button"
-														class="inline-flex cursor-default rounded-sm outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
+														class="inline-flex cursor-default rounded-sm outline-none focus-visible:outline-0 focus-visible:ring-[3px] focus-visible:ring-primary/50"
 														aria-label="More info"
 													>
 														<IconLucide-info class="size-3 text-muted-foreground/50" />
@@ -677,7 +677,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 												<TooltipTrigger as-child>
 													<button
 														type="button"
-														class="inline-flex cursor-default rounded-sm outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
+														class="inline-flex cursor-default rounded-sm outline-none focus-visible:outline-0 focus-visible:ring-[3px] focus-visible:ring-primary/50"
 														aria-label="More info"
 													>
 														<IconLucide-info class="size-3 text-muted-foreground/50" />

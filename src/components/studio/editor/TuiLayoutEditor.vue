@@ -392,7 +392,13 @@ const footerTriggerRef = ref<HTMLElement | null>(null)
 						<TooltipProvider :delay-duration="200">
 							<Tooltip>
 								<TooltipTrigger as-child>
-									<IconLucide-info class="size-3.5 shrink-0 text-muted-foreground/50" />
+									<button
+										type="button"
+										class="inline-flex cursor-default rounded-sm outline-none focus-visible:outline-0 focus-visible:ring-[3px] focus-visible:ring-primary/50"
+										aria-label="More info"
+									>
+										<IconLucide-info class="size-3.5 shrink-0 text-muted-foreground/50" />
+									</button>
 								</TooltipTrigger>
 								<TooltipContent side="right" class="max-w-xs text-xs font-normal">
 									TUI style renders a box-drawn grid in the terminal. Use breakpoints to define
