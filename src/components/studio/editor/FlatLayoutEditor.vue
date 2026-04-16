@@ -542,7 +542,7 @@ watch(
 								axis="x"
 								:values="segmentOrders[lineIndex] ?? []"
 								as="div"
-								class="flex min-w-0 items-center gap-2 overflow-x-auto p-1 -m-1"
+								class="flex min-w-0 items-center gap-2 overflow-x-auto p-1.5 -m-1.5"
 								@update:values="handleReorder(lineIndex, $event)"
 							>
 								<AnimatePresence>
