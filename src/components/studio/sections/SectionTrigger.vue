@@ -15,11 +15,11 @@ defineProps<{
 	>
 		<span
 			v-if="step"
-			class="absolute -left-18 top-0.5 hidden size-8 items-center justify-center rounded-full border border-muted-foreground/15 text-xs font-semibold tabular-nums text-muted-foreground/25 sm:flex"
+			class="absolute -left-18 top-0.5 hidden size-8 items-center justify-center rounded-full border border-muted-foreground/15 text-xs font-semibold tabular-nums text-muted-foreground/25 min-[1048px]:flex"
 			>{{ step }}</span
 		>
 		<IconLucide-chevron-right
-			class="size-4 shrink-0 text-muted-foreground transition-transform duration-200 sm:absolute sm:-left-7 sm:top-2"
+			class="size-4 shrink-0 self-start mt-0.5 text-muted-foreground transition-transform duration-200 min-[960px]:absolute min-[960px]:-left-7 min-[960px]:top-2 min-[960px]:mt-0"
 			:class="isOpen && 'rotate-90'"
 		/>
 		<div>

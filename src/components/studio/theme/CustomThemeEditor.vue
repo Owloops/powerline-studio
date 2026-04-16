@@ -39,7 +39,7 @@ function handleSave() {
 </script>
 
 <template>
-	<div class="flex flex-col gap-3">
+	<div class="@container flex flex-col gap-3">
 		<Separator />
 		<div>
 			<h3 class="text-sm font-medium">Custom Theme</h3>

@@ -347,11 +347,11 @@ watch(
 			>
 				<span
 					v-if="step"
-					class="absolute -left-18 top-0.5 hidden size-8 items-center justify-center rounded-full border border-muted-foreground/15 text-xs font-semibold tabular-nums text-muted-foreground/25 sm:flex"
+					class="absolute -left-18 top-0.5 hidden size-8 items-center justify-center rounded-full border border-muted-foreground/15 text-xs font-semibold tabular-nums text-muted-foreground/25 min-[1048px]:flex"
 					>{{ step }}</span
 				>
 				<IconLucide-chevron-right
-					class="size-4 shrink-0 text-muted-foreground transition-transform duration-200 sm:absolute sm:-left-7 sm:top-2"
+					class="size-4 shrink-0 self-start mt-0.5 text-muted-foreground transition-transform duration-200 min-[960px]:absolute min-[960px]:-left-7 min-[960px]:top-2 min-[960px]:mt-0"
 					:class="isOpen && 'rotate-90'"
 				/>
 				<div>
@@ -418,82 +418,88 @@ watch(
 								</Select>
 							</div>
 
+							<span class="hidden pb-2 text-xs text-muted-foreground sm:inline">or</span>
+
 							<div class="flex flex-col gap-1.5">
 								<Label class="hidden text-xs font-medium text-muted-foreground sm:block"
 									>&nbsp;</Label
 								>
-								<div class="flex flex-wrap items-center gap-3">
-									<Dialog v-model:open="showImportDialog">
-										<DialogTrigger as-child>
-											<Button variant="outline" size="sm" class="h-8">
-												<IconLucide-upload class="size-3.5" />
-												Import
-											</Button>
-										</DialogTrigger>
-										<DialogContent
-											class="sm:max-w-lg"
-											@dragover="handleDragOver"
-											@dragleave="handleDragLeave"
-											@drop="handleDrop"
-										>
-											<div
-												v-if="isDragging"
-												class="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-lg border-2 border-dashed border-primary bg-primary/5"
-											>
-												<div class="flex flex-col items-center gap-1.5 text-primary">
-													<IconLucide-file-json class="size-8" />
-													<span class="text-sm font-medium">Drop JSON file</span>
-												</div>
-											</div>
-											<DialogHeader>
-												<DialogTitle>Import Config</DialogTitle>
-												<DialogDescription>
-													Paste JSON, drop a file, or
-													<button
-														type="button"
-														class="cursor-pointer font-medium text-primary underline underline-offset-2 hover:text-primary/80"
-														@click="fileInputRef?.click()"
-													>
-														upload a file</button
-													>.
-												</DialogDescription>
-											</DialogHeader>
-											<input
-												ref="fileInputRef"
-												type="file"
-												accept=".json"
-												class="hidden"
-												@change="handleFileInput"
-											/>
-											<div class="flex flex-col gap-4">
-												<Textarea
-													v-model="importText"
-													placeholder='{ "theme": "dark", "display": { ... } }'
-													class="min-h-48 font-mono text-xs"
-												/>
-												<p v-if="importError" class="text-sm text-destructive">
-													{{ importError }}
-												</p>
-												<Button
-													variant="outline"
-													size="sm"
-													class="w-full"
-													:disabled="!importText.trim()"
-													@click="loadImportedConfig"
-												>
-													<IconLucide-upload class="size-4" />
-													Load Config
-												</Button>
-											</div>
-										</DialogContent>
-									</Dialog>
-									<ConfirmPopover action="Reset" @confirm="resetToDefaults">
-										<Button variant="destructive" size="sm" class="h-8">
-											<IconLucide-rotate-ccw class="size-3.5" />
-											Reset to Default
+								<Dialog v-model:open="showImportDialog">
+									<DialogTrigger as-child>
+										<Button variant="outline" size="sm" class="h-8">
+											<IconLucide-upload class="size-3.5" />
+											Import
 										</Button>
-									</ConfirmPopover>
-								</div>
+									</DialogTrigger>
+									<DialogContent
+										class="sm:max-w-lg"
+										@dragover="handleDragOver"
+										@dragleave="handleDragLeave"
+										@drop="handleDrop"
+									>
+										<div
+											v-if="isDragging"
+											class="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-lg border-2 border-dashed border-primary bg-primary/5"
+										>
+											<div class="flex flex-col items-center gap-1.5 text-primary">
+												<IconLucide-file-json class="size-8" />
+												<span class="text-sm font-medium">Drop JSON file</span>
+											</div>
+										</div>
+										<DialogHeader>
+											<DialogTitle>Import Config</DialogTitle>
+											<DialogDescription>
+												Paste JSON, drop a file, or
+												<button
+													type="button"
+													class="cursor-pointer font-medium text-primary underline underline-offset-2 hover:text-primary/80"
+													@click="fileInputRef?.click()"
+												>
+													upload a file</button
+												>.
+											</DialogDescription>
+										</DialogHeader>
+										<input
+											ref="fileInputRef"
+											type="file"
+											accept=".json"
+											class="hidden"
+											@change="handleFileInput"
+										/>
+										<div class="flex flex-col gap-4">
+											<Textarea
+												v-model="importText"
+												placeholder='{ "theme": "dark", "display": { ... } }'
+												class="min-h-48 font-mono text-xs"
+											/>
+											<p v-if="importError" class="text-sm text-destructive">
+												{{ importError }}
+											</p>
+											<Button
+												variant="outline"
+												size="sm"
+												class="w-full"
+												:disabled="!importText.trim()"
+												@click="loadImportedConfig"
+											>
+												<IconLucide-upload class="size-4" />
+												Load Config
+											</Button>
+										</div>
+									</DialogContent>
+								</Dialog>
+							</div>
+
+							<div class="flex flex-col gap-1.5 sm:ml-auto">
+								<Label class="hidden text-xs font-medium text-muted-foreground sm:block"
+									>&nbsp;</Label
+								>
+								<ConfirmPopover action="Reset" @confirm="resetToDefaults">
+									<Button variant="destructive" size="sm" class="h-8">
+										<IconLucide-rotate-ccw class="size-3.5" />
+										Reset to Default
+									</Button>
+								</ConfirmPopover>
 							</div>
 						</div>
 					</TooltipProvider>

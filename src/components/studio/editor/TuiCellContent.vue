@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import {
 	NumberField,
@@ -216,7 +215,7 @@ function resetTemplate() {
 
 	<Separator />
 
-	<ScrollArea class="max-h-[420px]">
+	<div class="max-h-[525px] overflow-y-auto">
 		<div class="flex flex-col">
 			<!-- Segment config form -->
 			<div v-if="hasConfigForm" class="compact-fields px-3 py-2">
@@ -293,7 +292,7 @@ function resetTemplate() {
 						/>
 					</CollapsibleTrigger>
 					<CollapsibleContent>
-						<div class="px-3 pb-2">
+						<div class="px-3 py-2">
 							<template v-if="template">
 								<SegmentTemplateItem
 									:seg-ref="cellSegment"
@@ -324,5 +323,5 @@ function resetTemplate() {
 				</div>
 			</template>
 		</div>
-	</ScrollArea>
+	</div>
 </template>

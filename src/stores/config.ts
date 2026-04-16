@@ -82,10 +82,16 @@ export const SEGMENT_DEFAULTS: Required<LineConfig['segments']> = {
 	},
 }
 
+function getInitialConfig(): PowerlineConfig {
+	const base = structuredClone(DEFAULT_CONFIG)
+	base.theme = 'tokyo-night'
+	return base
+}
+
 export const useConfigStore = defineStore('config', () => {
 	const config = useStorage<PowerlineConfig>(
 		'powerline-studio-config',
-		structuredClone(DEFAULT_CONFIG),
+		getInitialConfig(),
 		undefined,
 		{
 			mergeDefaults: (stored, defaults) => deepMerge(defaults, stored),
@@ -645,7 +651,7 @@ export const useConfigStore = defineStore('config', () => {
 	}
 
 	function loadConfig(partial: Partial<PowerlineConfig>) {
-		config.value = deepMerge(structuredClone(DEFAULT_CONFIG), partial as PowerlineConfig)
+		config.value = deepMerge(getInitialConfig(), partial as PowerlineConfig)
 		// Normalize all lines to ensure 13 segment keys
 		for (const line of config.value.display.lines) {
 			line.segments = normalizeSegments(toRaw(line.segments), SEGMENT_DEFAULTS)
@@ -661,7 +667,7 @@ export const useConfigStore = defineStore('config', () => {
 			? structuredClone(toRaw(config.value.colors))
 			: undefined
 
-		config.value = structuredClone(DEFAULT_CONFIG)
+		config.value = getInitialConfig()
 		config.value.display.style = currentStyle
 		config.value.theme = currentTheme
 		if (currentColors) config.value.colors = currentColors
@@ -671,7 +677,7 @@ export const useConfigStore = defineStore('config', () => {
 	}
 
 	function $reset() {
-		config.value = structuredClone(DEFAULT_CONFIG)
+		config.value = getInitialConfig()
 		activePresetId.value = null
 		rehydrateThemeEditor()
 	}

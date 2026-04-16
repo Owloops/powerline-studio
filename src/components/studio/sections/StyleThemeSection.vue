@@ -24,6 +24,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import StylePreview from '@/components/studio/sections/StylePreview.vue'
 import CustomThemeEditor from '@/components/studio/theme/CustomThemeEditor.vue'
 import ThemeOverrides from '@/components/studio/theme/ThemeOverrides.vue'
 import {
@@ -48,14 +49,8 @@ const styles: readonly { value: StyleValue; title: string }[] = [
 	{ value: 'minimal', title: 'Minimal' },
 	{ value: 'powerline', title: 'Powerline' },
 	{ value: 'capsule', title: 'Capsule' },
-	{ value: 'tui', title: 'TUI' },
+	{ value: 'tui', title: 'Terminal UI' },
 ]
-
-const segments = [
-	{ label: '~/project', bg: '#3b82f6' },
-	{ label: 'main \u2713', bg: '#22c55e' },
-	{ label: '\u25C6 Sonnet', bg: '#a855f7' },
-] as const
 
 // --- TUI options ---
 
@@ -249,120 +244,14 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 										<span>{{
 											styles.find((s) => s.value === configStore.config.display.style)?.title
 										}}</span>
-										<span
-											:class="[
-												'flex items-center overflow-hidden rounded bg-[#1e1e2e] px-1 font-nerd text-[0.625rem] leading-tight',
-												configStore.config.display.style !== 'tui' && 'py-1',
-											]"
-										>
-											<template v-if="configStore.config.display.style === 'minimal'">
-												<span
-													v-for="seg in segments"
-													:key="seg.label"
-													:style="{ background: seg.bg, color: '#fff' }"
-													class="inline-block px-1"
-													>{{ seg.label }}</span
-												>
-											</template>
-											<template v-else-if="configStore.config.display.style === 'powerline'">
-												<template v-for="(seg, i) in segments" :key="seg.label">
-													<span
-														:style="{ background: seg.bg, color: '#fff' }"
-														class="inline-block px-1"
-														>{{ seg.label }}</span
-													>
-													<span
-														:style="{
-															color: seg.bg,
-															background:
-																i < segments.length - 1 ? segments[i + 1].bg : 'transparent',
-														}"
-														class="inline-block"
-														>&#xE0B0;</span
-													>
-												</template>
-											</template>
-											<template v-else-if="configStore.config.display.style === 'capsule'">
-												<template v-for="(seg, i) in segments" :key="seg.label">
-													<span :style="{ color: seg.bg }" class="inline-block">&#xE0B6;</span>
-													<span
-														:style="{ background: seg.bg, color: '#fff' }"
-														class="inline-block px-0.5"
-														>{{ seg.label }}</span
-													>
-													<span :style="{ color: seg.bg }" class="inline-block">&#xE0B4;</span>
-													<span v-if="i < segments.length - 1" class="inline-block w-0.5" />
-												</template>
-											</template>
-											<template v-else-if="configStore.config.display.style === 'tui'">
-												<pre
-													class="leading-none"
-													style="font-family: inherit; color: #cdd6f4"
-												>&#x256D;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x256E;
-&#x2502; <span :style="{ color: '#3b82f6' }">~/project</span> &#x2502; <span :style="{ color: '#22c55e' }">main</span> &#x2502; <span :style="{ color: '#a855f7' }">Sonnet</span> &#x2502;
-&#x2570;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x256F;</pre>
-											</template>
-										</span>
+										<StylePreview :style="configStore.config.display.style" />
 									</span>
 								</SelectTrigger>
 								<SelectContent position="popper" side="bottom">
 									<SelectItem v-for="s in styles" :key="s.value" :value="s.value">
 										<div class="flex items-center gap-3">
-											<span class="w-16">{{ s.title }}</span>
-											<span
-												:class="[
-													'flex items-center overflow-hidden rounded bg-[#1e1e2e] px-1 font-nerd text-[0.625rem] leading-tight',
-													s.value !== 'tui' && 'py-1',
-												]"
-											>
-												<template v-if="s.value === 'minimal'">
-													<span
-														v-for="seg in segments"
-														:key="seg.label"
-														:style="{ background: seg.bg, color: '#fff' }"
-														class="inline-block px-1"
-														>{{ seg.label }}</span
-													>
-												</template>
-												<template v-else-if="s.value === 'powerline'">
-													<template v-for="(seg, i) in segments" :key="seg.label">
-														<span
-															:style="{ background: seg.bg, color: '#fff' }"
-															class="inline-block px-1"
-															>{{ seg.label }}</span
-														>
-														<span
-															:style="{
-																color: seg.bg,
-																background:
-																	i < segments.length - 1 ? segments[i + 1].bg : 'transparent',
-															}"
-															class="inline-block"
-															>&#xE0B0;</span
-														>
-													</template>
-												</template>
-												<template v-else-if="s.value === 'capsule'">
-													<template v-for="(seg, i) in segments" :key="seg.label">
-														<span :style="{ color: seg.bg }" class="inline-block">&#xE0B6;</span>
-														<span
-															:style="{ background: seg.bg, color: '#fff' }"
-															class="inline-block px-0.5"
-															>{{ seg.label }}</span
-														>
-														<span :style="{ color: seg.bg }" class="inline-block">&#xE0B4;</span>
-														<span v-if="i < segments.length - 1" class="inline-block w-0.5" />
-													</template>
-												</template>
-												<template v-else-if="s.value === 'tui'">
-													<pre
-														class="leading-none"
-														style="font-family: inherit; color: #cdd6f4"
-													>&#x256D;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x256E;
-&#x2502; <span :style="{ color: '#3b82f6' }">~/project</span> &#x2502; <span :style="{ color: '#22c55e' }">main</span> &#x2502; <span :style="{ color: '#a855f7' }">Sonnet</span> &#x2502;
-&#x2570;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x256F;</pre>
-												</template>
-											</span>
+											<span class="w-24">{{ s.title }}</span>
+											<StylePreview :style="s.value" />
 										</div>
 									</SelectItem>
 								</SelectContent>
@@ -528,7 +417,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 								</div>
 
 								<!-- Fit Content -->
-								<div class="col-span-1 flex flex-col gap-1.5 md:col-span-2">
+								<div class="col-span-1 flex flex-col gap-1.5 md:col-span-1">
 									<div class="flex items-center gap-1">
 										<Label for="fit-content" class="text-xs font-medium text-muted-foreground"
 											>Fit Content</Label
@@ -560,9 +449,9 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 
 								<!-- Extra settings trigger -->
 								<CollapsibleTrigger
-									class="col-span-2 flex h-8 items-center justify-end gap-1 self-end rounded-md px-2 text-xs text-muted-foreground hover:bg-accent/50 md:col-span-1 outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
+									class="col-span-2 flex h-8 w-auto items-center justify-self-end gap-1 self-end rounded-md px-2 text-xs text-muted-foreground hover:bg-accent/50 md:col-span-2 outline-none focus-visible:ring-[3px] focus-visible:ring-primary/50"
 								>
-									<span class="flex-1 text-center">Show more options</span>
+									<span>Show more options</span>
 									<IconLucide-chevron-down
 										class="size-3.5 transition-transform duration-200"
 										:class="tuiExtraOpen ? 'rotate-180' : ''"

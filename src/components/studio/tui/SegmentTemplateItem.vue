@@ -209,32 +209,33 @@ function wrapToken(token: string) {
 		</Popover>
 
 		<!-- Gap and Justify -->
-		<div class="grid grid-cols-2 gap-3">
-			<div class="flex flex-col gap-1">
-				<Label class="text-xs">Gap</Label>
+		<div class="flex flex-col gap-2">
+			<div class="flex items-center gap-2">
+				<Label class="w-32 shrink-0 text-xs text-muted-foreground">Gap</Label>
 				<NumberField
 					:model-value="template.gap ?? 1"
 					:min="0"
 					:max="10"
 					:step="1"
+					class="h-7 flex-1 min-w-0"
 					@update:model-value="updateGap"
 				>
 					<NumberFieldContent>
-						<NumberFieldDecrement />
-						<NumberFieldInput />
-						<NumberFieldIncrement />
+						<NumberFieldDecrement class="p-1" />
+						<NumberFieldInput class="h-7 text-xs" />
+						<NumberFieldIncrement class="p-1" />
 					</NumberFieldContent>
 				</NumberField>
 			</div>
-			<div class="flex flex-col gap-1">
-				<Label class="text-xs">Justify</Label>
+			<div class="flex items-center gap-2">
+				<Label class="w-32 shrink-0 text-xs text-muted-foreground">Justify</Label>
 				<Select :model-value="template.justify ?? 'start'" @update:model-value="updateJustify">
-					<SelectTrigger size="sm" class="w-full">
+					<SelectTrigger size="sm" class="h-7 text-xs flex-1 min-w-0">
 						<SelectValue />
 					</SelectTrigger>
 					<SelectContent>
-						<SelectItem value="start">Start</SelectItem>
-						<SelectItem value="between">Between</SelectItem>
+						<SelectItem value="start" class="text-xs">Start</SelectItem>
+						<SelectItem value="between" class="text-xs">Between</SelectItem>
 					</SelectContent>
 				</Select>
 			</div>

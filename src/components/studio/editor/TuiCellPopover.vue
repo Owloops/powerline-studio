@@ -24,7 +24,7 @@ const emit = defineEmits<{
 		<PopoverContent
 			:side-offset="8"
 			align="start"
-			class="w-[calc(100vw-2rem)] p-0 sm:w-92"
+			class="max-h-[85vh] w-[calc(100vw-2rem)] p-0 sm:w-92"
 			@open-auto-focus.prevent
 		>
 			<TuiCellContent

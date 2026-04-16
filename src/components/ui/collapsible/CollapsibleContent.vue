@@ -14,7 +14,7 @@ const props = defineProps<CollapsibleContentProps>()
 <style scoped>
 .collapsible-content[data-state='open'] {
 	animation: collapsible-down 200ms ease-out;
-	overflow: visible;
+	overflow: hidden;
 }
 
 .collapsible-content[data-state='closed'] {

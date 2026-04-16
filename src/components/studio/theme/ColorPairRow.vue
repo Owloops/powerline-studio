@@ -74,7 +74,7 @@ const emit = defineEmits<{
 		/>
 		<span
 			v-if="showPreview"
-			class="hidden h-7 min-w-0 items-center justify-center truncate rounded-md border border-border px-1 text-[0.625rem] font-bold @min-[440px]:flex"
+			class="hidden h-7 min-w-0 items-center justify-center truncate rounded-md border border-border px-1 text-[0.625rem] font-bold @min-[440px]:flex sm:flex"
 			:style="{ backgroundColor: bg, color: fg }"
 		>
 			{{ previewWord }}

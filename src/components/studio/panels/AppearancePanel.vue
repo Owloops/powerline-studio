@@ -53,7 +53,7 @@ const styles: readonly { value: StyleValue; title: string; description: string }
 	},
 	{
 		value: 'tui',
-		title: 'TUI',
+		title: 'Terminal UI',
 		description: 'Box-drawn grid panels',
 	},
 ]
@@ -152,7 +152,7 @@ const baseThemeColors = computed(() =>
 				<!-- TUI Info Alert -->
 				<Alert v-if="configStore.isTuiStyle" variant="info">
 					<IconLucide-info class="size-4" />
-					<AlertTitle>TUI Layout</AlertTitle>
+					<AlertTitle>Terminal UI Layout</AlertTitle>
 					<AlertDescription>
 						TUI style uses a grid layout. Configure breakpoints, columns, and box styles in the
 						<button

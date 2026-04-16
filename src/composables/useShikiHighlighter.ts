@@ -12,7 +12,7 @@ function ensureHighlighter(): Promise<HighlighterCore> {
 	loadPromise = import('shiki')
 		.then((mod) =>
 			mod.createHighlighter({
-				themes: ['vitesse-light', 'vitesse-dark'],
+				themes: ['light-plus', 'dark-plus'],
 				langs: ['json'],
 			}),
 		)
@@ -49,7 +49,7 @@ export function useShikiHighlighter(
 
 		html.value = h.codeToHtml(codeValue, {
 			lang: langValue,
-			themes: { light: 'vitesse-light', dark: 'vitesse-dark' },
+			themes: { light: 'light-plus', dark: 'dark-plus' },
 			defaultColor: false,
 		})
 		isLoading.value = false
