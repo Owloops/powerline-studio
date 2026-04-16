@@ -41,7 +41,135 @@ import {
 	PREVIEW_SEGMENTS,
 	getCanonicalThemeColors,
 } from '@/lib/themes'
+
 import type { CanonicalTheme, SavedCustomTheme } from '@/lib/themes'
+
+// Periodic table symbols in atomic-number order; single-letter symbols get a `#` suffix.
+const ELEMENT_SYMBOLS = [
+	'H#',
+	'He',
+	'Li',
+	'Be',
+	'B#',
+	'C#',
+	'N#',
+	'O#',
+	'F#',
+	'Ne',
+	'Na',
+	'Mg',
+	'Al',
+	'Si',
+	'P#',
+	'S#',
+	'Cl',
+	'Ar',
+	'K#',
+	'Ca',
+	'Sc',
+	'Ti',
+	'V#',
+	'Cr',
+	'Mn',
+	'Fe',
+	'Co',
+	'Ni',
+	'Cu',
+	'Zn',
+	'Ga',
+	'Ge',
+	'As',
+	'Se',
+	'Br',
+	'Kr',
+	'Rb',
+	'Sr',
+	'Y#',
+	'Zr',
+	'Nb',
+	'Mo',
+	'Tc',
+	'Ru',
+	'Rh',
+	'Pd',
+	'Ag',
+	'Cd',
+	'In',
+	'Sn',
+	'Sb',
+	'Te',
+	'I#',
+	'Xe',
+	'Cs',
+	'Ba',
+	'La',
+	'Ce',
+	'Pr',
+	'Nd',
+	'Pm',
+	'Sm',
+	'Eu',
+	'Gd',
+	'Tb',
+	'Dy',
+	'Ho',
+	'Er',
+	'Tm',
+	'Yb',
+	'Lu',
+	'Hf',
+	'Ta',
+	'W#',
+	'Re',
+	'Os',
+	'Ir',
+	'Pt',
+	'Au',
+	'Hg',
+	'Tl',
+	'Pb',
+	'Bi',
+	'Po',
+	'At',
+	'Rn',
+	'Fr',
+	'Ra',
+	'Ac',
+	'Th',
+	'Pa',
+	'U#',
+	'Np',
+	'Pu',
+	'Am',
+	'Cm',
+	'Bk',
+	'Cf',
+	'Es',
+	'Fm',
+	'Md',
+	'No',
+	'Lr',
+	'Rf',
+	'Db',
+	'Sg',
+	'Bh',
+	'Hs',
+	'Mt',
+	'Ds',
+	'Rg',
+	'Cn',
+	'Nh',
+	'Fl',
+	'Mc',
+	'Lv',
+	'Ts',
+	'Og',
+]
+
+function labelFor(themeIndex: number, segmentIndex: number) {
+	const i = (themeIndex * PREVIEW_SEGMENTS.length + segmentIndex) % ELEMENT_SYMBOLS.length
+	return ELEMENT_SYMBOLS[i]
+}
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 
@@ -291,6 +419,21 @@ const triggerLabel = computed(() => {
 
 // Current effective theme colors for the trigger swatch (includes overrides for built-in themes)
 const triggerThemeColors = computed(() => configStore.effectiveColors)
+
+// Index used to pick this theme's slice of element symbols for the trigger swatch.
+// Built-in themes use their canonical index; saved customs continue past the built-ins;
+// an unsaved custom draft falls back to 0.
+const triggerThemeIndex = computed(() => {
+	if (configStore.themeEditor.mode === 'builtin') {
+		return CANONICAL_THEMES.indexOf(configStore.themeEditor.builtinTheme)
+	}
+	const savedId = configStore.themeEditor.savedThemeId
+	if (savedId) {
+		const idx = configStore.savedCustomThemes.findIndex((t) => t.id === savedId)
+		if (idx >= 0) return CANONICAL_THEMES.length + idx
+	}
+	return 0
+})
 </script>
 
 <template>
@@ -357,35 +500,39 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 													class="flex gap-px overflow-hidden rounded text-[0.625rem] font-medium leading-none"
 												>
 													<span
-														v-for="seg in PREVIEW_SEGMENTS"
+														v-for="(seg, i) in PREVIEW_SEGMENTS"
 														:key="seg"
-														class="flex h-3.5 items-center px-1.5"
+														class="flex h-3.5 w-6 items-center justify-center"
 														:style="{
 															backgroundColor: triggerThemeColors[seg].bg,
 															color: triggerThemeColors[seg].fg,
 														}"
-														>Ab</span
+														>{{ labelFor(triggerThemeIndex, i) }}</span
 													>
 												</span>
 											</span>
 										</SelectTrigger>
 										<SelectContent position="popper" side="bottom">
 											<SelectGroup>
-												<SelectItem v-for="name in CANONICAL_THEMES" :key="name" :value="name">
+												<SelectItem
+													v-for="(name, themeIdx) in CANONICAL_THEMES"
+													:key="name"
+													:value="name"
+												>
 													<div class="flex items-center gap-3">
 														<span class="w-24">{{ CANONICAL_THEME_LABELS[name] }}</span>
 														<span
 															class="flex gap-px overflow-hidden rounded text-[0.625rem] font-medium leading-none"
 														>
 															<span
-																v-for="seg in PREVIEW_SEGMENTS"
+																v-for="(seg, i) in PREVIEW_SEGMENTS"
 																:key="seg"
-																class="flex h-3.5 items-center px-1.5"
+																class="flex h-3.5 w-6 items-center justify-center"
 																:style="{
 																	backgroundColor: getCanonicalThemeColors(name)[seg].bg,
 																	color: getCanonicalThemeColors(name)[seg].fg,
 																}"
-																>Ab</span
+																>{{ labelFor(themeIdx, i) }}</span
 															>
 														</span>
 													</div>
@@ -396,7 +543,7 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 												<SelectGroup>
 													<SelectLabel>Custom</SelectLabel>
 													<SelectItem
-														v-for="saved in configStore.savedCustomThemes"
+														v-for="(saved, savedIdx) in configStore.savedCustomThemes"
 														:key="saved.id"
 														:value="`${SAVED_PREFIX}${saved.id}`"
 													>
@@ -406,14 +553,14 @@ const triggerThemeColors = computed(() => configStore.effectiveColors)
 																class="flex gap-px overflow-hidden rounded text-[0.625rem] font-medium leading-none"
 															>
 																<span
-																	v-for="seg in PREVIEW_SEGMENTS"
+																	v-for="(seg, i) in PREVIEW_SEGMENTS"
 																	:key="seg"
-																	class="flex h-3.5 items-center px-1.5"
+																	class="flex h-3.5 w-6 items-center justify-center"
 																	:style="{
 																		backgroundColor: saved.colors[seg].bg,
 																		color: saved.colors[seg].fg,
 																	}"
-																	>Ab</span
+																	>{{ labelFor(CANONICAL_THEMES.length + savedIdx, i) }}</span
 																>
 															</span>
 														</div>
