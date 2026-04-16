@@ -384,6 +384,15 @@ watch(popoverOpen, (open) => {
 	}
 })
 
+function handlePopoverPointerDownOutside(event: Event) {
+	const triggerEl = triggerRef.value?.$el as HTMLElement | undefined
+	const target = (event as CustomEvent<{ originalEvent: PointerEvent }>).detail?.originalEvent
+		?.target as HTMLElement | undefined
+	if (triggerEl && target && triggerEl.contains(target)) {
+		event.preventDefault()
+	}
+}
+
 const terminalStyle = computed(() => ({
 	'--terminal-bg': previewStore.terminalBgColor,
 	'--terminal-fg': previewStore.terminalFgColor,
@@ -532,6 +541,7 @@ const effectiveWidth = computed(() =>
 										side="bottom"
 										:side-offset="8"
 										class="w-[calc(100vw-2rem)] p-0 sm:w-84"
+										@pointer-down-outside="handlePopoverPointerDownOutside"
 									>
 										<PreviewControls />
 									</PopoverContent>

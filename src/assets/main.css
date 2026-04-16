@@ -321,6 +321,7 @@
 	--font-mono: 'JetBrains Mono', ui-monospace, monospace;
 	--font-nerd: 'FiraCode Nerd Font Mono', ui-monospace, monospace;
 	--font-nerd--font-feature-settings: 'calt' 0, 'liga' 0;
+	--breakpoint-wide: 60rem;
 }
 
 @theme inline {

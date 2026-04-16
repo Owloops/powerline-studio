@@ -30,6 +30,7 @@ const activeSegment = ref<{
 	cellSegment?: string
 } | null>(null)
 const activeTitleFooter = ref<'title' | 'footer' | null>(null)
+const activeHitboxKey = ref<string | null>(null)
 const anchorStyle = ref<{
 	position: string
 	top: string
@@ -37,6 +38,10 @@ const anchorStyle = ref<{
 	width: string
 	height: string
 }>()
+
+function hitboxKey(segmentType: string, sourceLineIndex: number, cellSegment?: string) {
+	return `${segmentType}:${sourceLineIndex}:${cellSegment ?? ''}`
+}
 
 const isTui = computed(() => configStore.isTuiStyle)
 
@@ -81,10 +86,17 @@ function handleClick(
 	sourceLineIndex: number,
 	cellSegment?: string,
 ) {
+	const newKey = hitboxKey(segmentType, sourceLineIndex, cellSegment)
+	if (popoverOpen.value && activeHitboxKey.value === newKey) {
+		handleOpenChange(false)
+		return
+	}
+
 	if (segmentType === '__title_left' || segmentType === '__title_right') {
 		positionAnchor(event)
 		activeSegment.value = null
 		activeTitleFooter.value = 'title'
+		activeHitboxKey.value = newKey
 		popoverOpen.value = true
 		return
 	}
@@ -92,6 +104,7 @@ function handleClick(
 		positionAnchor(event)
 		activeSegment.value = null
 		activeTitleFooter.value = 'footer'
+		activeHitboxKey.value = newKey
 		popoverOpen.value = true
 		return
 	}
@@ -101,7 +114,16 @@ function handleClick(
 	positionAnchor(event)
 	activeTitleFooter.value = null
 	activeSegment.value = { key: segmentType, lineIndex: sourceLineIndex, cellSegment }
+	activeHitboxKey.value = newKey
 	popoverOpen.value = true
+}
+
+function handlePopoverPointerDownOutside(event: Event) {
+	const target = (event as CustomEvent<{ originalEvent: PointerEvent }>).detail?.originalEvent
+		?.target as HTMLElement | undefined
+	if (target?.closest('.segment-hitbox')) {
+		event.preventDefault()
+	}
 }
 
 function handleRemove() {
@@ -133,6 +155,7 @@ function handleOpenChange(open: boolean) {
 	if (!open) {
 		activeSegment.value = null
 		activeTitleFooter.value = null
+		activeHitboxKey.value = null
 	}
 }
 </script>
@@ -170,6 +193,7 @@ function handleOpenChange(open: boolean) {
 				align="start"
 				class="w-96 p-0"
 				@open-auto-focus.prevent
+				@pointer-down-outside="handlePopoverPointerDownOutside"
 			>
 				<!-- Title/Footer -->
 				<template v-if="activeTitleFooter">
