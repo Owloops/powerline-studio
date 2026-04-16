@@ -49,18 +49,27 @@ export const PREVIEW_SEGMENTS: (keyof ColorTheme)[] = [
 	'context',
 ]
 
+export interface PreCustomSnapshot {
+	builtinTheme: CanonicalTheme
+	overrides: Partial<ColorTheme>
+}
+
 export interface ThemeEditorState {
 	mode: 'builtin' | 'custom'
 	builtinTheme: CanonicalTheme
 	overrides: Partial<ColorTheme>
 	customDraft: ColorTheme | null
 	customSourceSnapshot: ColorTheme | null
+	customSourceTheme: CanonicalTheme | null
+	savedThemeId: string | null
+	preCustomSnapshot: PreCustomSnapshot | null
 }
 
 export interface SavedCustomTheme {
 	id: string
 	name: string
 	colors: ColorTheme
+	sourceTheme?: CanonicalTheme
 	createdAt: number
 }
 

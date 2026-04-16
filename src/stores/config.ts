@@ -684,6 +684,13 @@ export const useConfigStore = defineStore('config', () => {
 
 	// --- Theme Editor State ---
 
+	const currentSavedThemeId = useStorage<string | null>(
+		'powerline-studio-current-saved-theme',
+		null,
+	)
+
+	const savedCustomThemes = useStorage<SavedCustomTheme[]>('powerline-studio-custom-themes', [])
+
 	function resolveInitialThemeState(): ThemeEditorState {
 		const currentTheme = config.value.theme
 		if (currentTheme === 'custom') {
@@ -691,12 +698,17 @@ export const useConfigStore = defineStore('config', () => {
 			const draft = customColors
 				? structuredClone(toRaw(customColors))
 				: structuredClone(getCanonicalThemeColors('dark'))
+			const savedId = currentSavedThemeId.value
+			const saved = savedId ? savedCustomThemes.value.find((t) => t.id === savedId) : undefined
 			return {
 				mode: 'custom',
 				builtinTheme: 'dark',
 				overrides: {},
 				customDraft: draft,
 				customSourceSnapshot: structuredClone(draft),
+				customSourceTheme: saved?.sourceTheme ?? null,
+				savedThemeId: savedId,
+				preCustomSnapshot: null,
 			}
 		}
 		const canonical = CANONICAL_THEMES.includes(currentTheme as CanonicalTheme)
@@ -708,6 +720,9 @@ export const useConfigStore = defineStore('config', () => {
 			overrides: {},
 			customDraft: null,
 			customSourceSnapshot: null,
+			customSourceTheme: null,
+			savedThemeId: null,
+			preCustomSnapshot: null,
 		}
 	}
 
@@ -727,21 +742,39 @@ export const useConfigStore = defineStore('config', () => {
 		themeEditor.overrides = fresh.overrides
 		themeEditor.customDraft = fresh.customDraft
 		themeEditor.customSourceSnapshot = fresh.customSourceSnapshot
+		themeEditor.customSourceTheme = fresh.customSourceTheme
+		themeEditor.savedThemeId = fresh.savedThemeId
+		themeEditor.preCustomSnapshot = fresh.preCustomSnapshot
 	}
 
 	// --- Saved Custom Themes ---
 
-	const savedCustomThemes = useStorage<SavedCustomTheme[]>('powerline-studio-custom-themes', [])
-
-	function saveCustomTheme(name: string) {
+	function saveCustomTheme(name: string): string | undefined {
 		if (!themeEditor.customDraft) return
+		const draftColors = structuredClone(toRaw(themeEditor.customDraft))
+		const sourceTheme = themeEditor.customSourceTheme ?? themeEditor.builtinTheme
+		if (themeEditor.savedThemeId) {
+			const existing = savedCustomThemes.value.find((t) => t.id === themeEditor.savedThemeId)
+			if (existing) {
+				existing.name = name
+				existing.colors = draftColors
+				existing.sourceTheme = sourceTheme
+				themeEditor.customSourceSnapshot = structuredClone(draftColors)
+				return existing.id
+			}
+		}
 		const id = `custom-${Date.now()}`
 		savedCustomThemes.value.push({
 			id,
 			name,
-			colors: structuredClone(toRaw(themeEditor.customDraft)),
+			colors: draftColors,
+			sourceTheme,
 			createdAt: Date.now(),
 		})
+		themeEditor.savedThemeId = id
+		themeEditor.customSourceTheme = sourceTheme
+		themeEditor.customSourceSnapshot = structuredClone(draftColors)
+		currentSavedThemeId.value = id
 		return id
 	}
 
@@ -750,12 +783,27 @@ export const useConfigStore = defineStore('config', () => {
 		if (index !== -1) {
 			savedCustomThemes.value.splice(index, 1)
 		}
+		if (themeEditor.savedThemeId === id) {
+			confirmSwitchToBuiltIn(themeEditor.builtinTheme)
+		}
 	}
 
 	function loadSavedCustomTheme(saved: SavedCustomTheme) {
-		themeEditor.customDraft = structuredClone(saved.colors)
-		themeEditor.customSourceSnapshot = structuredClone(saved.colors)
+		if (themeEditor.mode === 'builtin') {
+			snapshotBuiltinState()
+		}
+		const rawColors = structuredClone(toRaw(saved.colors))
+		themeEditor.customDraft = rawColors
+		themeEditor.customSourceSnapshot = structuredClone(rawColors)
+		themeEditor.customSourceTheme = saved.sourceTheme ?? null
+		themeEditor.savedThemeId = saved.id
 		themeEditor.mode = 'custom'
+		currentSavedThemeId.value = saved.id
+	}
+
+	function loadSavedCustomThemeById(id: string) {
+		const saved = savedCustomThemes.value.find((t) => t.id === id)
+		if (saved) loadSavedCustomTheme(saved)
 	}
 
 	const effectiveColors = computed<ColorTheme>(() => {
@@ -813,15 +861,58 @@ export const useConfigStore = defineStore('config', () => {
 	function confirmSwitchToBuiltIn(theme: CanonicalTheme) {
 		themeEditor.customDraft = null
 		themeEditor.customSourceSnapshot = null
+		themeEditor.customSourceTheme = null
+		themeEditor.savedThemeId = null
+		themeEditor.preCustomSnapshot = null
 		themeEditor.mode = 'builtin'
 		themeEditor.builtinTheme = theme
+		currentSavedThemeId.value = null
+	}
+
+	function snapshotBuiltinState() {
+		themeEditor.preCustomSnapshot = {
+			builtinTheme: themeEditor.builtinTheme,
+			overrides: structuredClone(toRaw(themeEditor.overrides)),
+		}
 	}
 
 	function enterCustomTheme() {
+		if (themeEditor.mode === 'builtin') {
+			snapshotBuiltinState()
+		}
 		const colors = structuredClone(effectiveColors.value)
 		themeEditor.customDraft = colors
 		themeEditor.customSourceSnapshot = structuredClone(colors)
+		themeEditor.customSourceTheme = themeEditor.builtinTheme
+		themeEditor.savedThemeId = null
 		themeEditor.mode = 'custom'
+		currentSavedThemeId.value = null
+	}
+
+	function cancelCustomTheme() {
+		const prev = themeEditor.preCustomSnapshot
+		themeEditor.customDraft = null
+		themeEditor.customSourceSnapshot = null
+		themeEditor.customSourceTheme = null
+		themeEditor.savedThemeId = null
+		themeEditor.preCustomSnapshot = null
+		themeEditor.mode = 'builtin'
+		currentSavedThemeId.value = null
+		if (prev) {
+			themeEditor.builtinTheme = prev.builtinTheme
+			themeEditor.overrides = prev.overrides
+		}
+	}
+
+	function resetCustomColorToSource(segment: keyof ColorTheme) {
+		if (!themeEditor.customDraft || !themeEditor.customSourceTheme) return
+		const sourceColor = getCanonicalThemeColors(themeEditor.customSourceTheme)[segment]
+		themeEditor.customDraft[segment] = { ...sourceColor }
+	}
+
+	function revertCustomDraft() {
+		if (!themeEditor.customDraft || !themeEditor.customSourceSnapshot) return
+		themeEditor.customDraft = structuredClone(toRaw(themeEditor.customSourceSnapshot))
 	}
 
 	function updateCustomColor(segment: keyof ColorTheme, color: SegmentColor) {
@@ -910,7 +1001,10 @@ export const useConfigStore = defineStore('config', () => {
 		selectBuiltInTheme,
 		confirmSwitchToBuiltIn,
 		enterCustomTheme,
+		cancelCustomTheme,
 		updateCustomColor,
+		resetCustomColorToSource,
+		revertCustomDraft,
 		setColorOverride,
 		resetSegmentOverride,
 		// Saved custom themes
@@ -918,5 +1012,6 @@ export const useConfigStore = defineStore('config', () => {
 		saveCustomTheme,
 		deleteCustomTheme,
 		loadSavedCustomTheme,
+		loadSavedCustomThemeById,
 	}
 })
