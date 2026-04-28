@@ -14,11 +14,6 @@ const { values } = useSegmentForm('agent', agentConfigSchema, () => {
 <template>
 	<div class="space-y-3">
 		<FormShowIconRow segment-name="agent" />
-		<div class="flex flex-col gap-1.5">
-			<FormSwitchField name="showLabel" label='Show "agent:" label' />
-			<p class="text-sm text-muted-foreground">
-				Prefix the name with 'agent:' (e.g., '◇ agent: researcher')
-			</p>
-		</div>
+		<FormSwitchField name="showLabel" label='Show "agent:" label' />
 	</div>
 </template>

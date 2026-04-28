@@ -17,8 +17,5 @@ const { values } = useSegmentForm('thinking', thinkingConfigSchema, () => {
 		<FormShowIconRow segment-name="thinking" />
 		<FormSwitchField name="showEnabled" label="Show enabled state" />
 		<FormSwitchField name="showEffort" label="Show effort level" />
-		<p class="text-sm text-muted-foreground">
-			Both off hides the segment. Both on joins parts with '·' (e.g. '✦ On · xhigh').
-		</p>
 	</div>
 </template>

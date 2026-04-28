@@ -15,39 +15,38 @@ const props = defineProps<{
 
 const configStore = useConfigStore()
 
-const budgetConfig = computed(() => {
+const budgetItem = computed(() => {
 	const budget = configStore.config.budget as
 		| Record<string, Record<string, unknown> | undefined>
 		| undefined
-	const item = budget?.[props.budgetKey]
-	return {
-		amount: (item?.amount as number) ?? 0,
-		warningThreshold: (item?.warningThreshold as number) ?? 80,
-		type: (item?.type as 'cost' | 'tokens') ?? 'cost',
-		showPercentage: (item?.showPercentage as boolean | undefined) ?? true,
-		showValue: (item?.showValue as boolean | undefined) ?? true,
-	}
+	return budget?.[props.budgetKey]
 })
+
+const showPercentage = computed(
+	() => (budgetItem.value?.showPercentage as boolean | undefined) ?? true,
+)
+const showValue = computed(() => (budgetItem.value?.showValue as boolean | undefined) ?? true)
 
 const isOpen = ref(false)
 
 const { values } = useForm({
 	schema: budgetItemSchema,
-	initialValues: budgetConfig.value,
+	initialValues: {
+		amount: (budgetItem.value?.amount as number) ?? 0,
+		warningThreshold: (budgetItem.value?.warningThreshold as number) ?? 80,
+		type: (budgetItem.value?.type as 'cost' | 'tokens') ?? 'cost',
+	},
 })
 
 const amountStep = computed(() => (values.type === 'tokens' ? 1 : 0.01))
 
 const isBlock = computed(() => props.budgetKey === 'block')
-const bothOff = computed(() => values.showPercentage === false && values.showValue === false)
 
 watch(
 	values,
 	(newValues) => {
 		configStore.setBudget(`${props.budgetKey}.amount`, newValues.amount)
 		configStore.setBudget(`${props.budgetKey}.warningThreshold`, newValues.warningThreshold)
-		configStore.setBudget(`${props.budgetKey}.showPercentage`, newValues.showPercentage)
-		configStore.setBudget(`${props.budgetKey}.showValue`, newValues.showValue)
 		if (!configStore.config.budget) {
 			configStore.config.budget = {} as Record<string, unknown>
 		}
@@ -62,12 +61,12 @@ watch(
 
 function setShowPercentage(next: boolean) {
 	if (isBlock.value) return
-	values.showPercentage = next
+	configStore.setBudget(`${props.budgetKey}.showPercentage`, next)
 }
 
 function setShowValue(next: boolean) {
 	if (isBlock.value) return
-	values.showValue = next
+	configStore.setBudget(`${props.budgetKey}.showValue`, next)
 }
 
 const blockTooltip =
@@ -101,12 +100,9 @@ const valueTooltip = 'Hide the base cost/token value, render only the percentage
 					:step="1"
 				/>
 				<TooltipProvider :delay-duration="200">
-					<div class="flex flex-col gap-1.5">
-						<div class="flex items-center gap-1">
-							<Label
-								:for="`${budgetKey}-show-percentage`"
-								class="text-sm font-medium text-foreground"
-							>
+					<div class="flex items-center gap-2">
+						<div class="flex w-32 shrink-0 items-center gap-1">
+							<Label :for="`${budgetKey}-show-percentage`" class="text-xs text-muted-foreground">
 								Show Percentage
 							</Label>
 							<Tooltip>
@@ -126,14 +122,14 @@ const valueTooltip = 'Hide the base cost/token value, render only the percentage
 						</div>
 						<Switch
 							:id="`${budgetKey}-show-percentage`"
-							:model-value="values.showPercentage ?? true"
+							:model-value="showPercentage"
 							:disabled="isBlock"
 							@update:model-value="setShowPercentage"
 						/>
 					</div>
-					<div class="flex flex-col gap-1.5">
-						<div class="flex items-center gap-1">
-							<Label :for="`${budgetKey}-show-value`" class="text-sm font-medium text-foreground">
+					<div class="flex items-center gap-2">
+						<div class="flex w-32 shrink-0 items-center gap-1">
+							<Label :for="`${budgetKey}-show-value`" class="text-xs text-muted-foreground">
 								Show Value
 							</Label>
 							<Tooltip>
@@ -153,15 +149,12 @@ const valueTooltip = 'Hide the base cost/token value, render only the percentage
 						</div>
 						<Switch
 							:id="`${budgetKey}-show-value`"
-							:model-value="values.showValue ?? true"
+							:model-value="showValue"
 							:disabled="isBlock"
 							@update:model-value="setShowValue"
 						/>
 					</div>
 				</TooltipProvider>
-				<p v-if="bothOff && !isBlock" class="text-xs text-muted-foreground">
-					Both off hides the budget suffix entirely. The budget threshold still applies.
-				</p>
 			</div>
 		</CollapsibleContent>
 	</Collapsible>
