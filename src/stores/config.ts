@@ -720,7 +720,7 @@ export const useConfigStore = defineStore('config', () => {
 		const currentStyle = config.value.display.style
 		const currentTheme = config.value.theme
 		const currentColors = config.value.colors
-			? structuredClone(toRaw(config.value.colors))
+			? (JSON.parse(JSON.stringify(toRaw(config.value.colors))) as PowerlineConfig['colors'])
 			: undefined
 
 		config.value = getInitialConfig()
@@ -754,14 +754,17 @@ export const useConfigStore = defineStore('config', () => {
 			const savedId = currentSavedThemeId.value
 			const saved = savedId ? savedCustomThemes.value.find((t) => t.id === savedId) : undefined
 			const draft = customColors
-				? completeColorTheme(structuredClone(toRaw(customColors)), saved?.sourceTheme ?? 'dark')
-				: structuredClone(getCanonicalThemeColors('dark'))
+				? completeColorTheme(
+						JSON.parse(JSON.stringify(toRaw(customColors))) as Partial<ColorTheme>,
+						saved?.sourceTheme ?? 'dark',
+					)
+				: (JSON.parse(JSON.stringify(getCanonicalThemeColors('dark'))) as ColorTheme)
 			return {
 				mode: 'custom',
 				builtinTheme: 'dark',
 				overrides: {},
 				customDraft: draft,
-				customSourceSnapshot: structuredClone(draft),
+				customSourceSnapshot: JSON.parse(JSON.stringify(draft)) as ColorTheme,
 				customSourceTheme: saved?.sourceTheme ?? null,
 				savedThemeId: savedId,
 				preCustomSnapshot: null,
@@ -807,7 +810,7 @@ export const useConfigStore = defineStore('config', () => {
 
 	function saveCustomTheme(name: string): string | undefined {
 		if (!themeEditor.customDraft) return
-		const draftColors = structuredClone(toRaw(themeEditor.customDraft))
+		const draftColors = JSON.parse(JSON.stringify(toRaw(themeEditor.customDraft))) as ColorTheme
 		const sourceTheme = themeEditor.customSourceTheme ?? themeEditor.builtinTheme
 		if (themeEditor.savedThemeId) {
 			const existing = savedCustomThemes.value.find((t) => t.id === themeEditor.savedThemeId)
@@ -815,7 +818,7 @@ export const useConfigStore = defineStore('config', () => {
 				existing.name = name
 				existing.colors = draftColors
 				existing.sourceTheme = sourceTheme
-				themeEditor.customSourceSnapshot = structuredClone(draftColors)
+				themeEditor.customSourceSnapshot = JSON.parse(JSON.stringify(draftColors)) as ColorTheme
 				return existing.id
 			}
 		}
@@ -829,7 +832,7 @@ export const useConfigStore = defineStore('config', () => {
 		})
 		themeEditor.savedThemeId = id
 		themeEditor.customSourceTheme = sourceTheme
-		themeEditor.customSourceSnapshot = structuredClone(draftColors)
+		themeEditor.customSourceSnapshot = JSON.parse(JSON.stringify(draftColors)) as ColorTheme
 		currentSavedThemeId.value = id
 		return id
 	}
@@ -849,11 +852,11 @@ export const useConfigStore = defineStore('config', () => {
 			snapshotBuiltinState()
 		}
 		const rawColors = completeColorTheme(
-			structuredClone(toRaw(saved.colors)),
+			JSON.parse(JSON.stringify(toRaw(saved.colors))) as Partial<ColorTheme>,
 			saved.sourceTheme ?? 'dark',
 		)
 		themeEditor.customDraft = rawColors
-		themeEditor.customSourceSnapshot = structuredClone(rawColors)
+		themeEditor.customSourceSnapshot = JSON.parse(JSON.stringify(rawColors)) as ColorTheme
 		themeEditor.customSourceTheme = saved.sourceTheme ?? null
 		themeEditor.savedThemeId = saved.id
 		themeEditor.mode = 'custom'
@@ -931,7 +934,7 @@ export const useConfigStore = defineStore('config', () => {
 	function snapshotBuiltinState() {
 		themeEditor.preCustomSnapshot = {
 			builtinTheme: themeEditor.builtinTheme,
-			overrides: structuredClone(toRaw(themeEditor.overrides)),
+			overrides: JSON.parse(JSON.stringify(toRaw(themeEditor.overrides))) as Partial<ColorTheme>,
 		}
 	}
 
@@ -939,9 +942,9 @@ export const useConfigStore = defineStore('config', () => {
 		if (themeEditor.mode === 'builtin') {
 			snapshotBuiltinState()
 		}
-		const colors = structuredClone(effectiveColors.value)
+		const colors = JSON.parse(JSON.stringify(effectiveColors.value)) as ColorTheme
 		themeEditor.customDraft = colors
-		themeEditor.customSourceSnapshot = structuredClone(colors)
+		themeEditor.customSourceSnapshot = JSON.parse(JSON.stringify(colors)) as ColorTheme
 		themeEditor.customSourceTheme = themeEditor.builtinTheme
 		themeEditor.savedThemeId = null
 		themeEditor.mode = 'custom'
@@ -971,7 +974,9 @@ export const useConfigStore = defineStore('config', () => {
 
 	function revertCustomDraft() {
 		if (!themeEditor.customDraft || !themeEditor.customSourceSnapshot) return
-		themeEditor.customDraft = structuredClone(toRaw(themeEditor.customSourceSnapshot))
+		themeEditor.customDraft = JSON.parse(
+			JSON.stringify(toRaw(themeEditor.customSourceSnapshot)),
+		) as ColorTheme
 	}
 
 	function updateCustomColor(segment: keyof ColorTheme, color: SegmentColor) {
