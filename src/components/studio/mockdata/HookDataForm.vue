@@ -6,10 +6,19 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select'
+import { Button } from '@/components/ui/button'
 
 const store = useMockDataStore()
 
 const UNSET = '__unset__'
+
+const CACHE_TIMER_QUICK_PICKS: { label: string; seconds: number }[] = [
+	{ label: '0s', seconds: 0 },
+	{ label: '1:30', seconds: 90 },
+	{ label: '3:20', seconds: 200 },
+	{ label: '5:50', seconds: 350 },
+	{ label: '15m', seconds: 900 },
+]
 
 const EFFORT_OPTIONS = [
 	{ label: 'Unset', value: UNSET },
@@ -106,6 +115,19 @@ const thinkingState = computed({
 		store.markCustom()
 	},
 })
+
+const cacheTimerElapsed = computed({
+	get: () => (store.cacheTimerElapsedSeconds === null ? '' : store.cacheTimerElapsedSeconds),
+	set: (v: string | number) => {
+		if (v === '' || v === null) {
+			store.setCacheTimerElapsed(null)
+			return
+		}
+		const n = Number(v)
+		if (Number.isNaN(n)) return
+		store.setCacheTimerElapsed(Math.max(0, Math.floor(n)))
+	},
+})
 </script>
 
 <template>
@@ -178,6 +200,40 @@ const thinkingState = computed({
 						</SelectItem>
 					</SelectContent>
 				</Select>
+			</div>
+		</div>
+		<div class="space-y-1.5">
+			<Label class="text-xs text-muted-foreground">
+				Cache Timer Elapsed <span class="text-muted-foreground/60">(sec)</span>
+			</Label>
+			<Input
+				v-model="cacheTimerElapsed"
+				type="number"
+				min="0"
+				class="h-8 text-xs"
+				placeholder="null (hides segment)"
+			/>
+			<div class="flex flex-wrap gap-1">
+				<Button
+					v-for="qp in CACHE_TIMER_QUICK_PICKS"
+					:key="qp.seconds"
+					type="button"
+					variant="outline"
+					size="sm"
+					class="h-6 px-2 text-[10px]"
+					@click="store.setCacheTimerElapsed(qp.seconds)"
+				>
+					{{ qp.label }}
+				</Button>
+				<Button
+					type="button"
+					variant="outline"
+					size="sm"
+					class="h-6 px-2 text-[10px]"
+					@click="store.setCacheTimerElapsed(null)"
+				>
+					null
+				</Button>
 			</div>
 		</div>
 	</div>

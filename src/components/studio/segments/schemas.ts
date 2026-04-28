@@ -84,3 +84,5 @@ export const thinkingConfigSchema = z.object({
 	showEnabled: z.boolean(),
 	showEffort: z.boolean(),
 })
+
+export const cacheTimerConfigSchema = z.object({})

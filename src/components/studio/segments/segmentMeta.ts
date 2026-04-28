@@ -2,6 +2,7 @@ import type { Component } from 'vue'
 import type { LineConfig } from '@owloops/claude-powerline/browser'
 import type { AgentSegmentConfig } from '@/types/agent'
 import type { ThinkingSegmentConfig } from '@/types/thinking'
+import type { CacheTimerSegmentConfig } from '@/types/cacheTimer'
 import {
 	Activity,
 	Bot,
@@ -17,6 +18,7 @@ import {
 	Sparkles,
 	Tag,
 	Terminal,
+	Timer,
 	Variable,
 } from 'lucide-vue-next'
 
@@ -36,16 +38,18 @@ export const SEGMENT_KEYS = [
 	'env',
 	'agent',
 	'thinking',
+	'cacheTimer',
 ] as const
 
 export type SegmentKey = (typeof SEGMENT_KEYS)[number]
 
 // Mirrors @owloops/claude-powerline LineConfig['segments'] with the upcoming
-// `agent` and `thinking` slots from PR #82 added — switch to the upstream type
-// post-bump.
+// `agent`, `thinking`, and `cacheTimer` slots from PR #82 added — switch to the
+// upstream type post-bump.
 export type StudioSegmentsMap = LineConfig['segments'] & {
 	agent?: AgentSegmentConfig
 	thinking?: ThinkingSegmentConfig
+	cacheTimer?: CacheTimerSegmentConfig
 }
 
 export interface SegmentMeta {
@@ -69,6 +73,7 @@ export const SEGMENT_META: Record<SegmentKey, SegmentMeta> = {
 	env: { name: 'Environment', icon: Variable },
 	agent: { name: 'Agent', icon: Sparkles },
 	thinking: { name: 'Thinking', icon: Lightbulb },
+	cacheTimer: { name: 'Cache Timer', icon: Timer },
 }
 
 /**

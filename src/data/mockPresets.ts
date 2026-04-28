@@ -17,6 +17,7 @@ export interface MockDataPreset {
 	blockInfo: BlockInfo | null
 	todayInfo: TodayInfo | null
 	tmuxSessionId: string | null
+	cacheTimerElapsedSeconds: number | null
 }
 
 export interface PresetMeta {
@@ -149,6 +150,7 @@ function createDefaultPreset(): MockDataPreset {
 			date: now,
 		},
 		tmuxSessionId: 'studio-preview',
+		cacheTimerElapsedSeconds: 0,
 	}
 }
 
@@ -234,6 +236,7 @@ function createMinimalPreset(): MockDataPreset {
 			date: now,
 		},
 		tmuxSessionId: null,
+		cacheTimerElapsedSeconds: 0,
 	}
 }
 
@@ -342,6 +345,7 @@ function createHeavyPreset(): MockDataPreset {
 			date: now,
 		},
 		tmuxSessionId: 'prod-session',
+		cacheTimerElapsedSeconds: 0,
 	}
 }
 
@@ -450,6 +454,7 @@ function createRateLimitedPreset(): MockDataPreset {
 			date: now,
 		},
 		tmuxSessionId: 'rate-check',
+		cacheTimerElapsedSeconds: 0,
 	}
 }
 
@@ -558,6 +563,7 @@ function createLargeContextPreset(): MockDataPreset {
 			date: now,
 		},
 		tmuxSessionId: 'studio-preview',
+		cacheTimerElapsedSeconds: 0,
 	}
 }
 
@@ -657,6 +663,7 @@ function createGitMergeConflictPreset(): MockDataPreset {
 			date: now,
 		},
 		tmuxSessionId: 'studio-preview',
+		cacheTimerElapsedSeconds: 0,
 	}
 }
 
@@ -771,6 +778,7 @@ function createLongRunningPreset(): MockDataPreset {
 			date: now,
 		},
 		tmuxSessionId: 'long-session',
+		cacheTimerElapsedSeconds: 0,
 	}
 }
 

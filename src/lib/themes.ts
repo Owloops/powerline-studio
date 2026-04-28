@@ -1,9 +1,10 @@
 import type { ColorTheme, SegmentColor } from '@owloops/claude-powerline/browser'
 import { BUILT_IN_THEMES } from '@owloops/claude-powerline/browser'
-// Side-effect imports: augment ColorTheme with `agent` and `thinking` slots
-// ahead of PR #82 npm bump.
+// Side-effect imports: augment ColorTheme with `agent`, `thinking`, and
+// `cacheTimer` slots ahead of PR #82 npm bump.
 import '@/types/agent'
 import '@/types/thinking'
+import '@/types/cacheTimer'
 
 export type CanonicalTheme = 'dark' | 'light' | 'nord' | 'tokyo-night' | 'rose-pine' | 'gruvbox'
 
@@ -42,6 +43,7 @@ export const SEGMENT_LABELS: Record<keyof ColorTheme, string> = {
 	weekly: 'Weekly',
 	agent: 'Agent',
 	thinking: 'Thinking',
+	cacheTimer: 'Cache Timer',
 }
 
 export const SEGMENT_KEYS = Object.keys(SEGMENT_LABELS) as (keyof ColorTheme)[]
@@ -79,10 +81,11 @@ export interface SavedCustomTheme {
 	createdAt: number
 }
 
-// Local fallbacks for color slots added by PR #82 (`agent`, `thinking`), used
-// until the new themes ship in `@owloops/claude-powerline`. Once the dep is
-// bumped these defaults can be removed. Mirrors the upstream theme files.
-type LocalFallbackSlot = 'agent' | 'thinking'
+// Local fallbacks for color slots added by PR #82 (`agent`, `thinking`,
+// `cacheTimer`), used until the new themes ship in `@owloops/claude-powerline`.
+// Once the dep is bumped these defaults can be removed. Mirrors the upstream
+// theme files (truecolor variants from src/themes/*.ts in PR #82).
+type LocalFallbackSlot = 'agent' | 'thinking' | 'cacheTimer'
 
 const LOCAL_FALLBACK_COLORS: Record<LocalFallbackSlot, Record<CanonicalTheme, SegmentColor>> = {
 	agent: {
@@ -100,6 +103,14 @@ const LOCAL_FALLBACK_COLORS: Record<LocalFallbackSlot, Record<CanonicalTheme, Se
 		'tokyo-night': { bg: '#2f2a3d', fg: '#bb9af7' },
 		'rose-pine': { bg: '#26223a', fg: '#c4a7e7' },
 		gruvbox: { bg: '#3c3046', fg: '#d3869b' },
+	},
+	cacheTimer: {
+		dark: { bg: '#1f3a1f', fg: '#90ee90' },
+		light: { bg: '#059669', fg: '#ffffff' },
+		nord: { bg: '#3b4252', fg: '#a3be8c' },
+		'tokyo-night': { bg: '#1f2e2a', fg: '#9ece6a' },
+		'rose-pine': { bg: '#1f2d2e', fg: '#9ccfd8' },
+		gruvbox: { bg: '#3c3836', fg: '#b8bb26' },
 	},
 }
 

@@ -1,5 +1,6 @@
 import type { Component } from 'vue'
 import AgentConfig from './AgentConfig.vue'
+import CacheTimerConfig from './CacheTimerConfig.vue'
 import DirectoryConfig from './DirectoryConfig.vue'
 import GitConfig from './GitConfig.vue'
 import ModelConfig from './ModelConfig.vue'
@@ -31,4 +32,5 @@ export const segmentConfigMap: Record<string, Component> = {
 	sessionId: SessionIdConfig,
 	agent: AgentConfig,
 	thinking: ThinkingConfig,
+	cacheTimer: CacheTimerConfig,
 }

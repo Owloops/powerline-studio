@@ -10,9 +10,11 @@ import type {
 	TodayInfo,
 } from '@owloops/claude-powerline/browser'
 // Side-effect imports: augment ClaudeHookData with `agent`, `effort`, and
-// `thinking` slots ahead of PR #82 npm bump.
+// `thinking` slots ahead of PR #82 npm bump. cacheTimer adds a ColorTheme slot
+// only — its info is synthesized from the studio's own elapsedSeconds mock.
 import '@/types/agent'
 import '@/types/thinking'
+import '@/types/cacheTimer'
 import { DEFAULT_MOCK_DATA, MOCK_DATA_PRESETS } from '@/data/mockPresets'
 import type { MockDataPreset } from '@/data/mockPresets'
 import { deepMerge } from './utils'
@@ -28,6 +30,7 @@ export const useMockDataStore = defineStore('mockData', () => {
 	const blockInfo = ref<BlockInfo | null>(structuredClone(DEFAULT_MOCK_DATA.blockInfo))
 	const todayInfo = ref<TodayInfo | null>(structuredClone(DEFAULT_MOCK_DATA.todayInfo))
 	const tmuxSessionId = ref<string | null>(DEFAULT_MOCK_DATA.tmuxSessionId)
+	const cacheTimerElapsedSeconds = ref<number | null>(DEFAULT_MOCK_DATA.cacheTimerElapsedSeconds)
 	const activePreset = ref('default')
 
 	// Tracks the last named preset (not 'custom') for re-enable restore logic.
@@ -52,6 +55,7 @@ export const useMockDataStore = defineStore('mockData', () => {
 		blockInfo.value = structuredClone(preset.blockInfo)
 		todayInfo.value = structuredClone(preset.todayInfo)
 		tmuxSessionId.value = preset.tmuxSessionId
+		cacheTimerElapsedSeconds.value = preset.cacheTimerElapsedSeconds
 		activePreset.value = id
 		_lastNamedPreset = id
 		_applyingPreset = false
@@ -123,6 +127,11 @@ export const useMockDataStore = defineStore('mockData', () => {
 		markCustom()
 	}
 
+	function setCacheTimerElapsed(seconds: number | null) {
+		cacheTimerElapsedSeconds.value = seconds
+		markCustom()
+	}
+
 	function $reset() {
 		applyPreset('default')
 	}
@@ -136,6 +145,7 @@ export const useMockDataStore = defineStore('mockData', () => {
 		blockInfo,
 		todayInfo,
 		tmuxSessionId,
+		cacheTimerElapsedSeconds,
 		activePreset,
 		// Mutations
 		applyPreset,
@@ -149,6 +159,7 @@ export const useMockDataStore = defineStore('mockData', () => {
 		updateBlockInfo,
 		updateTodayInfo,
 		setTmuxSessionId,
+		setCacheTimerElapsed,
 		$reset,
 	}
 })
