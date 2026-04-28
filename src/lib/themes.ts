@@ -76,53 +76,14 @@ export interface SavedCustomTheme {
 	createdAt: number
 }
 
-// Local fallbacks for color slots added by PR #82 (`agent`, `thinking`,
-// `cacheTimer`), used until the new themes ship in `@owloops/claude-powerline`.
-// Once the dep is bumped these defaults can be removed. Mirrors the upstream
-// theme files (truecolor variants from src/themes/*.ts in PR #82).
-type LocalFallbackSlot = 'agent' | 'thinking' | 'cacheTimer'
-
-const LOCAL_FALLBACK_COLORS: Record<LocalFallbackSlot, Record<CanonicalTheme, SegmentColor>> = {
-	agent: {
-		dark: { bg: '#7c3aed', fg: '#ffffff' },
-		light: { bg: '#a855f7', fg: '#ffffff' },
-		nord: { bg: '#b48ead', fg: '#2e3440' },
-		'tokyo-night': { bg: '#bb9af7', fg: '#1a1b26' },
-		'rose-pine': { bg: '#c4a7e7', fg: '#191724' },
-		gruvbox: { bg: '#d3869b', fg: '#282828' },
-	},
-	thinking: {
-		dark: { bg: '#2a2a3a', fg: '#c792ea' },
-		light: { bg: '#7c3aed', fg: '#ffffff' },
-		nord: { bg: '#3b4252', fg: '#b48ead' },
-		'tokyo-night': { bg: '#2f2a3d', fg: '#bb9af7' },
-		'rose-pine': { bg: '#26223a', fg: '#c4a7e7' },
-		gruvbox: { bg: '#3c3046', fg: '#d3869b' },
-	},
-	cacheTimer: {
-		dark: { bg: '#1f3a1f', fg: '#90ee90' },
-		light: { bg: '#059669', fg: '#ffffff' },
-		nord: { bg: '#3b4252', fg: '#a3be8c' },
-		'tokyo-night': { bg: '#1f2e2a', fg: '#9ece6a' },
-		'rose-pine': { bg: '#1f2d2e', fg: '#9ccfd8' },
-		gruvbox: { bg: '#3c3836', fg: '#b8bb26' },
-	},
-}
-
 export function getCanonicalThemeColors(theme: CanonicalTheme): ColorTheme {
-	const base = BUILT_IN_THEMES[theme]!
-	const result = { ...base } as ColorTheme
-	for (const slot of Object.keys(LOCAL_FALLBACK_COLORS) as LocalFallbackSlot[]) {
-		if (!result[slot]) {
-			result[slot] = { ...LOCAL_FALLBACK_COLORS[slot][theme] }
-		}
-	}
-	return result
+	return BUILT_IN_THEMES[theme]!
 }
 
 /**
  * Backfills any missing slots in a partial ColorTheme from a canonical source.
- * Needed for stored custom themes that predate newer slots like `agent`.
+ * Needed for stored custom themes that predate slots added by upstream
+ * (`agent`, `thinking`, `cacheTimer`).
  */
 export function completeColorTheme(
 	theme: Partial<ColorTheme>,

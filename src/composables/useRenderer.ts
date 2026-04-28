@@ -271,42 +271,28 @@ function resolveThemeColors(
 	}
 }
 
+const SEGMENT_BOLD_KEYS: Record<string, keyof PowerlineColors> = {
+	directory: 'modeBold',
+	git: 'gitBold',
+	model: 'modelBold',
+	session: 'sessionBold',
+	sessionId: 'sessionBold',
+	block: 'blockBold',
+	today: 'todayBold',
+	tmux: 'tmuxBold',
+	context: 'contextBold',
+	metrics: 'metricsBold',
+	version: 'versionBold',
+	env: 'envBold',
+	weekly: 'weeklyBold',
+	agent: 'agentBold',
+	thinking: 'thinkingBold',
+	cacheTimer: 'cacheTimerBold',
+}
+
 function getSegmentBoldFlag(type: string, colors: PowerlineColors): boolean {
-	switch (type) {
-		case 'directory':
-			return colors.modeBold
-		case 'git':
-			return colors.gitBold
-		case 'model':
-			return colors.modelBold
-		case 'session':
-		case 'sessionId':
-			return colors.sessionBold
-		case 'block':
-			return colors.blockBold
-		case 'today':
-			return colors.todayBold
-		case 'tmux':
-			return colors.tmuxBold
-		case 'context':
-			return colors.contextBold
-		case 'metrics':
-			return colors.metricsBold
-		case 'version':
-			return colors.versionBold
-		case 'env':
-			return colors.envBold
-		case 'weekly':
-			return colors.weeklyBold
-		case 'agent':
-			return colors.agentBold
-		case 'thinking':
-			return colors.thinkingBold
-		case 'cacheTimer':
-			return colors.cacheTimerBold
-		default:
-			return colors.modeBold
-	}
+	const key = SEGMENT_BOLD_KEYS[type] ?? 'modeBold'
+	return Boolean(colors[key])
 }
 
 function formatSegment(
@@ -789,6 +775,10 @@ export function useRenderer() {
 			config.display.charset = charset
 
 			const colors = resolveThemeColors(config, colorMode, terminalBgColor)
+			const cacheTimerInfo: CacheTimerInfo | null =
+				mockDataStore.cacheTimerElapsedSeconds === null
+					? null
+					: { elapsedSeconds: mockDataStore.cacheTimerElapsedSeconds }
 			let ansi: string
 			let hitboxes: SegmentHitbox[] = []
 
@@ -801,11 +791,6 @@ export function useRenderer() {
 					config.display.tui.terminalWidth = terminalWidth
 					config.display.tui.widthReserve = reservedWidth
 				}
-
-				const cacheTimerInfo: CacheTimerInfo | null =
-					mockDataStore.cacheTimerElapsedSeconds === null
-						? null
-						: { elapsedSeconds: mockDataStore.cacheTimerElapsedSeconds }
 
 				const tuiData: TuiData = {
 					hookData: toRaw(mockDataStore.hookData),
@@ -838,10 +823,6 @@ export function useRenderer() {
 				const blockInfo = toRaw(mockDataStore.blockInfo)
 				const todayInfo = toRaw(mockDataStore.todayInfo)
 				const tmuxSessionId = mockDataStore.tmuxSessionId
-				const cacheTimerInfo: CacheTimerInfo | null =
-					mockDataStore.cacheTimerElapsedSeconds === null
-						? null
-						: { elapsedSeconds: mockDataStore.cacheTimerElapsedSeconds }
 
 				const outputLines: string[] = []
 				hitboxes = []

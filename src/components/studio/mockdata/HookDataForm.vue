@@ -78,11 +78,13 @@ const tmuxId = computed({
 	},
 })
 
+// Setters below assign to `store.hookData.*` directly rather than going through
+// `updateHookData`, because deepMerge silently drops `undefined` and we need to
+// be able to clear optional sub-objects (agent / effort / thinking / worktree).
+
 const agentName = computed({
 	get: () => store.hookData.agent?.name ?? '',
 	set: (v: string) => {
-		// Direct assignment because deepMerge skips undefined values, so we can
-		// clear the field by setting `agent` itself to undefined.
 		store.hookData.agent = v ? { name: v } : undefined
 		store.markCustom()
 	},
@@ -91,7 +93,6 @@ const agentName = computed({
 const effortLevel = computed({
 	get: () => store.hookData.effort?.level ?? UNSET,
 	set: (v: string) => {
-		// Direct assignment: clear by setting parent `effort` to undefined.
 		store.hookData.effort = v && v !== UNSET ? { level: v } : undefined
 		store.markCustom()
 	},
@@ -119,10 +120,8 @@ const thinkingState = computed({
 const worktreeOriginalCwd = computed({
 	get: () => store.hookData.worktree?.original_cwd ?? '',
 	set: (v: string) => {
-		// Direct assignment: clear by setting parent `worktree` to undefined
-		// (deepMerge skips undefined, so we can't drop it through updateHookData).
-		// Preserve any sibling fields (name/path/branch/original_branch) on edit.
 		if (v) {
+			// Preserve sibling fields (name/path/branch/original_branch) on edit.
 			const existing = store.hookData.worktree ?? {}
 			store.hookData.worktree = { ...existing, original_cwd: v }
 		} else {
