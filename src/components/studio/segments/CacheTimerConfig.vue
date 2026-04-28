@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import FormShowIconRow from './FormShowIconRow.vue'
 </script>
 
 <template>
 	<div class="space-y-3">
+		<FormShowIconRow segment-name="cacheTimer" />
 		<p class="text-sm text-muted-foreground">
 			Shows time since the last user turn, anchored to Anthropic's 5-minute prompt-cache TTL. Color
 			tiers: green (0–3m) → context warning (3–5m) → context critical (5m+). Format:

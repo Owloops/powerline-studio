@@ -12,6 +12,7 @@ import type { SegmentColor } from '@owloops/claude-powerline/browser'
 
 export interface CacheTimerSegmentConfig {
 	enabled: boolean
+	showIcon?: boolean
 }
 
 declare module '@owloops/claude-powerline/browser' {

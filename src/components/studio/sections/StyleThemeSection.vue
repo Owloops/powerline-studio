@@ -606,6 +606,36 @@ const triggerThemeIndex = computed(() => {
 											<span class="text-xs text-muted-foreground">Wrap at width</span>
 										</div>
 									</div>
+
+									<div class="flex flex-col gap-1.5">
+										<div class="flex items-center gap-1">
+											<Label for="show-icons" class="text-xs font-medium text-muted-foreground"
+												>Show Icons</Label
+											>
+											<Tooltip>
+												<TooltipTrigger as-child>
+													<button
+														type="button"
+														class="inline-flex cursor-default rounded-sm outline-none focus-visible:outline-0 focus-visible:ring-[3px] focus-visible:ring-primary/50"
+														aria-label="More info"
+													>
+														<IconLucide-info class="size-3 text-muted-foreground/50" />
+													</button>
+												</TooltipTrigger>
+												<TooltipContent side="top" class="max-w-64 text-xs">
+													Hide leading icons on segments. Status glyphs, separators, and metrics
+													sub-icons are unaffected.
+												</TooltipContent>
+											</Tooltip>
+										</div>
+										<div class="flex h-8 items-center">
+											<Switch
+												id="show-icons"
+												:model-value="configStore.config.display.showIcons ?? true"
+												@update:model-value="configStore.setShowIcons($event)"
+											/>
+										</div>
+									</div>
 								</template>
 
 								<!-- TUI: Box Style, Fit Content -->
@@ -687,6 +717,36 @@ const triggerThemeIndex = computed(() => {
 												id="fit-content"
 												:model-value="tuiFitContent"
 												@update:model-value="configStore.setTuiOption('fitContent', $event)"
+											/>
+										</div>
+									</div>
+
+									<div class="flex flex-col gap-1.5">
+										<div class="flex items-center gap-1">
+											<Label for="show-icons-tui" class="text-xs font-medium text-muted-foreground"
+												>Show Icons</Label
+											>
+											<Tooltip>
+												<TooltipTrigger as-child>
+													<button
+														type="button"
+														class="inline-flex cursor-default rounded-sm outline-none focus-visible:outline-0 focus-visible:ring-[3px] focus-visible:ring-primary/50"
+														aria-label="More info"
+													>
+														<IconLucide-info class="size-3 text-muted-foreground/50" />
+													</button>
+												</TooltipTrigger>
+												<TooltipContent side="top" class="max-w-64 text-xs">
+													Hide leading icons on segments. Status glyphs, separators, and metrics
+													sub-icons are unaffected.
+												</TooltipContent>
+											</Tooltip>
+										</div>
+										<div class="flex h-8 items-center">
+											<Switch
+												id="show-icons-tui"
+												:model-value="configStore.config.display.showIcons ?? true"
+												@update:model-value="configStore.setShowIcons($event)"
 											/>
 										</div>
 									</div>

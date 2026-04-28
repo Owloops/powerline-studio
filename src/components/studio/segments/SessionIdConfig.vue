@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import FormSwitchField from '@/components/FormSwitchField.vue'
+import FormShowIconRow from './FormShowIconRow.vue'
 import { sessionIdConfigSchema } from './schemas'
 
 const { values } = useSegmentForm('sessionId', sessionIdConfigSchema, () => {
@@ -12,6 +13,7 @@ const { values } = useSegmentForm('sessionId', sessionIdConfigSchema, () => {
 
 <template>
 	<div class="space-y-3">
+		<FormShowIconRow segment-name="sessionId" />
 		<FormSwitchField name="showIdLabel" label="Show ID Label" />
 	</div>
 </template>

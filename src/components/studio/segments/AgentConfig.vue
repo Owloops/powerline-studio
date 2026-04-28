@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import FormSwitchField from '@/components/FormSwitchField.vue'
+import FormShowIconRow from './FormShowIconRow.vue'
 import { agentConfigSchema } from './schemas'
 
 const { values } = useSegmentForm('agent', agentConfigSchema, () => {
@@ -12,6 +13,7 @@ const { values } = useSegmentForm('agent', agentConfigSchema, () => {
 
 <template>
 	<div class="space-y-3">
+		<FormShowIconRow segment-name="agent" />
 		<div class="flex flex-col gap-1.5">
 			<FormSwitchField name="showLabel" label='Show "agent:" label' />
 			<p class="text-sm text-muted-foreground">

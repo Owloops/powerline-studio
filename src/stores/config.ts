@@ -90,6 +90,10 @@ export const SEGMENT_DEFAULTS: Required<StudioSegmentsMap> = {
 function getInitialConfig(): PowerlineConfig {
 	const base = structuredClone(DEFAULT_CONFIG)
 	base.theme = 'tokyo-night'
+	// Mirror upstream PR #82's `display.showIcons` default. Seeded here so the
+	// raw `JSON.stringify` export emits `showIcons: true` even for fresh / legacy
+	// configs, which the installed npm dep doesn't yet include.
+	base.display.showIcons = true
 	return base
 }
 
@@ -245,6 +249,35 @@ export const useConfigStore = defineStore('config', () => {
 
 	function setAutoWrap(enabled: boolean) {
 		config.value.display.autoWrap = enabled
+	}
+
+	function setShowIcons(value: boolean) {
+		config.value.display.showIcons = value
+	}
+
+	function setSegmentShowIcon(
+		lineIndex: number,
+		segmentName: SegmentName,
+		value: boolean | undefined,
+	) {
+		const line = config.value.display.lines[lineIndex]
+		if (!line) return
+		const segments = line.segments as StudioSegmentsMap
+		const existing = segments[segmentName]
+		// `updateSegmentConfig` uses deepMerge which silently drops `undefined`,
+		// so a "Default (use global)" reset must DELETE the key here instead.
+		if (value === undefined) {
+			if (existing && 'showIcon' in existing) {
+				delete (existing as { showIcon?: boolean }).showIcon
+			}
+			return
+		}
+		if (existing) {
+			;(existing as { showIcon?: boolean }).showIcon = value
+		} else {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			segments[segmentName] = { ...SEGMENT_DEFAULTS[segmentName], showIcon: value } as any
+		}
 	}
 
 	function setTuiConfig(tui: TuiGridConfig | undefined) {
@@ -968,6 +1001,8 @@ export const useConfigStore = defineStore('config', () => {
 		setColorCompatibility,
 		setPadding,
 		setAutoWrap,
+		setShowIcons,
+		setSegmentShowIcon,
 		setTuiConfig,
 		// TUI actions
 		ensureTuiConfig,

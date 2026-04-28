@@ -1,7 +1,9 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import FormShowIconRow from './FormShowIconRow.vue'
+</script>
 
 <template>
-	<p class="py-2 text-center text-sm italic text-muted-foreground">
-		No additional configuration options. Enable or disable this segment using the toggle above.
-	</p>
+	<div class="space-y-3">
+		<FormShowIconRow segment-name="model" />
+	</div>
 </template>

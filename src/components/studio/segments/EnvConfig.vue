@@ -2,6 +2,7 @@
 import { useForm } from '@formwerk/core'
 import { refDebounced } from '@vueuse/core'
 import FormTextField from '@/components/FormTextField.vue'
+import FormShowIconRow from './FormShowIconRow.vue'
 import { envConfigSchema } from './schemas'
 import { SEGMENT_DEFAULTS } from '@/stores/config'
 
@@ -34,6 +35,7 @@ watch(
 
 <template>
 	<div class="space-y-3">
+		<FormShowIconRow segment-name="env" />
 		<FormTextField
 			name="variable"
 			label="Variable"

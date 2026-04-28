@@ -9,7 +9,7 @@ import { segmentConfigMap } from '@/components/studio/segments'
  * Segments whose config components show only a "no options" message.
  * These get a minimal popover without the config form chrome.
  */
-const NO_OPTIONS_SEGMENTS = new Set<SegmentKey>(['model', 'version', 'tmux'])
+const NO_OPTIONS_SEGMENTS = new Set<SegmentKey>()
 
 const props = defineProps<{
 	segmentKey: SegmentKey

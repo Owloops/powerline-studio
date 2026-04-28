@@ -2,6 +2,7 @@
 import FormSelectField from '@/components/FormSelectField.vue'
 import FormSwitchField from '@/components/FormSwitchField.vue'
 import FormNumberField from '@/components/FormNumberField.vue'
+import FormShowIconRow from './FormShowIconRow.vue'
 import { contextConfigSchema } from './schemas'
 import { BAR_DISPLAY_STYLE_OPTIONS, PERCENTAGE_MODE_OPTIONS } from './options'
 import { SEGMENT_DEFAULTS } from '@/stores/config'
@@ -20,6 +21,7 @@ const { values } = useSegmentForm('context', contextConfigSchema, () => {
 
 <template>
 	<div class="space-y-3">
+		<FormShowIconRow segment-name="context" />
 		<FormSelectField
 			name="displayStyle"
 			label="Display Style"

@@ -8,6 +8,7 @@ import type { SegmentColor } from '@owloops/claude-powerline/browser'
 export interface AgentSegmentConfig {
 	enabled: boolean
 	showLabel?: boolean
+	showIcon?: boolean
 }
 
 declare module '@owloops/claude-powerline/browser' {

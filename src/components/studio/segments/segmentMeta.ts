@@ -3,6 +3,8 @@ import type { LineConfig } from '@owloops/claude-powerline/browser'
 import type { AgentSegmentConfig } from '@/types/agent'
 import type { ThinkingSegmentConfig } from '@/types/thinking'
 import type { CacheTimerSegmentConfig } from '@/types/cacheTimer'
+// Side-effect import: augments DisplayConfig and SegmentConfig with PR #82 fields.
+import '@/types/showIcons'
 import {
 	Activity,
 	Bot,

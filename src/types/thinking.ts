@@ -10,6 +10,7 @@ export interface ThinkingSegmentConfig {
 	enabled: boolean
 	showEnabled?: boolean
 	showEffort?: boolean
+	showIcon?: boolean
 }
 
 declare module '@owloops/claude-powerline/browser' {
