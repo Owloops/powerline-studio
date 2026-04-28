@@ -470,7 +470,7 @@ watch(
 											<Textarea
 												v-model="importText"
 												placeholder='{ "theme": "dark", "display": { ... } }'
-												class="min-h-48 font-mono text-xs"
+												class="max-h-[60vh] min-h-48 font-mono text-xs"
 											/>
 											<p v-if="importError" class="text-sm text-destructive">
 												{{ importError }}
