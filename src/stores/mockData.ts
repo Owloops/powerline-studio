@@ -9,14 +9,6 @@ import type {
 	BlockInfo,
 	TodayInfo,
 } from '@owloops/claude-powerline/browser'
-// Side-effect imports: augment ClaudeHookData with `agent`, `effort`,
-// `thinking`, and `worktree` slots ahead of PR #82 npm bump. cacheTimer adds a
-// ColorTheme slot only — its info is synthesized from the studio's own
-// elapsedSeconds mock.
-import '@/types/agent'
-import '@/types/thinking'
-import '@/types/cacheTimer'
-import '@/types/worktree'
 import { DEFAULT_MOCK_DATA, MOCK_DATA_PRESETS } from '@/data/mockPresets'
 import type { MockDataPreset } from '@/data/mockPresets'
 import { deepMerge } from './utils'

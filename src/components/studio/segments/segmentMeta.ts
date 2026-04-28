@@ -1,10 +1,5 @@
 import type { Component } from 'vue'
 import type { LineConfig } from '@owloops/claude-powerline/browser'
-import type { AgentSegmentConfig } from '@/types/agent'
-import type { ThinkingSegmentConfig } from '@/types/thinking'
-import type { CacheTimerSegmentConfig } from '@/types/cacheTimer'
-// Side-effect import: augments DisplayConfig and SegmentConfig with PR #82 fields.
-import '@/types/showIcons'
 import {
 	Activity,
 	Bot,
@@ -45,14 +40,7 @@ export const SEGMENT_KEYS = [
 
 export type SegmentKey = (typeof SEGMENT_KEYS)[number]
 
-// Mirrors @owloops/claude-powerline LineConfig['segments'] with the upcoming
-// `agent`, `thinking`, and `cacheTimer` slots from PR #82 added — switch to the
-// upstream type post-bump.
-export type StudioSegmentsMap = LineConfig['segments'] & {
-	agent?: AgentSegmentConfig
-	thinking?: ThinkingSegmentConfig
-	cacheTimer?: CacheTimerSegmentConfig
-}
+export type StudioSegmentsMap = LineConfig['segments']
 
 export interface SegmentMeta {
 	name: string

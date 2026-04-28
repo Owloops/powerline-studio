@@ -1,13 +1,5 @@
 import type { ColorTheme, SegmentColor } from '@owloops/claude-powerline/browser'
 import { BUILT_IN_THEMES } from '@owloops/claude-powerline/browser'
-// Side-effect imports: augment ColorTheme with `agent`, `thinking`, and
-// `cacheTimer` slots, SegmentColor with `bold`, and BudgetItemConfig with
-// `showPercentage` / `showValue`, ahead of PR #82 npm bump.
-import '@/types/agent'
-import '@/types/thinking'
-import '@/types/cacheTimer'
-import '@/types/colorBold'
-import '@/types/budgetDisplay'
 
 export type CanonicalTheme = 'dark' | 'light' | 'nord' | 'tokyo-night' | 'rose-pine' | 'gruvbox'
 

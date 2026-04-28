@@ -10,7 +10,12 @@ import type {
 	PowerlineSymbols,
 	ColorTheme,
 	SegmentData,
+	SegmentConfig,
 	AnySegmentConfig,
+	AgentSegmentConfig,
+	ThinkingSegmentConfig,
+	CacheTimerSegmentConfig,
+	CacheTimerInfo,
 	DirectorySegmentConfig,
 	GitSegmentConfig,
 	ClaudeHookData,
@@ -72,6 +77,7 @@ interface RenderedSegment {
 	text: string
 	bgColor: string
 	fgColor: string
+	bold?: boolean
 }
 
 // ---------------------------------------------------------------------------
@@ -118,6 +124,9 @@ function resolveSymbols(config: PowerlineConfig): PowerlineSymbols {
 		env: symbolSet.env,
 		session_id: symbolSet.session_id,
 		weekly_cost: symbolSet.weekly_cost,
+		agent: symbolSet.agent,
+		thinking: symbolSet.thinking,
+		cache_timer: symbolSet.cache_timer,
 	}
 }
 
@@ -153,7 +162,7 @@ function resolveThemeColors(
 	const isTui = config.display.style === 'tui'
 	const terminalRef = terminalBgColor
 
-	const getSegmentColors = (segment: Exclude<keyof ColorTheme, 'tui'>) => {
+	const getSegmentColors = (segment: keyof ColorTheme) => {
 		const fallback = fallbackTheme[segment]
 		const custom = colorTheme![segment]
 		const colors = {
@@ -166,9 +175,12 @@ function resolveThemeColors(
 			fgHex = colors.bg
 		}
 
+		const useBold = colorMode !== 'none' && Boolean(custom?.bold ?? fallback.bold)
+
 		return {
 			bg: convertHex(colors.bg, true),
 			fg: convertHex(fgHex, false),
+			bold: useBold,
 		}
 	}
 
@@ -186,6 +198,9 @@ function resolveThemeColors(
 	const version = getSegmentColors('version')
 	const env = getSegmentColors('env')
 	const weekly = getSegmentColors('weekly')
+	const agent = getSegmentColors('agent')
+	const thinking = getSegmentColors('thinking')
+	const cacheTimer = getSegmentColors('cacheTimer')
 
 	let partFg: Record<string, string> = {}
 	if (theme === 'custom') {
@@ -203,33 +218,94 @@ function resolveThemeColors(
 		reset: colorMode === 'none' ? '' : RESET_CODE,
 		modeBg: directory.bg,
 		modeFg: directory.fg,
+		modeBold: directory.bold,
 		gitBg: git.bg,
 		gitFg: git.fg,
+		gitBold: git.bold,
 		modelBg: model.bg,
 		modelFg: model.fg,
+		modelBold: model.bold,
 		sessionBg: session.bg,
 		sessionFg: session.fg,
+		sessionBold: session.bold,
 		blockBg: block.bg,
 		blockFg: block.fg,
+		blockBold: block.bold,
 		todayBg: today.bg,
 		todayFg: today.fg,
+		todayBold: today.bold,
 		tmuxBg: tmux.bg,
 		tmuxFg: tmux.fg,
+		tmuxBold: tmux.bold,
 		contextBg: context.bg,
 		contextFg: context.fg,
+		contextBold: context.bold,
 		contextWarningBg: contextWarning.bg,
 		contextWarningFg: contextWarning.fg,
+		contextWarningBold: contextWarning.bold,
 		contextCriticalBg: contextCritical.bg,
 		contextCriticalFg: contextCritical.fg,
+		contextCriticalBold: contextCritical.bold,
 		metricsBg: metrics.bg,
 		metricsFg: metrics.fg,
+		metricsBold: metrics.bold,
 		versionBg: version.bg,
 		versionFg: version.fg,
+		versionBold: version.bold,
 		envBg: env.bg,
 		envFg: env.fg,
+		envBold: env.bold,
 		weeklyBg: weekly.bg,
 		weeklyFg: weekly.fg,
+		weeklyBold: weekly.bold,
+		agentBg: agent.bg,
+		agentFg: agent.fg,
+		agentBold: agent.bold,
+		thinkingBg: thinking.bg,
+		thinkingFg: thinking.fg,
+		thinkingBold: thinking.bold,
+		cacheTimerBg: cacheTimer.bg,
+		cacheTimerFg: cacheTimer.fg,
+		cacheTimerBold: cacheTimer.bold,
 		partFg,
+	}
+}
+
+function getSegmentBoldFlag(type: string, colors: PowerlineColors): boolean {
+	switch (type) {
+		case 'directory':
+			return colors.modeBold
+		case 'git':
+			return colors.gitBold
+		case 'model':
+			return colors.modelBold
+		case 'session':
+		case 'sessionId':
+			return colors.sessionBold
+		case 'block':
+			return colors.blockBold
+		case 'today':
+			return colors.todayBold
+		case 'tmux':
+			return colors.tmuxBold
+		case 'context':
+			return colors.contextBold
+		case 'metrics':
+			return colors.metricsBold
+		case 'version':
+			return colors.versionBold
+		case 'env':
+			return colors.envBold
+		case 'weekly':
+			return colors.weeklyBold
+		case 'agent':
+			return colors.agentBold
+		case 'thinking':
+			return colors.thinkingBold
+		case 'cacheTimer':
+			return colors.cacheTimerBold
+		default:
+			return colors.modeBold
 	}
 }
 
@@ -242,20 +318,24 @@ function formatSegment(
 	text: string,
 	nextBgColor: string | undefined,
 	colors: PowerlineColors,
+	bold: boolean,
 ): string {
 	const isCapsuleStyle = config.display.style === 'capsule'
 	const padding = ' '.repeat(config.display.padding ?? 1)
 	const isBasicMode = colorMode === 'ansi'
+	const useBold = bold && colors.reset !== ''
+	const boldStart = useBold ? '\x1b[1m' : ''
+	const boldEnd = useBold ? '\x1b[22m' : ''
 
 	if (isCapsuleStyle) {
 		const capFgColor = extractBgToFg(bgColor, isBasicMode)
 		const leftCap = `${capFgColor}${symbols.left}${colors.reset}`
-		const content = `${bgColor}${fgColor}${padding}${text}${padding}${colors.reset}`
+		const content = `${bgColor}${fgColor}${boldStart}${padding}${text}${padding}${boldEnd}${colors.reset}`
 		const rightCap = `${capFgColor}${symbols.right}${colors.reset}`
 		return `${leftCap}${content}${rightCap}`
 	}
 
-	let output = `${bgColor}${fgColor}${padding}${text}${padding}`
+	let output = `${bgColor}${fgColor}${boldStart}${padding}${text}${padding}${boldEnd}`
 
 	if (nextBgColor) {
 		const arrowFgColor = extractBgToFg(bgColor, isBasicMode)
@@ -289,6 +369,8 @@ function buildLineFromSegments(
 			line += ' '
 		}
 
+		const bold = segment.bold ?? getSegmentBoldFlag(segment.type, colors)
+
 		line += formatSegment(
 			config,
 			symbols,
@@ -298,6 +380,7 @@ function buildLineFromSegments(
 			segment.text,
 			nextSegment?.bgColor,
 			colors,
+			bold,
 		)
 	}
 
@@ -719,6 +802,11 @@ export function useRenderer() {
 					config.display.tui.widthReserve = reservedWidth
 				}
 
+				const cacheTimerInfo: CacheTimerInfo | null =
+					mockDataStore.cacheTimerElapsedSeconds === null
+						? null
+						: { elapsedSeconds: mockDataStore.cacheTimerElapsedSeconds }
+
 				const tuiData: TuiData = {
 					hookData: toRaw(mockDataStore.hookData),
 					usageInfo: toRaw(mockDataStore.usageInfo),
@@ -727,6 +815,7 @@ export function useRenderer() {
 					contextInfo: toRaw(mockDataStore.contextInfo),
 					metricsInfo: toRaw(mockDataStore.metricsInfo),
 					gitInfo: toRaw(mockDataStore.gitInfo),
+					cacheTimerInfo,
 					tmuxSessionId: mockDataStore.tmuxSessionId,
 					colors,
 				}
@@ -749,6 +838,10 @@ export function useRenderer() {
 				const blockInfo = toRaw(mockDataStore.blockInfo)
 				const todayInfo = toRaw(mockDataStore.todayInfo)
 				const tmuxSessionId = mockDataStore.tmuxSessionId
+				const cacheTimerInfo: CacheTimerInfo | null =
+					mockDataStore.cacheTimerElapsedSeconds === null
+						? null
+						: { elapsedSeconds: mockDataStore.cacheTimerElapsedSeconds }
 
 				const outputLines: string[] = []
 				hitboxes = []
@@ -784,6 +877,7 @@ export function useRenderer() {
 							blockInfo,
 							todayInfo,
 							tmuxSessionId,
+							cacheTimerInfo,
 							colors,
 							seg.config,
 						)
@@ -793,6 +887,7 @@ export function useRenderer() {
 								text: segData.text,
 								bgColor: segData.bgColor,
 								fgColor: segData.fgColor,
+								bold: segData.bold,
 							})
 						}
 					}
@@ -905,6 +1000,7 @@ export function useRenderer() {
 			() => mockDataStore.blockInfo,
 			() => mockDataStore.todayInfo,
 			() => mockDataStore.tmuxSessionId,
+			() => mockDataStore.cacheTimerElapsedSeconds,
 			() => previewStore.terminalWidth,
 			() => previewStore.colorMode,
 			() => previewStore.charset,
@@ -961,6 +1057,7 @@ function renderSingleSegment(
 	blockInfo: BlockInfo | null,
 	todayInfo: TodayInfo | null,
 	tmuxSessionId: string | null,
+	cacheTimerInfo: CacheTimerInfo | null,
 	colors: PowerlineColors,
 	config: AnySegmentConfig,
 ): SegmentData | null {
@@ -968,7 +1065,7 @@ function renderSingleSegment(
 		case 'directory':
 			return renderer.renderDirectory(hookData, colors, config as DirectorySegmentConfig)
 		case 'model':
-			return renderer.renderModel(hookData, colors)
+			return renderer.renderModel(hookData, colors, config as SegmentConfig)
 		case 'git':
 			return gitInfo ? renderer.renderGit(gitInfo, colors, config as GitSegmentConfig) : null
 		case 'session':
@@ -991,7 +1088,7 @@ function renderSingleSegment(
 				: null
 		case 'today':
 			return todayInfo
-				? renderer.renderToday(todayInfo, colors, (config as TodaySegmentConfig).type || 'cost')
+				? renderer.renderToday(todayInfo, colors, config as TodaySegmentConfig)
 				: null
 		case 'version':
 			return renderer.renderVersion(hookData, colors, config as VersionSegmentConfig)
@@ -999,6 +1096,14 @@ function renderSingleSegment(
 			return renderer.renderEnv(colors, config as EnvSegmentConfig)
 		case 'weekly':
 			return renderer.renderWeekly(hookData, colors, config as WeeklySegmentConfig)
+		case 'agent':
+			return renderer.renderAgent(hookData, colors, config as AgentSegmentConfig)
+		case 'thinking':
+			return renderer.renderThinking(hookData, colors, config as ThinkingSegmentConfig)
+		case 'cacheTimer':
+			return cacheTimerInfo
+				? renderer.renderCacheTimer(cacheTimerInfo, colors, config as CacheTimerSegmentConfig)
+				: null
 		default:
 			return null
 	}
