@@ -75,3 +75,7 @@ export const budgetItemSchema = z.object({
 	warningThreshold: z.number().int().min(0).max(100),
 	type: z.enum(BUDGET_TYPES),
 })
+
+export const agentConfigSchema = z.object({
+	showLabel: z.boolean(),
+})

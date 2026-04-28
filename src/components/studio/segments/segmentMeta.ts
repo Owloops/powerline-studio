@@ -1,5 +1,6 @@
 import type { Component } from 'vue'
 import type { LineConfig } from '@owloops/claude-powerline/browser'
+import type { AgentSegmentConfig } from '@/types/agent'
 import {
 	Activity,
 	Bot,
@@ -11,6 +12,7 @@ import {
 	Gauge,
 	GitBranch,
 	Hash,
+	Sparkles,
 	Tag,
 	Terminal,
 	Variable,
@@ -30,9 +32,16 @@ export const SEGMENT_KEYS = [
 	'context',
 	'metrics',
 	'env',
+	'agent',
 ] as const
 
 export type SegmentKey = (typeof SEGMENT_KEYS)[number]
+
+// Mirrors @owloops/claude-powerline LineConfig['segments'] with the upcoming
+// `agent` slot from PR #82 added — switch to the upstream type post-bump.
+export type StudioSegmentsMap = LineConfig['segments'] & {
+	agent?: AgentSegmentConfig
+}
 
 export interface SegmentMeta {
 	name: string
@@ -53,6 +62,7 @@ export const SEGMENT_META: Record<SegmentKey, SegmentMeta> = {
 	context: { name: 'Context', icon: Brain },
 	metrics: { name: 'Metrics', icon: Activity },
 	env: { name: 'Environment', icon: Variable },
+	agent: { name: 'Agent', icon: Sparkles },
 }
 
 /**
@@ -61,10 +71,10 @@ export const SEGMENT_META: Record<SegmentKey, SegmentMeta> = {
  */
 export { SEGMENT_DEFAULTS } from '@/stores/config'
 
-type SegmentsMap = LineConfig['segments']
+type SegmentsMap = StudioSegmentsMap
 
 /**
- * Normalizes a sparse segments object to always have all 13 keys.
+ * Normalizes a sparse segments object to always have all canonical keys.
  * Preserves existing key order for keys present in the input,
  * then appends missing keys in canonical order with defaults.
  */

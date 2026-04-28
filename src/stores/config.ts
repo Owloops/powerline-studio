@@ -14,7 +14,7 @@ import type {
 import { DEFAULT_CONFIG } from '@owloops/claude-powerline/browser'
 import { deepMerge, deepEqual } from './utils'
 import { useEditorStore } from './editor'
-import { normalizeSegments } from '@/components/studio/segments/segmentMeta'
+import { normalizeSegments, type StudioSegmentsMap } from '@/components/studio/segments/segmentMeta'
 import type { CanonicalTheme, ThemeEditorState, SavedCustomTheme } from '@/lib/themes'
 import { TUI_PRESETS } from '@/lib/tuiPresets'
 import { FLAT_PRESETS } from '@/lib/flatPresets'
@@ -23,16 +23,18 @@ import {
 	getCanonicalThemeColors,
 	mergeThemeWithOverrides,
 	deepEqualColorTheme,
+	completeColorTheme,
 } from '@/lib/themes'
 
-type SegmentName = keyof LineConfig['segments']
+type SegmentName = keyof StudioSegmentsMap
 
 /**
- * Canonical defaults for all 13 segment types, including `env`
- * which is absent from upstream DEFAULT_CONFIG.
- * Typed as Required<LineConfig['segments']> for per-segment type safety.
+ * Canonical defaults for all studio segment types, including `env`
+ * which is absent from upstream DEFAULT_CONFIG, and `agent` which mirrors
+ * upstream PR #82 ahead of the npm bump.
+ * Typed as Required<StudioSegmentsMap> for per-segment type safety.
  */
-export const SEGMENT_DEFAULTS: Required<LineConfig['segments']> = {
+export const SEGMENT_DEFAULTS: Required<StudioSegmentsMap> = {
 	directory: {
 		enabled: false,
 		style: 'basename',
@@ -80,6 +82,7 @@ export const SEGMENT_DEFAULTS: Required<LineConfig['segments']> = {
 		enabled: false,
 		variable: '',
 	},
+	agent: { enabled: false, showLabel: false },
 }
 
 function getInitialConfig(): PowerlineConfig {
@@ -123,7 +126,7 @@ export const useConfigStore = defineStore('config', () => {
 			if (config.value.display.lines.length !== preset.lines.length) return true
 			for (let i = 0; i < preset.lines.length; i++) {
 				const expectedSegs = normalizeSegments(
-					structuredClone(preset.lines[i]!.segments) as LineConfig['segments'],
+					structuredClone(preset.lines[i]!.segments) as StudioSegmentsMap,
 					SEGMENT_DEFAULTS,
 				)
 				const currentSegs = JSON.parse(
@@ -140,7 +143,7 @@ export const useConfigStore = defineStore('config', () => {
 		if (!deepEqual(currentTui, expectedTui)) return true
 
 		const expectedSegs = normalizeSegments(
-			structuredClone(preset.segments) as LineConfig['segments'],
+			structuredClone(preset.segments) as StudioSegmentsMap,
 			SEGMENT_DEFAULTS,
 		)
 		const currentSegs = JSON.parse(JSON.stringify(config.value.display.lines[0]?.segments ?? {}))
@@ -163,18 +166,18 @@ export const useConfigStore = defineStore('config', () => {
 			config.value.display.tui = undefined
 			config.value.display.lines = preset.lines.map((line) => ({
 				segments: normalizeSegments(
-					structuredClone(line.segments) as LineConfig['segments'],
+					structuredClone(line.segments) as StudioSegmentsMap,
 					SEGMENT_DEFAULTS,
-				),
+				) as LineConfig['segments'],
 			}))
 		} else {
 			const preset = entry.preset
 			config.value.display.style = 'tui'
 			config.value.display.tui = structuredClone(preset.tui) as TuiGridConfig
 			const segments = normalizeSegments(
-				structuredClone(preset.segments) as LineConfig['segments'],
+				structuredClone(preset.segments) as StudioSegmentsMap,
 				SEGMENT_DEFAULTS,
-			)
+			) as LineConfig['segments']
 			if (config.value.display.lines.length === 0) {
 				config.value.display.lines.push({ segments })
 			} else {
@@ -254,34 +257,36 @@ export const useConfigStore = defineStore('config', () => {
 	) {
 		const line = config.value.display.lines[lineIndex]
 		if (!line) return
-		const existing = line.segments[segmentName]
+		const segments = line.segments as StudioSegmentsMap
+		const existing = segments[segmentName]
 		if (existing) {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			line.segments[segmentName] = deepMerge(existing as any, patch) as any
+			segments[segmentName] = deepMerge(existing as any, patch) as any
 		} else {
 			const defaults = SEGMENT_DEFAULTS[segmentName]
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			line.segments[segmentName] = deepMerge({ ...defaults } as any, patch) as any
+			segments[segmentName] = deepMerge({ ...defaults } as any, patch) as any
 		}
 	}
 
 	function toggleSegment(lineIndex: number, segmentName: SegmentName, enabled: boolean) {
 		const line = config.value.display.lines[lineIndex]
 		if (!line) return
-		if (!line.segments[segmentName]) {
+		const segments = line.segments as StudioSegmentsMap
+		if (!segments[segmentName]) {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			line.segments[segmentName] = { ...SEGMENT_DEFAULTS[segmentName] } as any
+			segments[segmentName] = { ...SEGMENT_DEFAULTS[segmentName] } as any
 		}
-		line.segments[segmentName]!.enabled = enabled
+		segments[segmentName]!.enabled = enabled
 	}
 
 	function reorderSegments(lineIndex: number, orderedNames: SegmentName[]) {
 		const line = config.value.display.lines[lineIndex]
 		if (!line) return
 
-		// Normalize first so all 13 keys are present before reordering
+		// Normalize first so all canonical keys are present before reordering
 		const normalized = normalizeSegments(toRaw(line.segments), SEGMENT_DEFAULTS)
-		const reordered: LineConfig['segments'] = {}
+		const reordered: StudioSegmentsMap = {}
 
 		// Add segments in the requested order
 		for (const name of orderedNames) {
@@ -300,7 +305,7 @@ export const useConfigStore = defineStore('config', () => {
 			}
 		}
 
-		line.segments = reordered
+		line.segments = reordered as LineConfig['segments']
 	}
 
 	function addLine() {
@@ -652,9 +657,12 @@ export const useConfigStore = defineStore('config', () => {
 
 	function loadConfig(partial: Partial<PowerlineConfig>) {
 		config.value = deepMerge(getInitialConfig(), partial as PowerlineConfig)
-		// Normalize all lines to ensure 13 segment keys
+		// Normalize all lines to ensure all canonical segment keys are present
 		for (const line of config.value.display.lines) {
-			line.segments = normalizeSegments(toRaw(line.segments), SEGMENT_DEFAULTS)
+			line.segments = normalizeSegments(
+				toRaw(line.segments),
+				SEGMENT_DEFAULTS,
+			) as LineConfig['segments']
 		}
 		activePresetId.value = null
 		rehydrateThemeEditor()
@@ -695,11 +703,11 @@ export const useConfigStore = defineStore('config', () => {
 		const currentTheme = config.value.theme
 		if (currentTheme === 'custom') {
 			const customColors = config.value.colors?.custom as ColorTheme | undefined
-			const draft = customColors
-				? structuredClone(toRaw(customColors))
-				: structuredClone(getCanonicalThemeColors('dark'))
 			const savedId = currentSavedThemeId.value
 			const saved = savedId ? savedCustomThemes.value.find((t) => t.id === savedId) : undefined
+			const draft = customColors
+				? completeColorTheme(structuredClone(toRaw(customColors)), saved?.sourceTheme ?? 'dark')
+				: structuredClone(getCanonicalThemeColors('dark'))
 			return {
 				mode: 'custom',
 				builtinTheme: 'dark',
@@ -792,7 +800,10 @@ export const useConfigStore = defineStore('config', () => {
 		if (themeEditor.mode === 'builtin') {
 			snapshotBuiltinState()
 		}
-		const rawColors = structuredClone(toRaw(saved.colors))
+		const rawColors = completeColorTheme(
+			structuredClone(toRaw(saved.colors)),
+			saved.sourceTheme ?? 'dark',
+		)
 		themeEditor.customDraft = rawColors
 		themeEditor.customSourceSnapshot = structuredClone(rawColors)
 		themeEditor.customSourceTheme = saved.sourceTheme ?? null

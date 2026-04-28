@@ -44,6 +44,16 @@ const tmuxId = computed({
 		store.setTmuxSessionId(v || null)
 	},
 })
+
+const agentName = computed({
+	get: () => store.hookData.agent?.name ?? '',
+	set: (v: string) => {
+		// Direct assignment because deepMerge skips undefined values, so we can
+		// clear the field by setting `agent` itself to undefined.
+		store.hookData.agent = v ? { name: v } : undefined
+		store.markCustom()
+	},
+})
 </script>
 
 <template>
@@ -75,6 +85,10 @@ const tmuxId = computed({
 		<div class="space-y-1.5">
 			<Label class="text-xs text-muted-foreground">Tmux Session ID</Label>
 			<Input v-model="tmuxId" class="h-8 text-xs font-mono" placeholder="null (empty = null)" />
+		</div>
+		<div class="space-y-1.5">
+			<Label class="text-xs text-muted-foreground">Agent Name</Label>
+			<Input v-model="agentName" class="h-8 text-xs" placeholder="researcher (empty = no agent)" />
 		</div>
 	</div>
 </template>

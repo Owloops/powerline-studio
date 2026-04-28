@@ -1,8 +1,8 @@
 import { useForm } from '@formwerk/core'
 import type { GenericFormSchema } from '@formwerk/core'
-import type { LineConfig } from '@owloops/claude-powerline/browser'
+import type { StudioSegmentsMap } from '@/components/studio/segments/segmentMeta'
 
-type SegmentKey = keyof LineConfig['segments']
+type SegmentKey = keyof StudioSegmentsMap
 
 export function useSegmentForm<T extends Record<string, unknown>>(
 	segmentKey: SegmentKey,

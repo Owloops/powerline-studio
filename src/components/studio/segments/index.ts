@@ -1,4 +1,5 @@
 import type { Component } from 'vue'
+import AgentConfig from './AgentConfig.vue'
 import DirectoryConfig from './DirectoryConfig.vue'
 import GitConfig from './GitConfig.vue'
 import ModelConfig from './ModelConfig.vue'
@@ -27,4 +28,5 @@ export const segmentConfigMap: Record<string, Component> = {
 	version: VersionConfig,
 	tmux: TmuxConfig,
 	sessionId: SessionIdConfig,
+	agent: AgentConfig,
 }
