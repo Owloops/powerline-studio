@@ -32,13 +32,19 @@ function isOverridden(key: keyof ColorTheme): boolean {
 
 function updateBg(key: keyof ColorTheme, bg: string) {
 	const current = effectiveColor(key)
-	const updated = { ...props.overrides, [key]: { bg, fg: current.fg } }
+	const updated = { ...props.overrides, [key]: { ...current, bg } }
 	emit('update:overrides', updated)
 }
 
 function updateFg(key: keyof ColorTheme, fg: string) {
 	const current = effectiveColor(key)
-	const updated = { ...props.overrides, [key]: { bg: current.bg, fg } }
+	const updated = { ...props.overrides, [key]: { ...current, fg } }
+	emit('update:overrides', updated)
+}
+
+function updateBold(key: keyof ColorTheme, bold: boolean) {
+	const current = effectiveColor(key)
+	const updated = { ...props.overrides, [key]: { ...current, bold } }
 	emit('update:overrides', updated)
 }
 
@@ -77,11 +83,13 @@ function resetSegment(key: keyof ColorTheme) {
 						:label="SEGMENT_LABELS[key]"
 						:bg="effectiveColor(key).bg"
 						:fg="effectiveColor(key).fg"
+						:bold="effectiveColor(key).bold ?? false"
 						:index="i"
 						:show-reset="true"
 						:is-overridden="isOverridden(key)"
 						@update:bg="updateBg(key, $event)"
 						@update:fg="updateFg(key, $event)"
+						@update:bold="updateBold(key, $event)"
 						@reset="resetSegment(key)"
 					/>
 				</div>

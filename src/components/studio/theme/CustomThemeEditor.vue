@@ -46,7 +46,7 @@ function isOverridden(key: keyof ColorTheme): boolean {
 	if (!props.sourceColors) return false
 	const src = props.sourceColors[key]
 	const cur = props.colors[key]
-	return src.bg !== cur.bg || src.fg !== cur.fg
+	return src.bg !== cur.bg || src.fg !== cur.fg || (src.bold ?? false) !== (cur.bold ?? false)
 }
 
 function updateBg(segment: keyof ColorTheme, bg: string) {
@@ -58,6 +58,12 @@ function updateBg(segment: keyof ColorTheme, bg: string) {
 function updateFg(segment: keyof ColorTheme, fg: string) {
 	const updated = { ...props.colors }
 	updated[segment] = { ...updated[segment], fg }
+	emit('update:colors', updated)
+}
+
+function updateBold(segment: keyof ColorTheme, bold: boolean) {
+	const updated = { ...props.colors }
+	updated[segment] = { ...updated[segment], bold }
 	emit('update:colors', updated)
 }
 
@@ -117,11 +123,13 @@ function handleSave() {
 						:label="SEGMENT_LABELS[key]"
 						:bg="colors[key].bg"
 						:fg="colors[key].fg"
+						:bold="colors[key].bold ?? false"
 						:index="i"
 						:show-reset="hasSource"
 						:is-overridden="isOverridden(key)"
 						@update:bg="updateBg(key, $event)"
 						@update:fg="updateFg(key, $event)"
+						@update:bold="updateBold(key, $event)"
 						@reset="emit('reset:segment', key)"
 					/>
 				</div>

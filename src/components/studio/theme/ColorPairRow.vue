@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
+import { Toggle } from '@/components/ui/toggle'
 import ColorInput from './ColorInput.vue'
 
 const PREVIEW_WORDS = [
@@ -24,22 +25,24 @@ const props = withDefaults(
 		label: string
 		bg: string
 		fg: string
+		bold?: boolean
 		index?: number
 		showLabel?: boolean
 		showPreview?: boolean
 		showReset?: boolean
 		isOverridden?: boolean
 	}>(),
-	{ showLabel: true, showPreview: true },
+	{ bold: false, showLabel: true, showPreview: true },
 )
 
 const gridClass = computed(() => {
 	if (props.showLabel && props.showPreview)
-		return 'grid-cols-[1fr_auto_auto_auto] @min-[440px]:grid-cols-[80px_1fr_1fr_0.6fr_auto] sm:grid-cols-[120px_1fr_1fr_1fr_auto]'
-	if (props.showLabel) return 'grid-cols-[1fr_auto_auto_auto] sm:grid-cols-[120px_1fr_1fr_auto]'
+		return 'grid-cols-[1fr_auto_auto_auto_auto] @min-[440px]:grid-cols-[80px_1fr_1fr_auto_0.6fr_auto] sm:grid-cols-[120px_1fr_1fr_auto_1fr_auto]'
+	if (props.showLabel)
+		return 'grid-cols-[1fr_auto_auto_auto_auto] sm:grid-cols-[120px_1fr_1fr_auto_auto]'
 	if (props.showPreview)
-		return 'grid-cols-[1fr_1fr_auto] @min-[440px]:grid-cols-[1fr_1fr_0.6fr_auto] sm:grid-cols-[1fr_1fr_1fr_auto]'
-	return 'grid-cols-[1fr_1fr_auto]'
+		return 'grid-cols-[1fr_1fr_auto_auto] @min-[440px]:grid-cols-[1fr_1fr_auto_0.6fr_auto] sm:grid-cols-[1fr_1fr_auto_1fr_auto]'
+	return 'grid-cols-[1fr_1fr_auto_auto]'
 })
 
 const previewWord = computed(() =>
@@ -49,6 +52,7 @@ const previewWord = computed(() =>
 const emit = defineEmits<{
 	'update:bg': [color: string]
 	'update:fg': [color: string]
+	'update:bold': [bold: boolean]
 	reset: []
 }>()
 </script>
@@ -72,9 +76,20 @@ const emit = defineEmits<{
 			:label="`${label} foreground`"
 			@update:color="emit('update:fg', $event)"
 		/>
+		<Toggle
+			variant="outline"
+			size="sm"
+			:pressed="bold"
+			:aria-label="`${label} bold`"
+			class="size-7 min-w-7 px-0 font-bold"
+			@update:pressed="emit('update:bold', $event)"
+		>
+			B
+		</Toggle>
 		<span
 			v-if="showPreview"
-			class="hidden h-7 min-w-0 items-center justify-center truncate rounded-md border border-border px-1 text-[0.625rem] font-bold @min-[440px]:flex sm:flex"
+			class="hidden h-7 min-w-0 items-center justify-center truncate rounded-md border border-border px-1 text-[0.625rem] @min-[440px]:flex sm:flex"
+			:class="bold && 'font-bold'"
 			:style="{ backgroundColor: bg, color: fg }"
 		>
 			{{ previewWord }}

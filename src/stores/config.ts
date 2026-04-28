@@ -969,7 +969,11 @@ export const useConfigStore = defineStore('config', () => {
 
 	function setColorOverride(segment: keyof ColorTheme, color: SegmentColor) {
 		const base = getCanonicalThemeColors(themeEditor.builtinTheme)[segment]
-		if (base.bg === color.bg && base.fg === color.fg) {
+		if (
+			base.bg === color.bg &&
+			base.fg === color.fg &&
+			(base.bold ?? false) === (color.bold ?? false)
+		) {
 			delete themeEditor.overrides[segment]
 		} else {
 			themeEditor.overrides[segment] = { ...color }

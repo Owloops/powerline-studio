@@ -1,10 +1,11 @@
 import type { ColorTheme, SegmentColor } from '@owloops/claude-powerline/browser'
 import { BUILT_IN_THEMES } from '@owloops/claude-powerline/browser'
 // Side-effect imports: augment ColorTheme with `agent`, `thinking`, and
-// `cacheTimer` slots ahead of PR #82 npm bump.
+// `cacheTimer` slots, and SegmentColor with `bold`, ahead of PR #82 npm bump.
 import '@/types/agent'
 import '@/types/thinking'
 import '@/types/cacheTimer'
+import '@/types/colorBold'
 
 export type CanonicalTheme = 'dark' | 'light' | 'nord' | 'tokyo-night' | 'rose-pine' | 'gruvbox'
 
@@ -151,6 +152,7 @@ export function deepEqualColorTheme(a: ColorTheme | null, b: ColorTheme | null):
 		const sa = a[key] as SegmentColor
 		const sb = b[key] as SegmentColor
 		if (sa.bg !== sb.bg || sa.fg !== sb.fg) return false
+		if ((sa.bold ?? false) !== (sb.bold ?? false)) return false
 	}
 	return true
 }

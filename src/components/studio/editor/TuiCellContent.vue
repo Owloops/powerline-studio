@@ -67,7 +67,7 @@ const effectiveColors = computed(() => configStore.effectiveColors)
 const segmentColors = computed(() => {
 	const key = baseSegment.value as keyof typeof effectiveColors.value
 	const colors = effectiveColors.value[key]
-	if (colors) return { bg: colors.bg, fg: colors.fg }
+	if (colors) return { bg: colors.bg, fg: colors.fg, bold: colors.bold ?? false }
 	return null
 })
 
@@ -101,6 +101,17 @@ function handleColorUpdate(channel: 'bg' | 'fg', value: string) {
 				[channel]: value,
 			})
 		}
+	}
+}
+
+function handleBoldUpdate(bold: boolean) {
+	const key = baseSegment.value as keyof typeof effectiveColors.value
+	const current = effectiveColors.value[key]
+	if (!current) return
+	if (configStore.themeEditor.mode === 'custom') {
+		configStore.updateCustomColor(key, { ...current, bold })
+	} else {
+		configStore.setColorOverride(key, { ...current, bold })
 	}
 }
 
@@ -247,12 +258,16 @@ function resetTemplate() {
 					</CollapsibleTrigger>
 					<CollapsibleContent>
 						<div class="flex flex-col gap-1 px-3 pb-2">
-							<div class="grid grid-cols-[1fr_1fr_1fr_auto] items-end gap-2">
+							<div class="grid grid-cols-[1fr_1fr_auto_1fr_auto] items-end gap-2">
 								<span class="pl-1 text-[0.625rem] uppercase tracking-wider text-muted-foreground/50"
 									>Background</span
 								>
 								<span class="pl-1 text-[0.625rem] uppercase tracking-wider text-muted-foreground/50"
 									>Foreground</span
+								>
+								<span
+									class="text-center text-[0.625rem] uppercase tracking-wider text-muted-foreground/50"
+									>Bold</span
 								>
 								<span class="pl-1 text-[0.625rem] uppercase tracking-wider text-muted-foreground/50"
 									>Preview</span
@@ -263,11 +278,13 @@ function resetTemplate() {
 								:label="meta.name"
 								:bg="segmentColors.bg"
 								:fg="segmentColors.fg"
+								:bold="segmentColors.bold"
 								:show-label="false"
 								:show-reset="true"
 								:is-overridden="isColorOverridden"
 								@update:bg="handleColorUpdate('bg', $event)"
 								@update:fg="handleColorUpdate('fg', $event)"
+								@update:bold="handleBoldUpdate"
 								@reset="handleColorReset"
 							/>
 						</div>
