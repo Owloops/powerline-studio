@@ -116,6 +116,24 @@ const thinkingState = computed({
 	},
 })
 
+const worktreeOriginalCwd = computed({
+	get: () => store.hookData.worktree?.original_cwd ?? '',
+	set: (v: string) => {
+		// Direct assignment: clear by setting parent `worktree` to undefined
+		// (deepMerge skips undefined, so we can't drop it through updateHookData).
+		// Preserve any sibling fields (name/path/branch/original_branch) on edit.
+		if (v) {
+			const existing = store.hookData.worktree ?? {}
+			store.hookData.worktree = { ...existing, original_cwd: v }
+		} else {
+			store.hookData.worktree = undefined
+		}
+		store.markCustom()
+	},
+})
+
+const SAMPLE_WORKTREE_CWD = '/Users/dev/projects/claude-powerline'
+
 const cacheTimerElapsed = computed({
 	get: () => (store.cacheTimerElapsedSeconds === null ? '' : store.cacheTimerElapsedSeconds),
 	set: (v: string | number) => {
@@ -145,6 +163,37 @@ const cacheTimerElapsed = computed({
 		<div class="space-y-1.5">
 			<Label class="text-xs text-muted-foreground">Working Directory</Label>
 			<Input v-model="cwd" class="h-8 text-xs font-mono" />
+		</div>
+		<div class="space-y-1.5">
+			<Label class="text-xs text-muted-foreground">
+				Worktree Original CWD
+				<span class="text-muted-foreground/60">(empty = no worktree)</span>
+			</Label>
+			<Input
+				v-model="worktreeOriginalCwd"
+				class="h-8 text-xs font-mono"
+				placeholder="/path/to/original/repo"
+			/>
+			<div class="flex flex-wrap gap-1">
+				<Button
+					type="button"
+					variant="outline"
+					size="sm"
+					class="h-6 px-2 text-[10px]"
+					@click="worktreeOriginalCwd = SAMPLE_WORKTREE_CWD"
+				>
+					Sample
+				</Button>
+				<Button
+					type="button"
+					variant="outline"
+					size="sm"
+					class="h-6 px-2 text-[10px]"
+					@click="worktreeOriginalCwd = ''"
+				>
+					Clear
+				</Button>
+			</div>
 		</div>
 		<div class="grid grid-cols-2 gap-2">
 			<div class="space-y-1.5">
