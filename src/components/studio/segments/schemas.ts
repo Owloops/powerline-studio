@@ -74,6 +74,8 @@ export const budgetItemSchema = z.object({
 	amount: z.number().min(0),
 	warningThreshold: z.number().int().min(0).max(100),
 	type: z.enum(BUDGET_TYPES),
+	showPercentage: z.boolean().optional(),
+	showValue: z.boolean().optional(),
 })
 
 export const agentConfigSchema = z.object({

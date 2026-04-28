@@ -664,19 +664,32 @@ export const useConfigStore = defineStore('config', () => {
 		}
 	}
 
-	function setBudget(path: string, value: number) {
+	function setBudget(path: string, value: number | boolean | undefined) {
+		const parts = path.split('.')
+		if (parts.length !== 2) return
+		const [category, field] = parts as [string, string]
+		if (value === undefined) {
+			const budget = config.value.budget as
+				| Record<string, Record<string, unknown> | undefined>
+				| undefined
+			if (!budget?.[category]) return
+			delete budget[category]![field]
+			if (Object.keys(budget[category]!).length === 0) {
+				delete budget[category]
+			}
+			if (Object.keys(budget).length === 0) {
+				delete config.value.budget
+			}
+			return
+		}
 		if (!config.value.budget) {
 			config.value.budget = {}
 		}
-		const parts = path.split('.')
-		if (parts.length === 2) {
-			const [category, field] = parts as [string, string]
-			const budget = config.value.budget as Record<string, Record<string, unknown> | undefined>
-			if (!budget[category]) {
-				budget[category] = {}
-			}
-			budget[category]![field] = value
+		const budget = config.value.budget as Record<string, Record<string, unknown> | undefined>
+		if (!budget[category]) {
+			budget[category] = {}
 		}
+		budget[category]![field] = value
 	}
 
 	function setModelContextLimit(model: string, limit: number) {

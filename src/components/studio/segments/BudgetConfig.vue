@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { useForm } from '@formwerk/core'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import FormNumberField from '@/components/FormNumberField.vue'
 import FormSelectField from '@/components/FormSelectField.vue'
 import { budgetItemSchema } from './schemas'
@@ -21,15 +24,9 @@ const budgetConfig = computed(() => {
 		amount: (item?.amount as number) ?? 0,
 		warningThreshold: (item?.warningThreshold as number) ?? 80,
 		type: (item?.type as 'cost' | 'tokens') ?? 'cost',
+		showPercentage: (item?.showPercentage as boolean | undefined) ?? true,
+		showValue: (item?.showValue as boolean | undefined) ?? true,
 	}
-})
-
-const hasBudget = computed(() => {
-	const budget = configStore.config.budget as
-		| Record<string, Record<string, unknown> | undefined>
-		| undefined
-	const item = budget?.[props.budgetKey]
-	return item && (item.amount as number) > 0
 })
 
 const isOpen = ref(false)
@@ -41,11 +38,16 @@ const { values } = useForm({
 
 const amountStep = computed(() => (values.type === 'tokens' ? 1 : 0.01))
 
+const isBlock = computed(() => props.budgetKey === 'block')
+const bothOff = computed(() => values.showPercentage === false && values.showValue === false)
+
 watch(
 	values,
 	(newValues) => {
 		configStore.setBudget(`${props.budgetKey}.amount`, newValues.amount)
 		configStore.setBudget(`${props.budgetKey}.warningThreshold`, newValues.warningThreshold)
+		configStore.setBudget(`${props.budgetKey}.showPercentage`, newValues.showPercentage)
+		configStore.setBudget(`${props.budgetKey}.showValue`, newValues.showValue)
 		if (!configStore.config.budget) {
 			configStore.config.budget = {} as Record<string, unknown>
 		}
@@ -57,6 +59,22 @@ watch(
 	},
 	{ deep: true },
 )
+
+function setShowPercentage(next: boolean) {
+	if (isBlock.value) return
+	values.showPercentage = next
+}
+
+function setShowValue(next: boolean) {
+	if (isBlock.value) return
+	values.showValue = next
+}
+
+const blockTooltip =
+	'Block does not render a budget suffix today. These flags are accepted for config symmetry only.'
+const percentageTooltip =
+	'Hide the N% suffix while keeping the budget configured (e.g. for warning thresholds).'
+const valueTooltip = 'Hide the base cost/token value, render only the percentage (e.g. ◱ 15%).'
 </script>
 
 <template>
@@ -82,6 +100,68 @@ watch(
 					:max="100"
 					:step="1"
 				/>
+				<TooltipProvider :delay-duration="200">
+					<div class="flex flex-col gap-1.5">
+						<div class="flex items-center gap-1">
+							<Label
+								:for="`${budgetKey}-show-percentage`"
+								class="text-sm font-medium text-foreground"
+							>
+								Show Percentage
+							</Label>
+							<Tooltip>
+								<TooltipTrigger as-child>
+									<button
+										type="button"
+										class="inline-flex cursor-default rounded-sm outline-none focus-visible:outline-0 focus-visible:ring-[3px] focus-visible:ring-primary/50"
+										aria-label="More info"
+									>
+										<IconLucide-info class="size-3 text-muted-foreground/50" />
+									</button>
+								</TooltipTrigger>
+								<TooltipContent side="top" class="max-w-64 text-xs">
+									{{ isBlock ? blockTooltip : percentageTooltip }}
+								</TooltipContent>
+							</Tooltip>
+						</div>
+						<Switch
+							:id="`${budgetKey}-show-percentage`"
+							:model-value="values.showPercentage ?? true"
+							:disabled="isBlock"
+							@update:model-value="setShowPercentage"
+						/>
+					</div>
+					<div class="flex flex-col gap-1.5">
+						<div class="flex items-center gap-1">
+							<Label :for="`${budgetKey}-show-value`" class="text-sm font-medium text-foreground">
+								Show Value
+							</Label>
+							<Tooltip>
+								<TooltipTrigger as-child>
+									<button
+										type="button"
+										class="inline-flex cursor-default rounded-sm outline-none focus-visible:outline-0 focus-visible:ring-[3px] focus-visible:ring-primary/50"
+										aria-label="More info"
+									>
+										<IconLucide-info class="size-3 text-muted-foreground/50" />
+									</button>
+								</TooltipTrigger>
+								<TooltipContent side="top" class="max-w-64 text-xs">
+									{{ isBlock ? blockTooltip : valueTooltip }}
+								</TooltipContent>
+							</Tooltip>
+						</div>
+						<Switch
+							:id="`${budgetKey}-show-value`"
+							:model-value="values.showValue ?? true"
+							:disabled="isBlock"
+							@update:model-value="setShowValue"
+						/>
+					</div>
+				</TooltipProvider>
+				<p v-if="bothOff && !isBlock" class="text-xs text-muted-foreground">
+					Both off hides the budget suffix entirely. The budget threshold still applies.
+				</p>
 			</div>
 		</CollapsibleContent>
 	</Collapsible>
