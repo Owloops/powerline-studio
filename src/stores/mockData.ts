@@ -9,8 +9,10 @@ import type {
 	BlockInfo,
 	TodayInfo,
 } from '@owloops/claude-powerline/browser'
-// Side-effect import: augments ClaudeHookData with `agent` slot ahead of PR #82 npm bump.
+// Side-effect imports: augment ClaudeHookData with `agent`, `effort`, and
+// `thinking` slots ahead of PR #82 npm bump.
 import '@/types/agent'
+import '@/types/thinking'
 import { DEFAULT_MOCK_DATA, MOCK_DATA_PRESETS } from '@/data/mockPresets'
 import type { MockDataPreset } from '@/data/mockPresets'
 import { deepMerge } from './utils'

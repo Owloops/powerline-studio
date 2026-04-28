@@ -13,6 +13,7 @@ import WeeklyConfig from './WeeklyConfig.vue'
 import VersionConfig from './VersionConfig.vue'
 import TmuxConfig from './TmuxConfig.vue'
 import SessionIdConfig from './SessionIdConfig.vue'
+import ThinkingConfig from './ThinkingConfig.vue'
 
 export const segmentConfigMap: Record<string, Component> = {
 	directory: DirectoryConfig,
@@ -29,4 +30,5 @@ export const segmentConfigMap: Record<string, Component> = {
 	tmux: TmuxConfig,
 	sessionId: SessionIdConfig,
 	agent: AgentConfig,
+	thinking: ThinkingConfig,
 }

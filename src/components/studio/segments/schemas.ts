@@ -79,3 +79,8 @@ export const budgetItemSchema = z.object({
 export const agentConfigSchema = z.object({
 	showLabel: z.boolean(),
 })
+
+export const thinkingConfigSchema = z.object({
+	showEnabled: z.boolean(),
+	showEffort: z.boolean(),
+})

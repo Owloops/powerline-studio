@@ -1,5 +1,29 @@
 <script setup lang="ts">
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select'
+
 const store = useMockDataStore()
+
+const UNSET = '__unset__'
+
+const EFFORT_OPTIONS = [
+	{ label: 'Unset', value: UNSET },
+	{ label: 'low', value: 'low' },
+	{ label: 'medium', value: 'medium' },
+	{ label: 'high', value: 'high' },
+	{ label: 'xhigh', value: 'xhigh' },
+] as const
+
+const THINKING_OPTIONS = [
+	{ label: 'Unset', value: UNSET },
+	{ label: 'On', value: 'on' },
+	{ label: 'Off', value: 'off' },
+] as const
 
 const modelDisplayName = computed({
 	get: () => store.hookData.model.display_name,
@@ -54,6 +78,34 @@ const agentName = computed({
 		store.markCustom()
 	},
 })
+
+const effortLevel = computed({
+	get: () => store.hookData.effort?.level ?? UNSET,
+	set: (v: string) => {
+		// Direct assignment: clear by setting parent `effort` to undefined.
+		store.hookData.effort = v && v !== UNSET ? { level: v } : undefined
+		store.markCustom()
+	},
+})
+
+const thinkingState = computed({
+	get: (): string => {
+		const enabled = store.hookData.thinking?.enabled
+		if (enabled === true) return 'on'
+		if (enabled === false) return 'off'
+		return UNSET
+	},
+	set: (v: string) => {
+		if (v === 'on') {
+			store.hookData.thinking = { enabled: true }
+		} else if (v === 'off') {
+			store.hookData.thinking = { enabled: false }
+		} else {
+			store.hookData.thinking = undefined
+		}
+		store.markCustom()
+	},
+})
 </script>
 
 <template>
@@ -89,6 +141,44 @@ const agentName = computed({
 		<div class="space-y-1.5">
 			<Label class="text-xs text-muted-foreground">Agent Name</Label>
 			<Input v-model="agentName" class="h-8 text-xs" placeholder="researcher (empty = no agent)" />
+		</div>
+		<div class="grid grid-cols-2 gap-2">
+			<div class="space-y-1.5">
+				<Label class="text-xs text-muted-foreground">Thinking Enabled</Label>
+				<Select v-model="thinkingState">
+					<SelectTrigger class="h-8 text-xs">
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem
+							v-for="opt in THINKING_OPTIONS"
+							:key="opt.value"
+							:value="opt.value"
+							class="text-xs"
+						>
+							{{ opt.label }}
+						</SelectItem>
+					</SelectContent>
+				</Select>
+			</div>
+			<div class="space-y-1.5">
+				<Label class="text-xs text-muted-foreground">Effort Level</Label>
+				<Select v-model="effortLevel">
+					<SelectTrigger class="h-8 text-xs">
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem
+							v-for="opt in EFFORT_OPTIONS"
+							:key="opt.value"
+							:value="opt.value"
+							class="text-xs"
+						>
+							{{ opt.label }}
+						</SelectItem>
+					</SelectContent>
+				</Select>
+			</div>
 		</div>
 	</div>
 </template>
