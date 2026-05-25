@@ -14,7 +14,7 @@ const { html, isLoading } = useShikiHighlighter(() => configStore.configJson)
 
 const INSTALL_COMMAND = 'npm install -g @owloops/claude-powerline'
 const CONFIG_PATH = '~/.claude/claude-powerline.json'
-const SETTINGS_SNIPPET = '"statusLine": { "command": "claude-powerline" }'
+const SETTINGS_SNIPPET = '"statusLine": { "type": "command", "command": "claude-powerline" }'
 
 const jsonClipboard = useClipboard({ legacy: true })
 const installClipboard = useClipboard({ legacy: true })
