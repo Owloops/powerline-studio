@@ -51,8 +51,8 @@ export const SEGMENT_DEFAULTS: Required<StudioSegmentsMap> = {
 		showRepoName: false,
 	},
 	model: { enabled: false },
-	session: { enabled: false, type: 'tokens', costSource: 'calculated' },
-	today: { enabled: false, type: 'cost' },
+	session: { enabled: false, type: 'tokens', costSource: 'calculated', showUnits: true },
+	today: { enabled: false, type: 'cost', showUnits: true },
 	block: {
 		enabled: false,
 		type: 'cost',
@@ -84,7 +84,7 @@ export const SEGMENT_DEFAULTS: Required<StudioSegmentsMap> = {
 	},
 	agent: { enabled: false, showLabel: false },
 	thinking: { enabled: false, showEnabled: true, showEffort: true },
-	cacheTimer: { enabled: false },
+	cacheTimer: { enabled: false, displayMode: 'elapsed' },
 }
 
 function getInitialConfig(): PowerlineConfig {

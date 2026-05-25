@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import FormSelectField from '@/components/FormSelectField.vue'
+import FormSwitchField from '@/components/FormSwitchField.vue'
 import BudgetConfig from './BudgetConfig.vue'
 import FormShowIconRow from './FormShowIconRow.vue'
 import { todayConfigSchema } from './schemas'
@@ -10,6 +11,7 @@ const { values } = useSegmentForm('today', todayConfigSchema, () => {
 	const seg = useConfigStore().currentLineSegments.today
 	return {
 		type: seg?.type ?? SEGMENT_DEFAULTS.today.type,
+		showUnits: seg?.showUnits !== false,
 	}
 })
 </script>
@@ -18,6 +20,7 @@ const { values } = useSegmentForm('today', todayConfigSchema, () => {
 	<div class="space-y-3">
 		<FormShowIconRow segment-name="today" />
 		<FormSelectField name="type" label="Display Type" :options="USAGE_TYPE_OPTIONS" />
+		<FormSwitchField name="showUnits" label='Show "tokens" suffix' />
 		<BudgetConfig budget-key="today" />
 	</div>
 </template>

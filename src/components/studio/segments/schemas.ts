@@ -8,6 +8,7 @@ import {
 	BURN_TYPES,
 	PERCENTAGE_MODES,
 	BUDGET_TYPES,
+	CACHE_TIMER_DISPLAY_MODES,
 } from './options'
 
 export const directoryConfigSchema = z.object({
@@ -29,6 +30,7 @@ export const gitConfigSchema = z.object({
 export const sessionConfigSchema = z.object({
 	type: z.enum(USAGE_TYPES),
 	costSource: z.enum(COST_SOURCES),
+	showUnits: z.boolean(),
 })
 
 export const contextConfigSchema = z.object({
@@ -55,6 +57,7 @@ export const metricsConfigSchema = z.object({
 
 export const todayConfigSchema = z.object({
 	type: z.enum(USAGE_TYPES),
+	showUnits: z.boolean(),
 })
 
 export const envConfigSchema = z.object({
@@ -87,4 +90,7 @@ export const thinkingConfigSchema = z.object({
 	showEffort: z.boolean(),
 })
 
-export const cacheTimerConfigSchema = z.object({})
+export const cacheTimerConfigSchema = z.object({
+	displayMode: z.enum(CACHE_TIMER_DISPLAY_MODES),
+	ttlSeconds: z.number().int().min(1).optional(),
+})

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import FormSelectField from '@/components/FormSelectField.vue'
+import FormSwitchField from '@/components/FormSwitchField.vue'
 import BudgetConfig from './BudgetConfig.vue'
 import FormShowIconRow from './FormShowIconRow.vue'
 import { sessionConfigSchema } from './schemas'
@@ -11,6 +12,7 @@ const { values } = useSegmentForm('session', sessionConfigSchema, () => {
 	return {
 		type: seg?.type ?? SEGMENT_DEFAULTS.session.type,
 		costSource: seg?.costSource ?? SEGMENT_DEFAULTS.session.costSource,
+		showUnits: seg?.showUnits !== false,
 	}
 })
 </script>
@@ -20,6 +22,7 @@ const { values } = useSegmentForm('session', sessionConfigSchema, () => {
 		<FormShowIconRow segment-name="session" />
 		<FormSelectField name="type" label="Display Type" :options="USAGE_TYPE_OPTIONS" />
 		<FormSelectField name="costSource" label="Cost Source" :options="COST_SOURCE_OPTIONS" />
+		<FormSwitchField name="showUnits" label='Show "tokens" suffix' />
 		<BudgetConfig budget-key="session" />
 	</div>
 </template>

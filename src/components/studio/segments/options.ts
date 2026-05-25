@@ -18,6 +18,7 @@ export const BLOCK_TYPES = ['cost', 'tokens', 'both', 'time', 'weighted'] as con
 export const BURN_TYPES = ['cost', 'tokens', 'both', 'none'] as const
 export const PERCENTAGE_MODES = ['remaining', 'used'] as const
 export const BUDGET_TYPES = ['cost', 'tokens'] as const
+export const CACHE_TIMER_DISPLAY_MODES = ['elapsed', 'remaining'] as const
 
 function toSelectOptions<T extends string>(values: readonly T[]): { label: string; value: T }[] {
 	return values.map((v) => ({
@@ -34,3 +35,4 @@ export const BLOCK_TYPE_OPTIONS = toSelectOptions(BLOCK_TYPES)
 export const BURN_TYPE_OPTIONS = toSelectOptions(BURN_TYPES)
 export const PERCENTAGE_MODE_OPTIONS = toSelectOptions(PERCENTAGE_MODES)
 export const BUDGET_TYPE_OPTIONS = toSelectOptions(BUDGET_TYPES)
+export const CACHE_TIMER_DISPLAY_MODE_OPTIONS = toSelectOptions(CACHE_TIMER_DISPLAY_MODES)
