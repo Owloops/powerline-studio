@@ -14,7 +14,11 @@ import type {
 import { DEFAULT_CONFIG } from '@owloops/claude-powerline/browser'
 import { deepMerge, deepEqual } from './utils'
 import { useEditorStore } from './editor'
-import { normalizeSegments, type StudioSegmentsMap } from '@/components/studio/segments/segmentMeta'
+import {
+	normalizeSegments,
+	type SegmentTristateKey,
+	type StudioSegmentsMap,
+} from '@/components/studio/segments/segmentMeta'
 import type { CanonicalTheme, ThemeEditorState, SavedCustomTheme } from '@/lib/themes'
 import { TUI_PRESETS } from '@/lib/tuiPresets'
 import { FLAT_PRESETS } from '@/lib/flatPresets'
@@ -42,6 +46,8 @@ export const SEGMENT_DEFAULTS: Required<StudioSegmentsMap> = {
 	git: {
 		enabled: false,
 		showSha: false,
+		// Upstream defaults this to true, unlike the other git flags.
+		showAheadBehind: true,
 		showWorkingTree: false,
 		showOperation: false,
 		showTag: false,
@@ -49,6 +55,9 @@ export const SEGMENT_DEFAULTS: Required<StudioSegmentsMap> = {
 		showStashCount: false,
 		showUpstream: false,
 		showRepoName: false,
+		// `showWorktree` is deliberately absent: upstream reads an unset value as
+		// "follow showRepoName", and writing an explicit false here would take that
+		// inheritance away from every config studio exports.
 	},
 	model: { enabled: false },
 	session: { enabled: false, type: 'tokens', costSource: 'calculated', showUnits: true },
@@ -255,28 +264,32 @@ export const useConfigStore = defineStore('config', () => {
 		config.value.display.showIcons = value
 	}
 
-	function setSegmentShowIcon(
+	/**
+	 * Setting a tri-state flag back to "default" has to DELETE the key: the CLI
+	 * reads the absence as "inherit", and `updateSegmentConfig`'s deepMerge
+	 * silently drops `undefined`.
+	 */
+	function setSegmentTristate(
 		lineIndex: number,
 		segmentName: SegmentName,
+		key: SegmentTristateKey,
 		value: boolean | undefined,
 	) {
 		const line = config.value.display.lines[lineIndex]
 		if (!line) return
 		const segments = line.segments as StudioSegmentsMap
-		const existing = segments[segmentName]
-		// `updateSegmentConfig` uses deepMerge which silently drops `undefined`,
-		// so a "Default (use global)" reset must DELETE the key here instead.
+		const existing = segments[segmentName] as Record<string, unknown> | undefined
 		if (value === undefined) {
-			if (existing && 'showIcon' in existing) {
-				delete (existing as { showIcon?: boolean }).showIcon
+			if (existing && key in existing) {
+				delete existing[key]
 			}
 			return
 		}
 		if (existing) {
-			;(existing as { showIcon?: boolean }).showIcon = value
+			existing[key] = value
 		} else {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			segments[segmentName] = { ...SEGMENT_DEFAULTS[segmentName], showIcon: value } as any
+			segments[segmentName] = { ...SEGMENT_DEFAULTS[segmentName], [key]: value } as any
 		}
 	}
 
@@ -1024,7 +1037,7 @@ export const useConfigStore = defineStore('config', () => {
 		setPadding,
 		setAutoWrap,
 		setShowIcons,
-		setSegmentShowIcon,
+		setSegmentTristate,
 		setTuiConfig,
 		// TUI actions
 		ensureTuiConfig,

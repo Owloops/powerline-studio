@@ -84,6 +84,29 @@ interface RenderedSegment {
 // Pure helpers (replicated from PowerlineRenderer private methods)
 // ---------------------------------------------------------------------------
 
+/**
+ * Mirrors upstream's `shouldShowWorktree`, which the browser entry point does
+ * not export.
+ */
+function shouldShowWorktree(config?: GitSegmentConfig): boolean {
+	return config?.showWorktree ?? config?.showRepoName ?? false
+}
+
+/**
+ * The CLI resolves worktree visibility before it calls the git service, so
+ * renderers draw the glyph on sight. Studio feeds mock git data straight to
+ * those renderers, so it has to apply the gate itself.
+ */
+function gateWorktree(gitInfo: GitInfo | null, config?: GitSegmentConfig): GitInfo | null {
+	if (!gitInfo?.isWorktree || shouldShowWorktree(config)) return gitInfo
+	return { ...gitInfo, isWorktree: false }
+}
+
+/** The git config the TUI path renders from: first enabled git segment, as upstream does. */
+function findEnabledGitConfig(config: PowerlineConfig): GitSegmentConfig | undefined {
+	return config.display.lines.map((line) => line.segments.git).find((segment) => segment?.enabled)
+}
+
 function resolveSymbols(config: PowerlineConfig): PowerlineSymbols {
 	const style = config.display.style
 	const charset = config.display.charset || 'unicode'
@@ -799,7 +822,7 @@ export function useRenderer() {
 					todayInfo: toRaw(mockDataStore.todayInfo),
 					contextInfo: toRaw(mockDataStore.contextInfo),
 					metricsInfo: toRaw(mockDataStore.metricsInfo),
-					gitInfo: toRaw(mockDataStore.gitInfo),
+					gitInfo: gateWorktree(toRaw(mockDataStore.gitInfo), findEnabledGitConfig(config)),
 					cacheTimerInfo,
 					tmuxSessionId: mockDataStore.tmuxSessionId,
 					colors,
@@ -1047,8 +1070,11 @@ function renderSingleSegment(
 			return renderer.renderDirectory(hookData, colors, config as DirectorySegmentConfig)
 		case 'model':
 			return renderer.renderModel(hookData, colors, config as SegmentConfig)
-		case 'git':
-			return gitInfo ? renderer.renderGit(gitInfo, colors, config as GitSegmentConfig) : null
+		case 'git': {
+			const gitConfig = config as GitSegmentConfig
+			const gated = gateWorktree(gitInfo, gitConfig)
+			return gated ? renderer.renderGit(gated, colors, gitConfig) : null
+		}
 		case 'session':
 			return usageInfo
 				? renderer.renderSession(usageInfo, colors, config as UsageSegmentConfig)

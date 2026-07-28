@@ -103,6 +103,7 @@ function createDefaultPreset(): MockDataPreset {
 			stashCount: 2,
 			upstream: 'origin/feat/my-feature',
 			repoName: 'my-project',
+			isWorktree: true,
 		},
 		usageInfo: {
 			session: {

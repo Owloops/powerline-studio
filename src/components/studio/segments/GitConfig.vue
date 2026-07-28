@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import FormSwitchField from '@/components/FormSwitchField.vue'
 import FormShowIconRow from './FormShowIconRow.vue'
+import FormTristateRow from './FormTristateRow.vue'
 import { gitConfigSchema } from './schemas'
 
 const { values } = useSegmentForm('git', gitConfigSchema, () => {
@@ -22,6 +23,12 @@ const { values } = useSegmentForm('git', gitConfigSchema, () => {
 <template>
 	<div class="space-y-3">
 		<FormShowIconRow segment-name="git" />
+		<FormTristateRow
+			segment-name="git"
+			option-key="showWorktree"
+			label="Worktree"
+			default-label="Default (follow Repo Name)"
+		/>
 		<div class="grid grid-cols-2 gap-x-4 gap-y-2">
 			<FormSwitchField name="showAheadBehind" label="Ahead/Behind" />
 			<FormSwitchField name="showWorkingTree" label="Working Tree" />
