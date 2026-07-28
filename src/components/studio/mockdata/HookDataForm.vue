@@ -134,17 +134,40 @@ const worktreeOriginalCwd = computed({
 const SAMPLE_WORKTREE_CWD = '/Users/dev/projects/claude-powerline'
 
 const cacheTimerElapsed = computed({
-	get: () => (store.cacheTimerElapsedSeconds === null ? '' : store.cacheTimerElapsedSeconds),
+	get: () => store.cacheTimerInfo?.elapsedSeconds ?? '',
 	set: (v: string | number) => {
 		if (v === '' || v === null) {
-			store.setCacheTimerElapsed(null)
+			store.setCacheTimerInfo(null)
 			return
 		}
 		const n = Number(v)
 		if (Number.isNaN(n)) return
-		store.setCacheTimerElapsed(Math.max(0, Math.floor(n)))
+		store.setCacheTimerInfo({
+			...store.cacheTimerInfo,
+			elapsedSeconds: Math.max(0, Math.floor(n)),
+		})
 	},
 })
+
+/**
+ * What the CLI infers from transcript usage rather than reads from config. The
+ * cache timer's `remaining` mode counts down from `ttlSeconds ?? detectedTtlSeconds
+ * ?? 3600`, so without this the preview can only ever show the 1-hour fallback.
+ */
+const cacheTimerDetectedTtl = computed({
+	get: () => store.cacheTimerInfo?.detectedTtlSeconds ?? '',
+	set: (v: string | number) => {
+		if (!store.cacheTimerInfo) return
+		const n = Number(v)
+		const detected = v === '' || Number.isNaN(n) ? undefined : Math.max(1, Math.floor(n))
+		store.setCacheTimerInfo({ ...store.cacheTimerInfo, detectedTtlSeconds: detected })
+	},
+})
+
+const CACHE_TTL_QUICK_PICKS: { label: string; seconds: number }[] = [
+	{ label: '5m cache', seconds: 300 },
+	{ label: '1h cache', seconds: 3600 },
+]
 </script>
 
 <template>
@@ -269,7 +292,7 @@ const cacheTimerElapsed = computed({
 					variant="outline"
 					size="sm"
 					class="h-6 px-2 text-[10px]"
-					@click="store.setCacheTimerElapsed(qp.seconds)"
+					@click="cacheTimerElapsed = qp.seconds"
 				>
 					{{ qp.label }}
 				</Button>
@@ -278,9 +301,43 @@ const cacheTimerElapsed = computed({
 					variant="outline"
 					size="sm"
 					class="h-6 px-2 text-[10px]"
-					@click="store.setCacheTimerElapsed(null)"
+					@click="store.setCacheTimerInfo(null)"
 				>
 					null
+				</Button>
+			</div>
+		</div>
+		<div v-if="store.cacheTimerInfo" class="space-y-1.5">
+			<Label class="text-xs text-muted-foreground">
+				Detected Cache TTL <span class="text-muted-foreground/60">(sec)</span>
+			</Label>
+			<Input
+				v-model="cacheTimerDetectedTtl"
+				type="number"
+				min="1"
+				class="h-8 text-xs"
+				placeholder="unset (remaining mode falls back to 3600)"
+			/>
+			<div class="flex flex-wrap gap-1">
+				<Button
+					v-for="qp in CACHE_TTL_QUICK_PICKS"
+					:key="qp.seconds"
+					type="button"
+					variant="outline"
+					size="sm"
+					class="h-6 px-2 text-[10px]"
+					@click="cacheTimerDetectedTtl = qp.seconds"
+				>
+					{{ qp.label }}
+				</Button>
+				<Button
+					type="button"
+					variant="outline"
+					size="sm"
+					class="h-6 px-2 text-[10px]"
+					@click="cacheTimerDetectedTtl = ''"
+				>
+					unset
 				</Button>
 			</div>
 		</div>

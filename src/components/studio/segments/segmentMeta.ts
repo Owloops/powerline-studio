@@ -40,6 +40,14 @@ export const SEGMENT_KEYS = [
 
 export type SegmentKey = (typeof SEGMENT_KEYS)[number]
 
+/**
+ * Segment flags whose absence is itself a value to the CLI, so studio has to be
+ * able to delete the key rather than write `undefined`. A union rather than
+ * `string` so a key that means something else, `enabled` above all, can never
+ * reach `setSegmentTristate`, which deletes straight off the live config.
+ */
+export type SegmentTristateKey = 'showIcon' | 'showWorktree'
+
 export type StudioSegmentsMap = LineConfig['segments']
 
 export interface SegmentMeta {
