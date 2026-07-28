@@ -8,6 +8,7 @@ import type {
 	MetricsInfo,
 	BlockInfo,
 	TodayInfo,
+	CacheTimerInfo,
 } from '@owloops/claude-powerline/browser'
 import { DEFAULT_MOCK_DATA, MOCK_DATA_PRESETS } from '@/data/mockPresets'
 import type { MockDataPreset } from '@/data/mockPresets'
@@ -24,7 +25,9 @@ export const useMockDataStore = defineStore('mockData', () => {
 	const blockInfo = ref<BlockInfo | null>(structuredClone(DEFAULT_MOCK_DATA.blockInfo))
 	const todayInfo = ref<TodayInfo | null>(structuredClone(DEFAULT_MOCK_DATA.todayInfo))
 	const tmuxSessionId = ref<string | null>(DEFAULT_MOCK_DATA.tmuxSessionId)
-	const cacheTimerElapsedSeconds = ref<number | null>(DEFAULT_MOCK_DATA.cacheTimerElapsedSeconds)
+	const cacheTimerInfo = ref<CacheTimerInfo | null>(
+		structuredClone(DEFAULT_MOCK_DATA.cacheTimerInfo),
+	)
 	const activePreset = ref('default')
 
 	// Tracks the last named preset (not 'custom') for re-enable restore logic.
@@ -49,7 +52,7 @@ export const useMockDataStore = defineStore('mockData', () => {
 		blockInfo.value = structuredClone(preset.blockInfo)
 		todayInfo.value = structuredClone(preset.todayInfo)
 		tmuxSessionId.value = preset.tmuxSessionId
-		cacheTimerElapsedSeconds.value = preset.cacheTimerElapsedSeconds
+		cacheTimerInfo.value = structuredClone(preset.cacheTimerInfo)
 		activePreset.value = id
 		_lastNamedPreset = id
 		_applyingPreset = false
@@ -121,8 +124,8 @@ export const useMockDataStore = defineStore('mockData', () => {
 		markCustom()
 	}
 
-	function setCacheTimerElapsed(seconds: number | null) {
-		cacheTimerElapsedSeconds.value = seconds
+	function setCacheTimerInfo(info: CacheTimerInfo | null) {
+		cacheTimerInfo.value = info
 		markCustom()
 	}
 
@@ -139,7 +142,7 @@ export const useMockDataStore = defineStore('mockData', () => {
 		blockInfo,
 		todayInfo,
 		tmuxSessionId,
-		cacheTimerElapsedSeconds,
+		cacheTimerInfo,
 		activePreset,
 		// Mutations
 		applyPreset,
@@ -153,7 +156,7 @@ export const useMockDataStore = defineStore('mockData', () => {
 		updateBlockInfo,
 		updateTodayInfo,
 		setTmuxSessionId,
-		setCacheTimerElapsed,
+		setCacheTimerInfo,
 		$reset,
 	}
 })

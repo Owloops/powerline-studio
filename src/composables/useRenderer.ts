@@ -798,10 +798,7 @@ export function useRenderer() {
 			config.display.charset = charset
 
 			const colors = resolveThemeColors(config, colorMode, terminalBgColor)
-			const cacheTimerInfo: CacheTimerInfo | null =
-				mockDataStore.cacheTimerElapsedSeconds === null
-					? null
-					: { elapsedSeconds: mockDataStore.cacheTimerElapsedSeconds }
+			const cacheTimerInfo = toRaw(mockDataStore.cacheTimerInfo)
 			let ansi: string
 			let hitboxes: SegmentHitbox[] = []
 
@@ -1004,7 +1001,7 @@ export function useRenderer() {
 			() => mockDataStore.blockInfo,
 			() => mockDataStore.todayInfo,
 			() => mockDataStore.tmuxSessionId,
-			() => mockDataStore.cacheTimerElapsedSeconds,
+			() => mockDataStore.cacheTimerInfo,
 			() => previewStore.terminalWidth,
 			() => previewStore.colorMode,
 			() => previewStore.charset,

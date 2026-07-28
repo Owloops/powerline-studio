@@ -6,6 +6,7 @@ import type {
 	MetricsInfo,
 	BlockInfo,
 	TodayInfo,
+	CacheTimerInfo,
 } from '@owloops/claude-powerline/browser'
 
 export interface MockDataPreset {
@@ -17,7 +18,7 @@ export interface MockDataPreset {
 	blockInfo: BlockInfo | null
 	todayInfo: TodayInfo | null
 	tmuxSessionId: string | null
-	cacheTimerElapsedSeconds: number | null
+	cacheTimerInfo: CacheTimerInfo | null
 }
 
 export interface PresetMeta {
@@ -151,7 +152,7 @@ function createDefaultPreset(): MockDataPreset {
 			date: now,
 		},
 		tmuxSessionId: 'studio-preview',
-		cacheTimerElapsedSeconds: 0,
+		cacheTimerInfo: { elapsedSeconds: 0, detectedTtlSeconds: 3600 },
 	}
 }
 
@@ -237,7 +238,7 @@ function createMinimalPreset(): MockDataPreset {
 			date: now,
 		},
 		tmuxSessionId: null,
-		cacheTimerElapsedSeconds: 0,
+		cacheTimerInfo: { elapsedSeconds: 0, detectedTtlSeconds: 3600 },
 	}
 }
 
@@ -346,7 +347,7 @@ function createHeavyPreset(): MockDataPreset {
 			date: now,
 		},
 		tmuxSessionId: 'prod-session',
-		cacheTimerElapsedSeconds: 0,
+		cacheTimerInfo: { elapsedSeconds: 0, detectedTtlSeconds: 3600 },
 	}
 }
 
@@ -455,7 +456,7 @@ function createRateLimitedPreset(): MockDataPreset {
 			date: now,
 		},
 		tmuxSessionId: 'rate-check',
-		cacheTimerElapsedSeconds: 0,
+		cacheTimerInfo: { elapsedSeconds: 0, detectedTtlSeconds: 3600 },
 	}
 }
 
@@ -564,7 +565,7 @@ function createLargeContextPreset(): MockDataPreset {
 			date: now,
 		},
 		tmuxSessionId: 'studio-preview',
-		cacheTimerElapsedSeconds: 0,
+		cacheTimerInfo: { elapsedSeconds: 0, detectedTtlSeconds: 3600 },
 	}
 }
 
@@ -664,7 +665,7 @@ function createGitMergeConflictPreset(): MockDataPreset {
 			date: now,
 		},
 		tmuxSessionId: 'studio-preview',
-		cacheTimerElapsedSeconds: 0,
+		cacheTimerInfo: { elapsedSeconds: 0, detectedTtlSeconds: 3600 },
 	}
 }
 
@@ -779,7 +780,7 @@ function createLongRunningPreset(): MockDataPreset {
 			date: now,
 		},
 		tmuxSessionId: 'long-session',
-		cacheTimerElapsedSeconds: 0,
+		cacheTimerInfo: { elapsedSeconds: 0, detectedTtlSeconds: 3600 },
 	}
 }
 
