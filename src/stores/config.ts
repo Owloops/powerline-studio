@@ -34,8 +34,9 @@ type SegmentName = keyof StudioSegmentsMap
 
 /**
  * Canonical defaults for all studio segment types, including `env`
- * which is absent from upstream DEFAULT_CONFIG, and `agent` + `thinking`
- * + `cacheTimer` which mirror upstream PR #82 ahead of the npm bump.
+ * which is absent from upstream DEFAULT_CONFIG, `agent` + `thinking`
+ * + `cacheTimer` which mirror upstream PR #82, and `outputStyle` which
+ * mirrors upstream ahead of the npm bump.
  * Typed as Required<StudioSegmentsMap> for per-segment type safety.
  */
 export const SEGMENT_DEFAULTS: Required<StudioSegmentsMap> = {
@@ -94,6 +95,7 @@ export const SEGMENT_DEFAULTS: Required<StudioSegmentsMap> = {
 	agent: { enabled: false, showLabel: false },
 	thinking: { enabled: false, showEnabled: true, showEffort: true },
 	cacheTimer: { enabled: false, displayMode: 'elapsed' },
+	outputStyle: { enabled: false, showLabel: false, hideDefault: false },
 }
 
 function getInitialConfig(): PowerlineConfig {

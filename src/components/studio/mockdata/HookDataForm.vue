@@ -80,12 +80,21 @@ const tmuxId = computed({
 
 // Setters below assign to `store.hookData.*` directly rather than going through
 // `updateHookData`, because deepMerge silently drops `undefined` and we need to
-// be able to clear optional sub-objects (agent / effort / thinking / worktree).
+// be able to clear optional sub-objects (agent / effort / thinking / worktree /
+// output style).
 
 const agentName = computed({
 	get: () => store.hookData.agent?.name ?? '',
 	set: (v: string) => {
 		store.hookData.agent = v ? { name: v } : undefined
+		store.markCustom()
+	},
+})
+
+const outputStyleName = computed({
+	get: () => store.hookData.output_style?.name ?? '',
+	set: (v: string) => {
+		store.hookData.output_style = v ? { name: v } : undefined
 		store.markCustom()
 	},
 })
@@ -234,6 +243,14 @@ const CACHE_TTL_QUICK_PICKS: { label: string; seconds: number }[] = [
 		<div class="space-y-1.5">
 			<Label class="text-xs text-muted-foreground">Agent Name</Label>
 			<Input v-model="agentName" class="h-8 text-xs" placeholder="researcher (empty = no agent)" />
+		</div>
+		<div class="space-y-1.5">
+			<Label class="text-xs text-muted-foreground">Output Style</Label>
+			<Input
+				v-model="outputStyleName"
+				class="h-8 text-xs"
+				placeholder="Explanatory (empty = no output style)"
+			/>
 		</div>
 		<div class="grid grid-cols-2 gap-2">
 			<div class="space-y-1.5">

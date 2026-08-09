@@ -12,6 +12,7 @@ import {
 	GitBranch,
 	Hash,
 	Lightbulb,
+	Pencil,
 	Sparkles,
 	Tag,
 	Terminal,
@@ -36,6 +37,7 @@ export const SEGMENT_KEYS = [
 	'agent',
 	'thinking',
 	'cacheTimer',
+	'outputStyle',
 ] as const
 
 export type SegmentKey = (typeof SEGMENT_KEYS)[number]
@@ -72,10 +74,11 @@ export const SEGMENT_META: Record<SegmentKey, SegmentMeta> = {
 	agent: { name: 'Agent', icon: Sparkles },
 	thinking: { name: 'Thinking', icon: Lightbulb },
 	cacheTimer: { name: 'Cache Timer', icon: Timer },
+	outputStyle: { name: 'Output Style', icon: Pencil },
 }
 
 /**
- * Canonical defaults for all 13 segment types.
+ * Canonical defaults for all 17 segment types.
  * Re-exported from useConfigStore's SEGMENT_DEFAULTS for consistency.
  */
 export { SEGMENT_DEFAULTS } from '@/stores/config'

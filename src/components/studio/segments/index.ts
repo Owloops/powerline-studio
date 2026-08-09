@@ -15,6 +15,7 @@ import VersionConfig from './VersionConfig.vue'
 import TmuxConfig from './TmuxConfig.vue'
 import SessionIdConfig from './SessionIdConfig.vue'
 import ThinkingConfig from './ThinkingConfig.vue'
+import OutputStyleConfig from './OutputStyleConfig.vue'
 
 export const segmentConfigMap: Record<string, Component> = {
 	directory: DirectoryConfig,
@@ -33,4 +34,5 @@ export const segmentConfigMap: Record<string, Component> = {
 	agent: AgentConfig,
 	thinking: ThinkingConfig,
 	cacheTimer: CacheTimerConfig,
+	outputStyle: OutputStyleConfig,
 }
