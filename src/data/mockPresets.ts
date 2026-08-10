@@ -62,6 +62,15 @@ function createDefaultPreset(): MockDataPreset {
 			output_style: {
 				name: 'Explanatory',
 			},
+			thinking: {
+				enabled: true,
+			},
+			effort: {
+				level: 'medium',
+			},
+			agent: {
+				name: 'researcher',
+			},
 			cost: {
 				total_cost_usd: 2.85,
 				total_duration_ms: 16200000,
@@ -264,6 +273,15 @@ function createHeavyPreset(): MockDataPreset {
 				project_dir: '~/large-monorepo',
 			},
 			version: '1.0.47',
+			thinking: {
+				enabled: true,
+			},
+			effort: {
+				level: 'max',
+			},
+			agent: {
+				name: 'general-purpose',
+			},
 			cost: {
 				total_cost_usd: 28.5,
 				total_duration_ms: 28800000,
@@ -482,6 +500,12 @@ function createLargeContextPreset(): MockDataPreset {
 				project_dir: '~/big-project',
 			},
 			version: '1.0.47',
+			thinking: {
+				enabled: true,
+			},
+			effort: {
+				level: 'high',
+			},
 			cost: {
 				total_cost_usd: 8.5,
 				total_duration_ms: 10800000,
@@ -691,6 +715,9 @@ function createLongRunningPreset(): MockDataPreset {
 				project_dir: '~/enterprise-app',
 			},
 			version: '1.0.47',
+			thinking: {
+				enabled: false,
+			},
 			cost: {
 				total_cost_usd: 42.0,
 				total_duration_ms: 43200000,
