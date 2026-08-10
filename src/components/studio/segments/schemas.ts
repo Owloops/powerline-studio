@@ -94,3 +94,8 @@ export const cacheTimerConfigSchema = z.object({
 	displayMode: z.enum(CACHE_TIMER_DISPLAY_MODES),
 	ttlSeconds: z.number().int().min(1).optional(),
 })
+
+export const outputStyleConfigSchema = z.object({
+	showLabel: z.boolean(),
+	hideDefault: z.boolean(),
+})

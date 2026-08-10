@@ -59,6 +59,9 @@ function createDefaultPreset(): MockDataPreset {
 				project_dir: '/home/user/my-project',
 			},
 			version: '1.0.47',
+			output_style: {
+				name: 'Explanatory',
+			},
 			cost: {
 				total_cost_usd: 2.85,
 				total_duration_ms: 16200000,

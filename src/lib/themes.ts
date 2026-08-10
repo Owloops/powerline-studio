@@ -39,6 +39,7 @@ export const SEGMENT_LABELS: Record<keyof ColorTheme, string> = {
 	agent: 'Agent',
 	thinking: 'Thinking',
 	cacheTimer: 'Cache Timer',
+	outputStyle: 'Output Style',
 }
 
 export const SEGMENT_KEYS = Object.keys(SEGMENT_LABELS) as (keyof ColorTheme)[]
@@ -83,7 +84,7 @@ export function getCanonicalThemeColors(theme: CanonicalTheme): ColorTheme {
 /**
  * Backfills any missing slots in a partial ColorTheme from a canonical source.
  * Needed for stored custom themes that predate slots added by upstream
- * (`agent`, `thinking`, `cacheTimer`).
+ * (`agent`, `thinking`, `cacheTimer`, `outputStyle`).
  */
 export function completeColorTheme(
 	theme: Partial<ColorTheme>,

@@ -16,6 +16,7 @@ import type {
 	ThinkingSegmentConfig,
 	CacheTimerSegmentConfig,
 	CacheTimerInfo,
+	OutputStyleSegmentConfig,
 	DirectorySegmentConfig,
 	GitSegmentConfig,
 	ClaudeHookData,
@@ -150,6 +151,7 @@ function resolveSymbols(config: PowerlineConfig): PowerlineSymbols {
 		agent: symbolSet.agent,
 		thinking: symbolSet.thinking,
 		cache_timer: symbolSet.cache_timer,
+		output_style: symbolSet.output_style,
 	}
 }
 
@@ -224,6 +226,7 @@ function resolveThemeColors(
 	const agent = getSegmentColors('agent')
 	const thinking = getSegmentColors('thinking')
 	const cacheTimer = getSegmentColors('cacheTimer')
+	const outputStyle = getSegmentColors('outputStyle')
 
 	let partFg: Record<string, string> = {}
 	if (theme === 'custom') {
@@ -290,6 +293,9 @@ function resolveThemeColors(
 		cacheTimerBg: cacheTimer.bg,
 		cacheTimerFg: cacheTimer.fg,
 		cacheTimerBold: cacheTimer.bold,
+		outputStyleBg: outputStyle.bg,
+		outputStyleFg: outputStyle.fg,
+		outputStyleBold: outputStyle.bold,
 		partFg,
 	}
 }
@@ -311,6 +317,7 @@ const SEGMENT_BOLD_KEYS: Record<string, keyof PowerlineColors> = {
 	agent: 'agentBold',
 	thinking: 'thinkingBold',
 	cacheTimer: 'cacheTimerBold',
+	outputStyle: 'outputStyleBold',
 }
 
 function getSegmentBoldFlag(type: string, colors: PowerlineColors): boolean {
@@ -1108,6 +1115,8 @@ function renderSingleSegment(
 			return cacheTimerInfo
 				? renderer.renderCacheTimer(cacheTimerInfo, colors, config as CacheTimerSegmentConfig)
 				: null
+		case 'outputStyle':
+			return renderer.renderOutputStyle(hookData, colors, config as OutputStyleSegmentConfig)
 		default:
 			return null
 	}
