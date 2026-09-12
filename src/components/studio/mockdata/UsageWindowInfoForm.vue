@@ -1,67 +1,66 @@
 <script setup lang="ts">
+import type { MonthInfo, TodayInfo } from '@owloops/claude-powerline/browser'
 import { DEFAULT_MOCK_DATA } from '@/data/mockPresets'
+
+type InfoKey = 'todayInfo' | 'monthInfo'
+
+const PERIOD_FIELDS: Record<InfoKey, { label: string; format: string; placeholder: string }> = {
+	todayInfo: { label: 'Date', format: 'YYYY-MM-DD', placeholder: '2026-04-11' },
+	monthInfo: { label: 'Month', format: 'YYYY-MM', placeholder: '2026-04' },
+}
+
+const props = defineProps<{
+	infoKey: InfoKey
+}>()
 
 const store = useMockDataStore()
 
-const enabled = computed({
-	get: () => store.todayInfo !== null,
-	set: (v: boolean) => {
-		if (v) {
-			const preset = store.getActivePresetData()
-			const restored = preset.todayInfo ?? structuredClone(DEFAULT_MOCK_DATA.todayInfo)
-			store.todayInfo = structuredClone(restored)
+const info = computed<TodayInfo | MonthInfo | null>(() => store[props.infoKey])
+const periodField = computed(() => PERIOD_FIELDS[props.infoKey])
+
+function usageField(key: 'cost' | 'tokens') {
+	return computed({
+		get: () => info.value?.[key] ?? '',
+		set: (v: string | number) => {
+			if (!info.value) return
+			const n = Number(v)
+			info.value[key] = v === '' || Number.isNaN(n) ? null : n
+			store.markCustom()
+		},
+	})
+}
+
+const cost = usageField('cost')
+const tokens = usageField('tokens')
+
+const period = computed({
+	get: () => {
+		const current = info.value
+		if (!current) return ''
+		return 'month' in current ? current.month : current.date
+	},
+	set: (v: string) => {
+		const current = info.value
+		if (!current) return
+		if ('month' in current) {
+			current.month = v
 		} else {
-			store.todayInfo = null
+			current.date = v
 		}
 		store.markCustom()
 	},
 })
 
-const cost = computed({
-	get: () => {
-		const v = store.todayInfo?.cost
-		return v !== null && v !== undefined ? v : ''
-	},
-	set: (v: string | number) => {
-		if (!store.todayInfo) return
-		const n = Number(v)
-		store.todayInfo.cost = v === '' || Number.isNaN(n) ? null : n
-		store.markCustom()
-	},
-})
-
-const tokens = computed({
-	get: () => {
-		const v = store.todayInfo?.tokens
-		return v !== null && v !== undefined ? v : ''
-	},
-	set: (v: string | number) => {
-		if (!store.todayInfo) return
-		const n = Number(v)
-		store.todayInfo.tokens = v === '' || Number.isNaN(n) ? null : n
-		store.markCustom()
-	},
-})
-
-const date = computed({
-	get: () => store.todayInfo?.date ?? '',
-	set: (v: string) => {
-		if (!store.todayInfo) return
-		store.todayInfo.date = v
-		store.markCustom()
-	},
-})
-
 const hasBreakdown = computed({
-	get: () =>
-		store.todayInfo?.tokenBreakdown !== null && store.todayInfo?.tokenBreakdown !== undefined,
+	get: () => info.value?.tokenBreakdown != null,
 	set: (v: boolean) => {
-		if (!store.todayInfo) return
+		const current = info.value
+		if (!current) return
 		if (v) {
 			const preset = store.getActivePresetData()
-			store.todayInfo.tokenBreakdown = structuredClone(
-				preset.todayInfo?.tokenBreakdown ??
-					DEFAULT_MOCK_DATA.todayInfo?.tokenBreakdown ?? {
+			current.tokenBreakdown = structuredClone(
+				preset[props.infoKey]?.tokenBreakdown ??
+					DEFAULT_MOCK_DATA[props.infoKey]?.tokenBreakdown ?? {
 						input: 0,
 						output: 0,
 						cacheCreation: 0,
@@ -69,7 +68,7 @@ const hasBreakdown = computed({
 					},
 			)
 		} else {
-			store.todayInfo.tokenBreakdown = null
+			current.tokenBreakdown = null
 		}
 		store.markCustom()
 	},
@@ -77,11 +76,12 @@ const hasBreakdown = computed({
 
 function breakdownField(key: 'input' | 'output' | 'cacheCreation' | 'cacheRead') {
 	return computed({
-		get: () => store.todayInfo?.tokenBreakdown?.[key] ?? '',
+		get: () => info.value?.tokenBreakdown?.[key] ?? '',
 		set: (v: string | number) => {
-			if (!store.todayInfo?.tokenBreakdown) return
+			const breakdown = info.value?.tokenBreakdown
+			if (!breakdown) return
 			const n = Number(v)
-			store.todayInfo.tokenBreakdown[key] = v === '' || Number.isNaN(n) ? 0 : n
+			breakdown[key] = v === '' || Number.isNaN(n) ? 0 : n
 			store.markCustom()
 		},
 	})
@@ -95,7 +95,7 @@ const bdCacheRead = breakdownField('cacheRead')
 
 <template>
 	<div class="flex flex-col gap-2">
-		<template v-if="enabled">
+		<template v-if="info">
 			<div class="grid grid-cols-2 gap-2">
 				<div class="space-y-1.5">
 					<Label class="text-xs text-muted-foreground"
@@ -111,9 +111,14 @@ const bdCacheRead = breakdownField('cacheRead')
 
 			<div class="space-y-1.5">
 				<Label class="text-xs text-muted-foreground"
-					>Date <span class="text-muted-foreground/60">(YYYY-MM-DD)</span></Label
+					>{{ periodField.label }}
+					<span class="text-muted-foreground/60">({{ periodField.format }})</span></Label
 				>
-				<Input v-model="date" class="h-8 text-xs font-mono" placeholder="2026-04-11" />
+				<Input
+					v-model="period"
+					class="h-8 text-xs font-mono"
+					:placeholder="periodField.placeholder"
+				/>
 			</div>
 
 			<Separator />

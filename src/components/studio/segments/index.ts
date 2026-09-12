@@ -9,6 +9,7 @@ import ContextConfig from './ContextConfig.vue'
 import BlockConfig from './BlockConfig.vue'
 import MetricsConfig from './MetricsConfig.vue'
 import TodayConfig from './TodayConfig.vue'
+import MonthConfig from './MonthConfig.vue'
 import EnvConfig from './EnvConfig.vue'
 import WeeklyConfig from './WeeklyConfig.vue'
 import VersionConfig from './VersionConfig.vue'
@@ -26,6 +27,7 @@ export const segmentConfigMap: Record<string, Component> = {
 	block: BlockConfig,
 	metrics: MetricsConfig,
 	today: TodayConfig,
+	month: MonthConfig,
 	env: EnvConfig,
 	weekly: WeeklyConfig,
 	version: VersionConfig,

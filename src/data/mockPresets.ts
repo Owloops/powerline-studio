@@ -6,6 +6,7 @@ import type {
 	MetricsInfo,
 	BlockInfo,
 	TodayInfo,
+	MonthInfo,
 	CacheTimerInfo,
 } from '@owloops/claude-powerline/browser'
 
@@ -17,6 +18,7 @@ export interface MockDataPreset {
 	metricsInfo: MetricsInfo | null
 	blockInfo: BlockInfo | null
 	todayInfo: TodayInfo | null
+	monthInfo: MonthInfo | null
 	tmuxSessionId: string | null
 	cacheTimerInfo: CacheTimerInfo | null
 }
@@ -34,6 +36,11 @@ function todayDate(): string {
 	const month = String(d.getMonth() + 1).padStart(2, '0')
 	const day = String(d.getDate()).padStart(2, '0')
 	return `${year}-${month}-${day}`
+}
+
+/** Reduces a YYYY-MM-DD date to its YYYY-MM month. */
+function monthOf(date: string): string {
+	return date.slice(0, 7)
 }
 
 function resetAtFromNow(minutes: number): number {
@@ -154,6 +161,17 @@ function createDefaultPreset(): MockDataPreset {
 			},
 			date: now,
 		},
+		monthInfo: {
+			cost: 186.5,
+			tokens: 6800000,
+			tokenBreakdown: {
+				input: 4500000,
+				output: 2300000,
+				cacheCreation: 0,
+				cacheRead: 0,
+			},
+			month: monthOf(now),
+		},
 		tmuxSessionId: 'studio-preview',
 		cacheTimerInfo: { elapsedSeconds: 0, detectedTtlSeconds: 3600 },
 	}
@@ -239,6 +257,17 @@ function createMinimalPreset(): MockDataPreset {
 				cacheRead: 0,
 			},
 			date: now,
+		},
+		monthInfo: {
+			cost: 0.02,
+			tokens: 3800,
+			tokenBreakdown: {
+				input: 3000,
+				output: 800,
+				cacheCreation: 0,
+				cacheRead: 0,
+			},
+			month: monthOf(now),
 		},
 		tmuxSessionId: null,
 		cacheTimerInfo: { elapsedSeconds: 0, detectedTtlSeconds: 3600 },
@@ -349,6 +378,17 @@ function createHeavyPreset(): MockDataPreset {
 			},
 			date: now,
 		},
+		monthInfo: {
+			cost: 612.0,
+			tokens: 16400000,
+			tokenBreakdown: {
+				input: 12300000,
+				output: 4100000,
+				cacheCreation: 0,
+				cacheRead: 0,
+			},
+			month: monthOf(now),
+		},
 		tmuxSessionId: 'prod-session',
 		cacheTimerInfo: { elapsedSeconds: 0, detectedTtlSeconds: 3600 },
 	}
@@ -457,6 +497,17 @@ function createRateLimitedPreset(): MockDataPreset {
 				cacheRead: 0,
 			},
 			date: now,
+		},
+		monthInfo: {
+			cost: 410.0,
+			tokens: 11200000,
+			tokenBreakdown: {
+				input: 7900000,
+				output: 3300000,
+				cacheCreation: 0,
+				cacheRead: 0,
+			},
+			month: monthOf(now),
 		},
 		tmuxSessionId: 'rate-check',
 		cacheTimerInfo: { elapsedSeconds: 0, detectedTtlSeconds: 3600 },
@@ -567,6 +618,17 @@ function createLargeContextPreset(): MockDataPreset {
 			},
 			date: now,
 		},
+		monthInfo: {
+			cost: 265.0,
+			tokens: 8900000,
+			tokenBreakdown: {
+				input: 6700000,
+				output: 2200000,
+				cacheCreation: 0,
+				cacheRead: 0,
+			},
+			month: monthOf(now),
+		},
 		tmuxSessionId: 'studio-preview',
 		cacheTimerInfo: { elapsedSeconds: 0, detectedTtlSeconds: 3600 },
 	}
@@ -666,6 +728,17 @@ function createGitMergeConflictPreset(): MockDataPreset {
 				cacheRead: 0,
 			},
 			date: now,
+		},
+		monthInfo: {
+			cost: 74.0,
+			tokens: 2900000,
+			tokenBreakdown: {
+				input: 2200000,
+				output: 700000,
+				cacheCreation: 0,
+				cacheRead: 0,
+			},
+			month: monthOf(now),
 		},
 		tmuxSessionId: 'studio-preview',
 		cacheTimerInfo: { elapsedSeconds: 0, detectedTtlSeconds: 3600 },
@@ -781,6 +854,17 @@ function createLongRunningPreset(): MockDataPreset {
 				cacheRead: 0,
 			},
 			date: now,
+		},
+		monthInfo: {
+			cost: 890.0,
+			tokens: 27000000,
+			tokenBreakdown: {
+				input: 20500000,
+				output: 6500000,
+				cacheCreation: 0,
+				cacheRead: 0,
+			},
+			month: monthOf(now),
 		},
 		tmuxSessionId: 'long-session',
 		cacheTimerInfo: { elapsedSeconds: 0, detectedTtlSeconds: 3600 },
