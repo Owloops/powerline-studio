@@ -26,11 +26,13 @@ import type {
 	MetricsInfo,
 	BlockInfo,
 	TodayInfo,
+	MonthInfo,
 	UsageSegmentConfig,
 	ContextSegmentConfig,
 	MetricsSegmentConfig,
 	BlockSegmentConfig,
 	TodaySegmentConfig,
+	MonthSegmentConfig,
 	VersionSegmentConfig,
 	SessionIdSegmentConfig,
 	EnvSegmentConfig,
@@ -134,6 +136,7 @@ function resolveSymbols(config: PowerlineConfig): PowerlineSymbols {
 		session_cost: symbolSet.session_cost,
 		block_cost: symbolSet.block_cost,
 		today_cost: symbolSet.today_cost,
+		month_cost: symbolSet.month_cost,
 		context_time: symbolSet.context_time,
 		metrics_response: symbolSet.metrics_response,
 		metrics_last_response: symbolSet.metrics_last_response,
@@ -215,6 +218,7 @@ function resolveThemeColors(
 	const session = getSegmentColors('session')
 	const block = getSegmentColors('block')
 	const today = getSegmentColors('today')
+	const month = getSegmentColors('month')
 	const tmux = getSegmentColors('tmux')
 	const context = getSegmentColors('context')
 	const contextWarning = getSegmentColors('contextWarning')
@@ -260,6 +264,9 @@ function resolveThemeColors(
 		todayBg: today.bg,
 		todayFg: today.fg,
 		todayBold: today.bold,
+		monthBg: month.bg,
+		monthFg: month.fg,
+		monthBold: month.bold,
 		tmuxBg: tmux.bg,
 		tmuxFg: tmux.fg,
 		tmuxBold: tmux.bold,
@@ -308,6 +315,7 @@ const SEGMENT_BOLD_KEYS: Record<string, keyof PowerlineColors> = {
 	sessionId: 'sessionBold',
 	block: 'blockBold',
 	today: 'todayBold',
+	month: 'monthBold',
 	tmux: 'tmuxBold',
 	context: 'contextBold',
 	metrics: 'metricsBold',
@@ -824,6 +832,7 @@ export function useRenderer() {
 					usageInfo: toRaw(mockDataStore.usageInfo),
 					blockInfo: toRaw(mockDataStore.blockInfo),
 					todayInfo: toRaw(mockDataStore.todayInfo),
+					monthInfo: toRaw(mockDataStore.monthInfo),
 					contextInfo: toRaw(mockDataStore.contextInfo),
 					metricsInfo: toRaw(mockDataStore.metricsInfo),
 					gitInfo: gateWorktree(toRaw(mockDataStore.gitInfo), findEnabledGitConfig(config)),
@@ -849,6 +858,7 @@ export function useRenderer() {
 				const metricsInfo = toRaw(mockDataStore.metricsInfo)
 				const blockInfo = toRaw(mockDataStore.blockInfo)
 				const todayInfo = toRaw(mockDataStore.todayInfo)
+				const monthInfo = toRaw(mockDataStore.monthInfo)
 				const tmuxSessionId = mockDataStore.tmuxSessionId
 
 				const outputLines: string[] = []
@@ -884,6 +894,7 @@ export function useRenderer() {
 							metricsInfo,
 							blockInfo,
 							todayInfo,
+							monthInfo,
 							tmuxSessionId,
 							cacheTimerInfo,
 							colors,
@@ -1007,6 +1018,7 @@ export function useRenderer() {
 			() => mockDataStore.metricsInfo,
 			() => mockDataStore.blockInfo,
 			() => mockDataStore.todayInfo,
+			() => mockDataStore.monthInfo,
 			() => mockDataStore.tmuxSessionId,
 			() => mockDataStore.cacheTimerInfo,
 			() => previewStore.terminalWidth,
@@ -1064,6 +1076,7 @@ function renderSingleSegment(
 	metricsInfo: MetricsInfo | null,
 	blockInfo: BlockInfo | null,
 	todayInfo: TodayInfo | null,
+	monthInfo: MonthInfo | null,
 	tmuxSessionId: string | null,
 	cacheTimerInfo: CacheTimerInfo | null,
 	colors: PowerlineColors,
@@ -1100,6 +1113,10 @@ function renderSingleSegment(
 		case 'today':
 			return todayInfo
 				? renderer.renderToday(todayInfo, colors, config as TodaySegmentConfig)
+				: null
+		case 'month':
+			return monthInfo
+				? renderer.renderMonth(monthInfo, colors, config as MonthSegmentConfig)
 				: null
 		case 'version':
 			return renderer.renderVersion(hookData, colors, config as VersionSegmentConfig)

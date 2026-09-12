@@ -7,13 +7,20 @@ import UsageInfoForm from './UsageInfoForm.vue'
 import ContextInfoForm from './ContextInfoForm.vue'
 import MetricsInfoForm from './MetricsInfoForm.vue'
 import BlockInfoForm from './BlockInfoForm.vue'
-import TodayInfoForm from './TodayInfoForm.vue'
+import UsageWindowInfoForm from './UsageWindowInfoForm.vue'
 import RateLimitsForm from './RateLimitsForm.vue'
 
 const store = useMockDataStore()
 
 function toggleSection(
-	key: 'gitInfo' | 'usageInfo' | 'contextInfo' | 'metricsInfo' | 'blockInfo' | 'todayInfo',
+	key:
+		| 'gitInfo'
+		| 'usageInfo'
+		| 'contextInfo'
+		| 'metricsInfo'
+		| 'blockInfo'
+		| 'todayInfo'
+		| 'monthInfo',
 	enabled: boolean,
 ) {
 	if (enabled) {
@@ -128,7 +135,20 @@ function toggleRateLimits(enabled: boolean) {
 			<template #icon>
 				<IconLucide-calendar class="size-3.5 shrink-0 text-muted-foreground" />
 			</template>
-			<TodayInfoForm />
+			<UsageWindowInfoForm info-key="todayInfo" />
+		</MockDataSection>
+
+		<MockDataSection
+			title="Month Usage"
+			description="Aggregate cost and tokens for this month"
+			toggleable
+			:enabled="store.monthInfo !== null"
+			@update:enabled="toggleSection('monthInfo', $event)"
+		>
+			<template #icon>
+				<IconLucide-calendar-days class="size-3.5 shrink-0 text-muted-foreground" />
+			</template>
+			<UsageWindowInfoForm info-key="monthInfo" />
 		</MockDataSection>
 
 		<MockDataSection

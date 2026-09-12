@@ -60,6 +60,8 @@ export const todayConfigSchema = z.object({
 	showUnits: z.boolean(),
 })
 
+export const monthConfigSchema = todayConfigSchema
+
 export const envConfigSchema = z.object({
 	variable: z.string().min(1, 'Environment variable name is required'),
 	prefix: z.string().optional(),

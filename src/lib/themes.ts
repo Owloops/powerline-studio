@@ -28,6 +28,7 @@ export const SEGMENT_LABELS: Record<keyof ColorTheme, string> = {
 	session: 'Session',
 	block: 'Block',
 	today: 'Today',
+	month: 'Month',
 	tmux: 'Tmux',
 	context: 'Context',
 	contextWarning: 'Context Warning',
@@ -84,7 +85,7 @@ export function getCanonicalThemeColors(theme: CanonicalTheme): ColorTheme {
 /**
  * Backfills any missing slots in a partial ColorTheme from a canonical source.
  * Needed for stored custom themes that predate slots added by upstream
- * (`agent`, `thinking`, `cacheTimer`, `outputStyle`).
+ * (`agent`, `thinking`, `cacheTimer`, `outputStyle`, `month`).
  */
 export function completeColorTheme(
 	theme: Partial<ColorTheme>,

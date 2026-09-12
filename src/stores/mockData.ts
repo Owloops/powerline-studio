@@ -8,6 +8,7 @@ import type {
 	MetricsInfo,
 	BlockInfo,
 	TodayInfo,
+	MonthInfo,
 	CacheTimerInfo,
 } from '@owloops/claude-powerline/browser'
 import { DEFAULT_MOCK_DATA, MOCK_DATA_PRESETS } from '@/data/mockPresets'
@@ -24,6 +25,7 @@ export const useMockDataStore = defineStore('mockData', () => {
 	const metricsInfo = ref<MetricsInfo | null>(structuredClone(DEFAULT_MOCK_DATA.metricsInfo))
 	const blockInfo = ref<BlockInfo | null>(structuredClone(DEFAULT_MOCK_DATA.blockInfo))
 	const todayInfo = ref<TodayInfo | null>(structuredClone(DEFAULT_MOCK_DATA.todayInfo))
+	const monthInfo = ref<MonthInfo | null>(structuredClone(DEFAULT_MOCK_DATA.monthInfo))
 	const tmuxSessionId = ref<string | null>(DEFAULT_MOCK_DATA.tmuxSessionId)
 	const cacheTimerInfo = ref<CacheTimerInfo | null>(
 		structuredClone(DEFAULT_MOCK_DATA.cacheTimerInfo),
@@ -51,6 +53,7 @@ export const useMockDataStore = defineStore('mockData', () => {
 		metricsInfo.value = structuredClone(preset.metricsInfo)
 		blockInfo.value = structuredClone(preset.blockInfo)
 		todayInfo.value = structuredClone(preset.todayInfo)
+		monthInfo.value = structuredClone(preset.monthInfo)
 		tmuxSessionId.value = preset.tmuxSessionId
 		cacheTimerInfo.value = structuredClone(preset.cacheTimerInfo)
 		activePreset.value = id
@@ -141,6 +144,7 @@ export const useMockDataStore = defineStore('mockData', () => {
 		metricsInfo,
 		blockInfo,
 		todayInfo,
+		monthInfo,
 		tmuxSessionId,
 		cacheTimerInfo,
 		activePreset,

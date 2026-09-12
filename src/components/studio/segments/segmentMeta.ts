@@ -4,6 +4,7 @@ import {
 	Activity,
 	Bot,
 	Brain,
+	Calendar,
 	CalendarDays,
 	CalendarRange,
 	DollarSign,
@@ -26,6 +27,7 @@ export const SEGMENT_KEYS = [
 	'model',
 	'session',
 	'today',
+	'month',
 	'block',
 	'weekly',
 	'version',
@@ -63,6 +65,7 @@ export const SEGMENT_META: Record<SegmentKey, SegmentMeta> = {
 	model: { name: 'Model', icon: Bot },
 	session: { name: 'Session', icon: DollarSign },
 	today: { name: 'Today', icon: CalendarDays },
+	month: { name: 'Month', icon: Calendar },
 	block: { name: 'Block', icon: Gauge },
 	weekly: { name: 'Weekly', icon: CalendarRange },
 	version: { name: 'Version', icon: Tag },
@@ -78,7 +81,7 @@ export const SEGMENT_META: Record<SegmentKey, SegmentMeta> = {
 }
 
 /**
- * Canonical defaults for all 17 segment types.
+ * Canonical defaults for all 18 segment types.
  * Re-exported from useConfigStore's SEGMENT_DEFAULTS for consistency.
  */
 export { SEGMENT_DEFAULTS } from '@/stores/config'

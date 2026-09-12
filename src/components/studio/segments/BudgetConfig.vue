@@ -10,7 +10,7 @@ import { budgetItemSchema } from './schemas'
 import { BUDGET_TYPE_OPTIONS } from './options'
 
 const props = defineProps<{
-	budgetKey: 'session' | 'today' | 'block'
+	budgetKey: 'session' | 'today' | 'month' | 'block'
 }>()
 
 const configStore = useConfigStore()
