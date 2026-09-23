@@ -1,6 +1,6 @@
 import { ref, shallowRef, computed } from 'vue'
 import { defineStore } from 'pinia'
-import { useConfigStore } from './config'
+import { DEFAULT_WIDTH_RESERVE, useConfigStore } from './config'
 import type { SegmentHitbox } from '@/lib/segmentHitboxes'
 import { getTerminalFont } from '@/lib/terminalFonts'
 import { getTerminalTheme } from '@/lib/terminalThemes'
@@ -17,7 +17,7 @@ export const usePreviewStore = defineStore('preview', () => {
 	const fontWeight = ref(400)
 	const fontSize = ref(14)
 	const lineHeight = ref(1)
-	const reservedWidth = ref(45)
+	const reservedWidth = ref(DEFAULT_WIDTH_RESERVE)
 	const showClaudeHeader = ref(true)
 	const ansiOutput = ref('')
 	const htmlOutput = ref('')

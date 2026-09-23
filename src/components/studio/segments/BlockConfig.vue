@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import FormSelectField from '@/components/FormSelectField.vue'
+import FormSwitchField from '@/components/FormSwitchField.vue'
 import BudgetConfig from './BudgetConfig.vue'
 import FormShowIconRow from './FormShowIconRow.vue'
 import { blockConfigSchema } from './schemas'
@@ -12,6 +13,7 @@ const { values } = useSegmentForm('block', blockConfigSchema, () => {
 		type: seg?.type ?? SEGMENT_DEFAULTS.block.type,
 		burnType: seg?.burnType ?? SEGMENT_DEFAULTS.block.burnType,
 		displayStyle: seg?.displayStyle ?? SEGMENT_DEFAULTS.block.displayStyle,
+		showPace: seg?.showPace === true,
 	}
 })
 </script>
@@ -26,6 +28,7 @@ const { values } = useSegmentForm('block', blockConfigSchema, () => {
 			label="Display Style"
 			:options="BAR_DISPLAY_STYLE_OPTIONS"
 		/>
+		<FormSwitchField name="showPace" label="Show pace" />
 		<BudgetConfig budget-key="block" />
 	</div>
 </template>
