@@ -44,6 +44,7 @@ export const blockConfigSchema = z.object({
 	type: z.enum(BLOCK_TYPES),
 	burnType: z.enum(BURN_TYPES),
 	displayStyle: z.enum(BAR_DISPLAY_STYLES),
+	showPace: z.boolean(),
 })
 
 export const metricsConfigSchema = z.object({
@@ -69,6 +70,7 @@ export const envConfigSchema = z.object({
 
 export const weeklyConfigSchema = z.object({
 	displayStyle: z.enum(BAR_DISPLAY_STYLES),
+	showPace: z.boolean(),
 })
 
 export const sessionIdConfigSchema = z.object({

@@ -32,6 +32,9 @@ import {
 
 type SegmentName = keyof StudioSegmentsMap
 
+/** Columns the CLI keeps free when `display.widthReserve` is unset. */
+export const DEFAULT_WIDTH_RESERVE = 45
+
 /**
  * Canonical defaults for all studio segment types, including `env`
  * which is absent from upstream DEFAULT_CONFIG, `agent` + `thinking`
@@ -69,8 +72,9 @@ export const SEGMENT_DEFAULTS: Required<StudioSegmentsMap> = {
 		type: 'cost',
 		burnType: 'cost',
 		displayStyle: 'text',
+		showPace: false,
 	},
-	weekly: { enabled: false, displayStyle: 'text' },
+	weekly: { enabled: false, displayStyle: 'text', showPace: false },
 	version: { enabled: false },
 	tmux: { enabled: false },
 	sessionId: { enabled: false, showIdLabel: true },
@@ -424,6 +428,15 @@ export const useConfigStore = defineStore('config', () => {
 	function setTuiWidthReserve(value: number) {
 		ensureTuiConfig()
 		config.value.display.tui!.widthReserve = value
+	}
+
+	/** The default is left unset so exported configs don't carry a no-op key. */
+	function setWidthReserve(value: number) {
+		if (value === DEFAULT_WIDTH_RESERVE) {
+			delete config.value.display.widthReserve
+		} else {
+			config.value.display.widthReserve = value
+		}
 	}
 
 	function addBreakpoint(copyFromIndex?: number) {
@@ -1046,6 +1059,7 @@ export const useConfigStore = defineStore('config', () => {
 		ensureTuiConfig,
 		setTuiOption,
 		setTuiWidthReserve,
+		setWidthReserve,
 		addBreakpoint,
 		removeBreakpoint,
 		updateBreakpointMinWidth,

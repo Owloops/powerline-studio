@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import FormSelectField from '@/components/FormSelectField.vue'
+import FormSwitchField from '@/components/FormSwitchField.vue'
 import FormShowIconRow from './FormShowIconRow.vue'
 import { weeklyConfigSchema } from './schemas'
 import { BAR_DISPLAY_STYLE_OPTIONS } from './options'
@@ -9,6 +10,7 @@ const { values } = useSegmentForm('weekly', weeklyConfigSchema, () => {
 	const seg = useConfigStore().currentLineSegments.weekly
 	return {
 		displayStyle: seg?.displayStyle ?? SEGMENT_DEFAULTS.weekly.displayStyle,
+		showPace: seg?.showPace === true,
 	}
 })
 </script>
@@ -21,5 +23,6 @@ const { values } = useSegmentForm('weekly', weeklyConfigSchema, () => {
 			label="Display Style"
 			:options="BAR_DISPLAY_STYLE_OPTIONS"
 		/>
+		<FormSwitchField name="showPace" label="Show pace" />
 	</div>
 </template>

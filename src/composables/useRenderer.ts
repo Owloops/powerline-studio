@@ -1,5 +1,5 @@
 import { AnsiUp } from 'ansi_up'
-import { useConfigStore } from '@/stores/config'
+import { DEFAULT_WIDTH_RESERVE, useConfigStore } from '@/stores/config'
 import { useMockDataStore } from '@/stores/mockData'
 import { usePreviewStore } from '@/stores/preview'
 import type { SegmentHitbox, NonTuiStyle } from '@/lib/segmentHitboxes'
@@ -117,44 +117,12 @@ function resolveSymbols(config: PowerlineConfig): PowerlineSymbols {
 	const isCapsuleStyle = style === 'capsule'
 	const symbolSet = charset === 'text' ? TEXT_SYMBOLS : SYMBOLS
 
+	// Every symbol except the separators passes through under its own name, so
+	// spreading the set picks up symbols added upstream without a studio change.
 	return {
+		...symbolSet,
 		right: isMinimalStyle ? '' : isCapsuleStyle ? symbolSet.right_rounded : symbolSet.right,
 		left: isCapsuleStyle ? symbolSet.left_rounded : '',
-		branch: symbolSet.branch,
-		model: symbolSet.model,
-		git_clean: symbolSet.git_clean,
-		git_dirty: symbolSet.git_dirty,
-		git_conflicts: symbolSet.git_conflicts,
-		git_ahead: symbolSet.git_ahead,
-		git_behind: symbolSet.git_behind,
-		git_worktree: symbolSet.git_worktree,
-		git_tag: symbolSet.git_tag,
-		git_sha: symbolSet.git_sha,
-		git_upstream: symbolSet.git_upstream,
-		git_stash: symbolSet.git_stash,
-		git_time: symbolSet.git_time,
-		session_cost: symbolSet.session_cost,
-		block_cost: symbolSet.block_cost,
-		today_cost: symbolSet.today_cost,
-		month_cost: symbolSet.month_cost,
-		context_time: symbolSet.context_time,
-		metrics_response: symbolSet.metrics_response,
-		metrics_last_response: symbolSet.metrics_last_response,
-		metrics_duration: symbolSet.metrics_duration,
-		metrics_messages: symbolSet.metrics_messages,
-		metrics_lines_added: symbolSet.metrics_lines_added,
-		metrics_lines_removed: symbolSet.metrics_lines_removed,
-		metrics_burn: symbolSet.metrics_burn,
-		version: symbolSet.version,
-		bar_filled: symbolSet.bar_filled,
-		bar_empty: symbolSet.bar_empty,
-		env: symbolSet.env,
-		session_id: symbolSet.session_id,
-		weekly_cost: symbolSet.weekly_cost,
-		agent: symbolSet.agent,
-		thinking: symbolSet.thinking,
-		cache_timer: symbolSet.cache_timer,
-		output_style: symbolSet.output_style,
 	}
 }
 
@@ -675,7 +643,7 @@ function computeTuiHitboxes(
 			} else if (cell.segment === 'block.bar') {
 				content = buildBlockBar(tuiData, resolveWidth, sym, reset, colors, config, pf)
 			} else if (cell.segment === 'weekly.bar') {
-				content = buildWeeklyBar(tuiData, resolveWidth, sym, reset, colors, pf)
+				content = buildWeeklyBar(tuiData, resolveWidth, sym, reset, colors, pf, config)
 			} else {
 				const tmpl = templates[cell.segment]
 				if (tmpl) {
@@ -1033,16 +1001,18 @@ export function useRenderer() {
 		{ deep: true },
 	)
 
-	// Sync reservedWidth between preview store and TUI config.
-	// When switching TO TUI, seed the preview slider from the TUI config's
-	// widthReserve (so persisted/preset values are respected on first render).
-	// When the slider changes while in TUI mode, write back to the TUI config.
+	// The preview slider shows the reserve the CLI will actually apply: the
+	// grid's own value in TUI mode, then display.widthReserve, then the CLI
+	// default. Watching the resolved value rather than the style also picks up
+	// presets and imported configs.
 	watch(
-		() => configStore.isTuiStyle,
-		(isTui) => {
-			if (isTui && configStore.config.display.tui?.widthReserve != null) {
-				previewStore.reservedWidth = configStore.config.display.tui.widthReserve
-			}
+		() => {
+			const display = configStore.config.display
+			const shared = display.widthReserve ?? DEFAULT_WIDTH_RESERVE
+			return configStore.isTuiStyle ? (display.tui?.widthReserve ?? shared) : shared
+		},
+		(value) => {
+			previewStore.reservedWidth = value
 		},
 		{ immediate: true },
 	)
@@ -1052,6 +1022,8 @@ export function useRenderer() {
 		(value) => {
 			if (configStore.isTuiStyle) {
 				configStore.setTuiWidthReserve(value)
+			} else {
+				configStore.setWidthReserve(value)
 			}
 		},
 	)
